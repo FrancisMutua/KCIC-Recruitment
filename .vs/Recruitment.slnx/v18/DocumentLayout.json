@@ -1,0 +1,83 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|d:\\work\\portals\\kuccps\\recruitment\\recruitment.server\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|solutionrelative:recruitment.server\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|d:\\work\\portals\\kuccps\\recruitment\\recruitment.server\\controllers\\settingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|solutionrelative:recruitment.server\\controllers\\settingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|d:\\work\\portals\\kuccps\\recruitment\\recruitment.server\\controllers\\jobcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D0EC02EF-DA0B-A939-8A5F-659C209163F1}|Recruitment.Server\\Recruitment.Server.csproj|solutionrelative:recruitment.server\\controllers\\jobcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Recruitment.Server\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Recruitment.Server\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T15:33:00.298Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SettingsController.cs",
+              "DocumentMoniker": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\SettingsController.cs",
+              "RelativeDocumentMoniker": "Recruitment.Server\\Controllers\\SettingsController.cs",
+              "ToolTip": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\SettingsController.cs",
+              "RelativeToolTip": "Recruitment.Server\\Controllers\\SettingsController.cs",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAIwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T15:32:56.698Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "JobController.cs",
+              "DocumentMoniker": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\JobController.cs",
+              "RelativeDocumentMoniker": "Recruitment.Server\\Controllers\\JobController.cs",
+              "ToolTip": "D:\\Work\\Portals\\KUCCPS\\Recruitment\\Recruitment.Server\\Controllers\\JobController.cs",
+              "RelativeToolTip": "Recruitment.Server\\Controllers\\JobController.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAowLACAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T15:20:36.179Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
