@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Recruitment.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37a4c44c7830ac10d90a554039ec7978d7d4325c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b650a91c23cf0da0adcf6c8462bedd4e074741d9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Recruitment.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Recruitment.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

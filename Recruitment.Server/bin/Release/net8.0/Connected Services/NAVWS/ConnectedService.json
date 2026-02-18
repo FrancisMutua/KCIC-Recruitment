@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "ExtendedData": {
     "inputs": [
-      "http://108.181.152.166:7047/Biovax/WS/Ken Biovax Test/Codeunit/Recruitment"
+      "http://154.12.228.158:9047/KCA/WS/KCAU/Codeunit/Recruitment"
     ],
     "collectionTypes": [
       "System.Array",
