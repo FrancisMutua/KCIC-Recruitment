@@ -1,459 +1,309 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NAVWS;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Recruitment.Library.DTOs;
-using Recruitment.Library.Interfaces;
+using System.Text.Json;
+using Recruitment.Server.DTOs;
+using Recruitment.Server.Interfaces;
+using Recruitment.Server.Models;
+using Recruitment.Server.Utilities;
 
 namespace Recruitment.Server.Controllers
 {
     [ApiController]
     [Route("/api/auth")]
-    public class AuthController(IWebService webService, IAuthService authService, IHelperService helperService) : Controller
+    public class AuthController(IAuthService authService, IWebService webService, IEmailService emailService, ILogger<AuthController> logger) : Controller
     {
-        private readonly Recruitment_PortClient webportals = webService.ObjNav();
         private readonly IAuthService _authService = authService;
-        private readonly IHelperService _helperService = helperService;
-
-        [HttpGet("getusers")]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                // 1. Asynchronously call the web portal service to retrieve all user records.
-                var response = await webportals.GetAllUsersAsync();
-
-                // 2. Extract the raw result string (expected to be JSON format) from the service response.
-                var result = response.return_value;
-
-                // 3. Convert the JSON string into a strongly-typed list of User Data Transfer Objects (DTOs).
-                var data = JsonConvert.DeserializeObject<List<UsersDto>>(result) ?? [];
-
-                // 4. Return an HTTP 200 OK status containing the list of users.
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                // 5. If any error occurs (network failure, database error, or invalid JSON), 
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpPost("createaccount")]
-        public async Task<IActionResult> CreateAccount(CreateAccountDto account)
-        {
-            try
-            {
-                // 1. Extract and normalize user data from the incoming request model
-                string firstName = account.firstName;
-                // Use the null-coalescing operator (??) to ensure middleName is never null
-                string middleName = account.middleName ?? string.Empty;
-                string lastName = account.lastName;
-                string idNumber = account.idNumber;
-                int telNo = account.telNo;
-                string emailAddress = account.emailAddress;
-                string requestLink = account.requestLink; // The frontend base URL (e.g., https://portal.kuccps.net)
-
-                // 2. Persist the new user record in the backend/external system asynchronously
-                await webportals.CreateOnlineUserAsync(emailAddress, firstName, middleName, lastName, idNumber, telNo);
-
-                // 3. Generate a secure Access Token for account activation
-                var login = new LoginDto { username = emailAddress };
-                string accessToken = _authService.GenerateAccessToken(login);
-
-                // 4. Construct the activation deep-link
-                // This link points to the frontend "Activate" route with the email and token as query parameters
-                string activationLink = $"{requestLink}/account/activate-account?emailAddress={emailAddress}&token={accessToken}";
-
-                // 5. Define the Email Subject and HTML Body
-                string subject = "KUCCPS Account Activation - Action Required";
-
-                // Using an interpolated verbatim string ($@) to create a clean, multi-line HTML template
-                string body = $@"
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                            .header {{ background-color: #0066cc; color: white; padding: 20px; text-align: center; }}
-                            .content {{ background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }}
-                            .button {{ display: inline-block; padding: 12px 30px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
-                            .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='header'>
-                                <h2>KUCCPS Account Activation</h2>
-                            </div>
-                            <div class='content'>
-                                <p>Dear {firstName} {middleName} {lastName},</p>
-    
-                                <p>Thank you for registering with the Kenya Universities and Colleges Central Placement Service (KUCCPS).</p>
-    
-                                <p>Your account has been successfully created. To complete the registration process, please activate your account by clicking the button below:</p>
-    
-                                <p style='text-align: center;'>
-                                    <a style='color: white;' href='{activationLink}' class='button' target='_blank'>Activate My Account</a>
-                                </p>
-    
-                                <p>Alternatively, you can copy and paste the following link into your browser:</p>
-                                <p style='word-break: break-all; color: #0066cc;'>{activationLink}</p>
-    
-                                <p><strong>Important:</strong> This activation link will expire in 2 hours for security purposes.</p>
-    
-                                <p>If you did not create this account, please disregard this email or contact our support team immediately.</p>
-    
-                                <p>Best regards,<br/>
-                                KUCCPS Support Team</p>
-                            </div>  
-                            <div class='footer'>
-                                <p>This is an automated email. Please do not reply to this message.</p>
-                                <p>&copy; {DateTime.Now.Year} Kenya Universities and Colleges Central Placement Service. All rights reserved.</p>
-                                <p>For assistance, contact: support@kuccps.ac.ke</p>
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                ";
-
-                // 6. Dispatch the activation email asynchronously via the portal's notification service
-                await webportals.SendEmailNotificationAsync(emailAddress, subject, body);
-
-                // 7. Return success response to the frontend
-                return Ok(new
-                {
-                    success = true,
-                    message = "Account has been created successfully. Please follow the link sent to your email address to activate your account!"
-                });
-            }
-            catch (Exception ex)
-            {
-                // 8. Global error handling: catch failures in User Creation, Token Generation, or Emailing
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpPost("activateaccount")]
-        public async Task<IActionResult> ActivateUserAccount(string token)
-        {
-            try
-            {
-                // 1. Validate the provided token (likely a JWT) sent via the activation link.
-                var tokenData = _helperService.ValidateTokenData(token);
-
-                // 2. Extract the username from the validated token payload.
-                string username = tokenData?.Username!;
-
-                // 3. Asynchronously call the web portal service to update the user's status.
-                await webportals.ActivateAccountAsync(username);
-
-                // 4. Return an HTTP 200 OK response with a success flag and message for the frontend.
-                return Ok(new { success = true, message = "Account has been activated successfully!" });
-            }
-            catch (Exception ex)
-            {
-                // 5. Catch any errors that occur during validation (e.g., Expired Token) 
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpPost("updatepassword")]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto update)
-        {
-            try
-            {
-                // 1. Extract the unique identifier (email address) from the update model
-                string username = update.emailAddress;
-
-                // 2. Hash the plain-text password using BCrypt.
-                string password = BCrypt.Net.BCrypt.HashPassword(update.password);
-
-                // 3. Asynchronously call the portal service to save the new hashed password.
-                await webportals.UpdateUserPasswordAsync(username, password);
-
-                // 4. Return an HTTP 200 OK response indicating success.
-                return Ok(new
-                {
-                    success = true,
-                    message = "Password has been updated successfully. Please proceed to login."
-                });
-            }
-            catch (Exception ex)
-            {
-                // 5. Catch failures such as database connectivity issues or service timeouts.
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpPost("sentpasswordresetlink")]
-        public async Task<IActionResult> PasswordResetLink(string emailAddress, string requestLink)
-        {
-            try
-            {
-                // 1. Validate the provided email address.
-                await webportals.CheckValidEmailAddressAsync(emailAddress);
-
-                // 2. Construct the password reset deep-link.
-                string activationLink = $"{requestLink}/account/activate-account?emailAddress={emailAddress}";
-
-                // 3. Define the Email Subject
-                string subject = "KUCCPS Password Reset Link";
-
-                // 4. Create the HTML Email Body using an interpolated verbatim string ($@"")
-                string body = $@"
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                            .header {{ background-color: #0066cc; color: white; padding: 20px; text-align: center; }}
-                            .content {{ background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }}
-                            .button {{ display: inline-block; padding: 12px 30px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
-                            .footer {{ text-align: center; padding: 20px; font-size: 12px; color: #666; }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='header'>
-                                <h2>KUCCPS Password Reset Link</h2>
-                            </div>
-                            <div class='content'>
-                                <p>Dear User,</p>
-     
-                                <p>Thank you for registering with the Kenya Universities and Colleges Central Placement Service (KUCCPS).</p>
-     
-                                <p>Please reset your password by clicking the button below:</p>
-     
-                                <p style='text-align: center;'>
-                                    <a style='color: white;' href='{activationLink}' class='button' target='_blank'>Reset Password</a>
-                                </p>
-     
-                                <p>Alternatively, you can copy and paste the following link into your browser:</p>
-                                <p style='word-break: break-all; color: #0066cc;'>{activationLink}</p>
-     
-                                <p><strong>Important:</strong> This activation link will expire in 2 hours for security purposes.</p>
-     
-                                <p>If you did not create this account, please disregard this email or contact our support team immediately.</p>
-     
-                                <p>Best regards,<br/>
-                                KUCCPS Support Team</p>
-                            </div>
-                            <div class='footer'>
-                                <p>This is an automated email. Please do not reply to this message.</p>
-                                <p>&copy; {DateTime.Now.Year} Kenya Universities and Colleges Central Placement Service. All rights reserved.</p>
-                                <p>For assistance, contact: support@kuccps.ac.ke</p>
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                ";
-
-                // 5. Asynchronously dispatch the email via the portal's notification service.
-                await webportals.SendEmailNotificationAsync(emailAddress, subject, body);
-
-                // 6. Return an HTTP 200 OK status to the client confirming the email was sent.
-                return Ok(new
-                {
-                    success = true,
-                    message = $"Password reset link has been sent to your email address {emailAddress}"
-                });
-            }
-            catch (Exception ex)
-            {
-                // 7. Handle failures such as "Email Not Found", "Service Unavailable", or "Mail Server Error".
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
+        private readonly IEmailService _emailService = emailService;
+        private readonly ILogger<AuthController> _logger = logger;
+        private readonly Recruitment_PortClient _webportals = webService.ObjNav();
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto login)
         {
             try
-            {
-                // 1. Extract credentials from the login request model
-                string username = login.username;
-                string password = login.password;
-
-                // 2. Validate that the email address exists in the system
-                await webportals.CheckValidEmailAddressAsync(username);
-
-                // 3. Check if the user has completed the email activation process
-                var accountActivated = await webportals.HasActivatedAccountAsync(username);
-                var accountActivatedRes = accountActivated.return_value;
-
-                // If the account is not activated, stop the login and inform the user
-                if (!accountActivatedRes)
-                    throw new Exception("Your account has not been activated. Please follow the link sent to your email address to activate!");
-
-                // 4. Retrieve the stored hashed password from the database/portal
-                var userPassword = await webportals.GetUserPasswordAsync(username);
-                var hashedPassword = userPassword.return_value.ToString();
-
-                // 5. Securely compare the provided plain-text password with the stored hash using BCrypt
-                if (!BCrypt.Net.BCrypt.Verify(password, hashedPassword))
-                    throw new Exception("Incorrect password. Please try again!");
-
-                // 6. Execute the core login logic in the portal system and retrieve the user's unique identity
-                var userResponse = await webportals.UserLoginAsync(username);
-                var userResult = userResponse.return_value;
-
-                // 7. Prepare the login data for token generation
-                var model = new LoginDto
                 {
-                    username = userResult,
-                    password = BCrypt.Net.BCrypt.HashPassword(password)
-                };
+                    string username = login.username;
+                    string password = login.password;
 
-                // 8. Generate a secure JWT (Access Token) using the internal Authentication Service
-                var accessToken = _authService.GenerateAccessToken(model);
+                    var hashedPasswordResponse = await _webportals.GetUserPasswordAsync(username);
+                    string hashedPassword = hashedPasswordResponse.return_value;
+                    
+                    if (string.IsNullOrEmpty(hashedPassword))
+                    {
+                         throw new Exception("Invalid username or password.");
+                    }
 
-                // 9. Return an HTTP 200 OK with the generated token
-                return Ok(new { success = true, accessToken });
-            }
-            catch (Exception ex)
-            {
-                // 10. Centralized Error Handling: 
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+                    bool isPasswordValid = false;
+                    try
+                    {
+                        isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+                    }
+                    catch (Exception)
+                    {
+                    
+                        isPasswordValid = false;
+                    }
+
+                    if (!isPasswordValid) throw new Exception("Invalid username or password.");
+
+                    var response = await _webportals.UserLoginAsync(username);
+                    var result = response.return_value;
+
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        throw new Exception("Failed to retrieve user details.");
+                    }
+
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var account = JsonSerializer.Deserialize<AccountDto>(result, options) ?? new AccountDto();
+
+                    var user = new User { EmailAddress = account.EmailAddress, Password = password };
+
+                    string accessToken = _authService.GenerateAccessToken(user);
+                    string refreshToken = _authService.GenerateRefreshToken();
+                    
+                   
+                    var tokenData = _authService.ValidateToken(accessToken);
+                    var expiresIn = (int)(tokenData.Expiration - DateTime.UtcNow).TotalSeconds;
+
+                   
+                    bool isProfileUpdated = false;
+                    try
+                    {
+                        var profileStatus = await _webportals.IsProfileUpdatedAsync(username);
+                        isProfileUpdated = profileStatus.return_value;
+                    }
+                    catch
+                    {
+                        
+                        isProfileUpdated = false;
+                    }
+
+                    return Ok(new ApiResponse<TokenDto>
+                    {
+                        Success = true,
+                        Data = new TokenDto
+                        {
+                            AccessToken = accessToken,
+                            RefreshToken = refreshToken,
+                            ExpiresIn = expiresIn,
+                            TokenType = "Bearer",
+                            IsProfileUpdated = isProfileUpdated
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Login error for {Username}", login?.username);
+                    return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.StartsWith("Invalid") ? ex.Message : "An error occurred during login. Please try again." });
+                }
         }
+        
 
-        [HttpDelete("deleteaccount")]
-        public async Task<IActionResult> DeleteAccount(string username)
+        [HttpPost("createaccount")]
+        public async Task<IActionResult> CreateAccount(CreateAccountDto accountDto)
         {
             try
             {
-                // 1. Asynchronously call the portal service to remove the user account.
-                await webportals.DeleteAccountAsync(username);
+                string firstName = accountDto.firstName;
+                string lastName = accountDto.lastName;
+                string middleName = accountDto.middleName ?? string.Empty;
+                string idNumber = accountDto.idNumber;
+                string emailAddress = accountDto.emailAddress;
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(accountDto.password);
 
-                // 2. Return an HTTP 200 OK status to indicate the operation was successful.
-                return Ok(new { success = true, message = "Account deleted successfully!" });
+                
+                var activationToken = _authService.GenerateActivationToken(emailAddress);
+
+
+                string frontendUrl = Request.Headers["Origin"].ToString();
+                if (string.IsNullOrEmpty(frontendUrl))
+                {
+                    frontendUrl = Request.Headers["Referer"].ToString();
+                    if (!string.IsNullOrEmpty(frontendUrl) && frontendUrl.EndsWith("/"))
+                    {
+                        frontendUrl = frontendUrl.TrimEnd('/');
+                    }
+                }
+
+            
+                await _emailService.SendActivationEmailAsync(emailAddress, firstName, activationToken, frontendUrl);
+
+                try
+                {
+                    
+                    await _webportals.CreateOnlineUserAsync(emailAddress, firstName, middleName, lastName, idNumber, hashedPassword);
+                }
+                catch (Exception)
+                {
+                  
+                    await _emailService.SendRegistrationFailedEmailAsync(emailAddress, firstName);
+                    throw; 
+                }
+
+                return Ok(new ApiResponse<object> { Success = true, Message = "Account created successfully! A verification email has been sent to your inbox. Please activate your account to proceed." });
             }
             catch (Exception ex)
             {
-                // 3. Catch any errors that occur during the deletion process.
-                return BadRequest(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Create account error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to create account. This email or ID number may already be in use." });
             }
         }
 
-        [Authorize]
-        [HttpGet("getuserdetails")]
-        public async Task<IActionResult> GetUserDetails(string token)
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword(LoginDto login)
         {
             try
             {
-                // 1. Validate the provided access token (JWT).
-                var tokenData = _authService.ValidateAccessToken(token);
+                string username = login.username;
+                string password = BCrypt.Net.BCrypt.HashPassword(login.password);
+                await _webportals.UpdateUserPasswordAsync(username, password);
+                return Ok(new ApiResponse<object> { Success = true, Message = "Password has been updated successfully!" });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Reset password error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to reset password. Please ensure the email is correct." });
+            }
+        }
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateAccount([FromBody] ActivateAccountDto model)
+        {
+            try
+            {
+                if (model == null || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.Email))
+                {
+                    return BadRequest(new ApiResponse<object> { Success = false, Message = "Invalid activation request." });
+                }
 
-                // 2. Extract the username from the validated token payload.
-                string username = tokenData?.Username!;
+                // Validate token
+                bool isValid = _authService.ValidateActivationToken(model.Token, model.Email);
+                if (!isValid)
+                {
+                    return BadRequest(new ApiResponse<object> { Success = false, Message = "Invalid or expired activation token." });
+                }
 
-                // 3. Asynchronously fetch the raw user data from the external portal service.
-                var response = await webportals.GetUserDetailsAsync(username);
+                // Activate user in NAV
+                await _webportals.ActivateUserAccountAsync(model.Email);
 
-                // 4. Extract the actual data content (usually a JSON string) from the service response.
+                return Ok(new ApiResponse<object> { Success = true, Message = "Account activated successfully! You can now login." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Activation error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Activation failed. The link may have expired or is invalid." });
+            }
+        }
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                
+                var username = User.Claims.FirstOrDefault(x => x.Type == "username")?.Value;
+                if (string.IsNullOrEmpty(username)) return Unauthorized(new ApiResponse<object> { Success = false, Message = "User not found!" });
+
+                var response = await _webportals.GetUserDetailsAsync(username);
                 var result = response.return_value;
 
-                // 5. Convert the JSON string into a strongly-typed User Data Transfer Object (UserDto).
-                var user = JsonConvert.DeserializeObject<UserDto>(result);
+                var cleanedProfile = JsonUtilities.FlattenNavResponse(result);
 
-                // 6. Return an HTTP 200 OK status containing the populated user object.
-                return Ok(user);
+                return Ok(new ApiResponse<object> { Success = true, Data = cleanedProfile });
             }
             catch (Exception ex)
             {
-                // 7. Global Error Handling:
-                return BadRequest(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Get profile error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to load profile details." });
             }
         }
-
-        [Authorize]
-        [HttpGet("hasupdatedprofile")]
-        public async Task<IActionResult> HasUpdatedProfile(string token)
+        [HttpPost("updateprofile")]
+        public async Task<IActionResult> UpdateProfile(AccountDto account)
         {
             try
             {
-                // 1. Validate the provided JWT access token.
-                var tokenData = _authService.ValidateAccessToken(token);
 
-                // 2. Extract the username from the validated token payload.
-                string username = tokenData?.Username!;
-
-                // 3. Asynchronously call the web portal service to check the user's profile status.
-                var response = await webportals.HasUpdatedProfileAsync(username);
-
-                // 4. Extract the boolean result (true/false) from the service's return wrapper.
-                var result = response.return_value;
-
-                // 5. Return an HTTP 200 OK status with the profile update status.
-                return Ok(new { success = true, updated = result });
+                await _webportals.UpdateApplicantProfileAsync(
+                 account.EmailAddress, 
+            account.Initials ?? 0, 
+                int.TryParse(account.PhoneNumber, out int phone) ? phone : 0,
+                ((int)(account.Gender ?? 0)).ToString(), 
+               ((int)(account.MaritalStatus ?? 0)).ToString(), 
+                account.PostalCode,
+                account.PostalAddress, 
+                account.BirthDate ?? DateTime.MinValue, 
+                account.Disability ?? false, 
+                account.DisabilityStatus ?? "", 
+                account.PwdNumber ?? "",
+                account.Country
+                );
+                return Ok(new ApiResponse<object> { Success = true, Message = "Profile updated successfully!" });
             }
             catch (Exception ex)
             {
-                // 6. Global error handling:
-                return BadRequest(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Update profile error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to update profile. Please ensure all required fields are valid." });
             }
         }
 
-        [Authorize]
-        [HttpPost("updateuserprofile")]
-        public async Task<IActionResult> UpdateUserProfile(UpdateProfileDto update)
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
             try
             {
-                // 1. Security/Authentication: Extract the token and validate it.
-                string token = update.token;
-                var tokenData = _authService.ValidateAccessToken(token);
+                
+                var username = User.Claims.FirstOrDefault(x => x.Type == "username")?.Value;
+                if (string.IsNullOrEmpty(username)) return Unauthorized(new ApiResponse<object> { Success = false, Message = "User not found!" });
 
-                // 2. Personal Identity Mapping:
-                int initials = update.initials;
-                string firstName = update.firstName;
-                // Use null-coalescing to ensure MiddleName is never null to prevent service errors.
-                string middleName = update.middleName ?? string.Empty;
-                string lastName = update.lastName;
-                string gender = update.gender;
-                string maritalStatus = update.maritalStatus;
-                DateTime dateOfBirth = update.dateOfBirth;
+            
+                var hashedPasswordResponse = await _webportals.GetUserPasswordAsync(username);
+                string currentHashedPassword = hashedPasswordResponse.return_value;
 
-                // 3. Secure Identity Extraction:
-                // IMPORTANT: The emailAddress is pulled from the VALIDATED token (claims), 
-                // NOT the request body. This prevents users from updating someone else's profile.
-                string emailAddress = tokenData?.Username!;
+                if (string.IsNullOrEmpty(currentHashedPassword))
+                {
+                    throw new Exception("Could not verify current password.");
+                }
 
-                // 4. Contact & Address Details
-                string idNumber = update.idNumber;
-                int telNo = update.telNo;
-                int altTelNo = update.altTelNo;
-                string postCode = update.postCode;
-                string postalAddress = update.postalAddress;
-                string country = update.country;
-                string county = update.county;
-                string subCounty = update.subCounty;
+                bool isCurrentPasswordValid = false;
+                try
+                {
+                    isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(model.CurrentPassword, currentHashedPassword);
+                }
+                catch (Exception)
+                {
+                    isCurrentPasswordValid = false;
+                }
 
-                // 5. Statutory & Ethnicity Details
-                string ethnicity = update.ethnicity;
-                string kraPin = update.kraPin;
+                if (!isCurrentPasswordValid)
+                {
+                    throw new Exception("The current password provided is incorrect.");
+                }
 
-                // 6. Disability (P.W.D) Information:
-                bool isPwd = update.isPwd;
-                string pwdNo = update.pwdNo ?? string.Empty;
-                string disabilityType = update.disabilityType ?? string.Empty;
+               
+                string newHashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 
-                // 7. External Service Integration:
-                // Asynchronously call the portal service to persist the changes in the main database.
-                await webportals.UpdateUserProfileAsync(emailAddress, gender, maritalStatus, dateOfBirth, altTelNo, postCode, postalAddress, country, county, subCounty, ethnicity, kraPin, isPwd, pwdNo, disabilityType);
+             
+                await _webportals.UpdateUserPasswordAsync(username, newHashedPassword);
+                var userDetailsResponse = await _webportals.GetUserDetailsAsync(username);
+                var userDetailsJson = userDetailsResponse.return_value;
+                var userDetails = JsonUtilities.FlattenNavResponse(userDetailsJson);
+                
+                string email = userDetails["EmailAddress"]?.ToString() ?? "";
+                string firstName = userDetails["FirstName"]?.ToString() ?? "User";
 
-                // 8. Return Success Result
-                return Ok(new { success = true, message = "Profile has been updated successfully!" });
+                if (!string.IsNullOrEmpty(email))
+                {
+                     await _emailService.SendPasswordChangeNotificationAsync(email, firstName);
+                }
+
+                return Ok(new ApiResponse<object> { Success = true, Message = "Password changed successfully!" });
             }
             catch (Exception ex)
             {
-                // 9. Error Handling:
-                // Catch validation failures (expired token), network issues, or database errors.
-                return BadRequest(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Change password error");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.Contains("Incorrect") || ex.Message.Contains("Could not verify") ? ex.Message : "Failed to change password. Please try again later." });
             }
         }
     }

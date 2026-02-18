@@ -1,19 +1,23 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Recruitment.Library.Interfaces;
-using Recruitment.Library.Services;
-using Scalar.AspNetCore;
-using System.Text;
+using Recruitment.Server.Interfaces;
+using Recruitment.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Add services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWebService, WebService>();
-builder.Services.AddScoped<IHelperService, HelperService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IDropDownService, DropDownService>();
 
 // Add JWT configuration
 var issuer = builder.Configuration["Jwt:Issuer"];
@@ -45,13 +49,13 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options => options.Theme = ScalarTheme.BluePlanet);
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 //CORS 
@@ -62,7 +66,10 @@ app.UseCors(policy =>
           .AllowAnyHeader()
 );
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 

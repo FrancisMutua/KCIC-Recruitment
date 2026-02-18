@@ -1,0 +1,14 @@
+
+> recruitment.client@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 6094 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.64 kB │ gzip:   0.41 kB
+dist/assets/logo-ku3c3LhK.png   234.57 kB
+dist/assets/index-Bq-uq6sy.css   34.40 kB │ gzip:   6.32 kB
+dist/assets/index-72qotrxD.js   440.50 kB │ gzip: 122.71 kB
+✓ built in 2.32s

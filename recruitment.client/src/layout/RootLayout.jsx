@@ -1,33 +1,49 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import RootNav from "../pages/RootNav";
 import RootFooter from "../pages/RootFooter";
 import RootBrand from "../pages/RootBrand";
+import RootAdvertisedJobs from "../pages/RootAdvertisedJobs";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/ReactToastify.css";
-import { useEffect } from "react";
 import { changeDocumentTitle } from "../scripts/script";
 
+
 const RootLayout = () => {
-  localStorage.removeItem("accessToken");
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
-  useEffect(function () {
-    changeDocumentTitle("Home Page");
+  // Only clear user session if we are actually on the home page, not just passing through or rendering RootLayout
+  useEffect(() => {
+    if (isHomePage) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("userProfile");
+    }
+  }, [isHomePage]);
 
-    return () =>
-      changeDocumentTitle(
-        "The Kenya Universities and Colleges Central Placement Service",
-      );
-  }, []);
+  changeDocumentTitle("Home");
   return (
-    <div className="flex flex-col min-h-screen bg-red-800/10">
-      <RootNav />
-      <RootBrand />
-      <Outlet />
-      <RootFooter />
-      <div className="text-base">
-        <ToastContainer autoClose={10000} />
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <RootNav />
+        {isHomePage && (
+          <>
+            <RootBrand />
+            <RootAdvertisedJobs />
+          </>
+        )}
+        <Outlet />
+        <RootFooter />
+        <ToastContainer
+          position="top-center"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
       </div>
-    </div>
   );
 };
 

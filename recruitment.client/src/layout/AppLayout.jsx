@@ -1,43 +1,38 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import SideNav from "../components/SideNav";
-import MainNav from "../components/MainNav";
-import Footer from "../components/Footer";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const AppLayout = () => {
-  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
-
-  const toggleSideNav = () => setIsSideNavOpen(!isSideNavOpen);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50/50 flex transition-colors duration-300">
-      {/* 1. Sidebar - Fixed width w-72 (18rem) */}
-      <SideNav isOpen={isSideNavOpen} toggleSideNav={toggleSideNav} />
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden">
+      {/* Sidebar - Fixed/Collapsible */}
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+      />
 
-      {/* 2. Content Area - Margin matches Sidebar width (72) */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-72 transition-all duration-300">
-        {/* Top Navigation */}
-        <MainNav toggleSideNav={toggleSideNav} />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Header */}
+        <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
-        {/* 3. Scrollable Main Content */}
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1">
-            {/* Standardized Padding for all internal pages */}
-            <div className="max-w-[1600px] mx-auto animate-in fade-in duration-500">
+        {/* Dynamic Page Content */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth flex flex-col pt-6 lg:pt-10">
+          <div className="flex-1 px-6 lg:px-10">
+            <div className="max-w-7xl mx-auto space-y-8">
               <Outlet />
             </div>
           </div>
-
-          {/* 4. Footer (Non-sticky, scrolls with content) */}
-          <Footer />
+          
+          {/* Internal Footer (pushed to bottom) */}
+          <div className="w-full mt-12">
+            <Footer />
+          </div>
         </main>
-      </div>
-
-      {/* Global Toast Container */}
-      <div className="text-base">
-        <ToastContainer autoClose={10000} />
       </div>
     </div>
   );

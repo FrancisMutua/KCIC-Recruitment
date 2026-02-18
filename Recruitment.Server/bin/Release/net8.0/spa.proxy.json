@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:44357",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/../recruitment.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}
