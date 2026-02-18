@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
-import { IconShare } from "@tabler/icons-react";
+import { IconShare, IconEye } from "@tabler/icons-react";
 import { toast } from "react-toastify";
+import { DataTable } from "./ui/DataTable";
+import { Button } from "./ui/button";
 
 const JobTable = ({ basePath = "/job-details" }) => {
   const [advertisedJobs, setAdvertisedJobs] = useState([]);
@@ -49,9 +51,65 @@ const JobTable = ({ basePath = "/job-details" }) => {
     });
   };
 
+  const columns = useMemo(() => [
+    {
+      header: "Reference Number",
+      accessorKey: "documentNo",
+    },
+    {
+      header: "Date",
+      accessorKey: "documentDate",
+    },
+    {
+      header: "Job Id",
+      accessorKey: "jobId",
+    },
+    {
+      header: "Job Title",
+      accessorKey: "jobTitle",
+    },
+    {
+      header: "Vacancy",
+      accessorKey: "vacancy",
+    },
+    {
+      header: "Start Date",
+      accessorKey: "startDate",
+    },
+    {
+      header: "End Date",
+      accessorKey: "endDate",
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const job = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <Button 
+                size="sm"
+                className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
+                onClick={() => navigate(`${basePath}/${job.jobId}`)}
+            >
+                Details
+            </Button>
+            <button 
+              className="p-1.5 text-brand-navy hover:bg-brand-navy rounded-md transition-colors border border-brand-navy"
+              onClick={() => handleShare(job.jobId)}
+              title="Share Job"
+            >
+              <IconShare size={16} />
+            </button>
+          </div>
+        );
+      },
+    },
+  ], [basePath, navigate]);
+
   return (
     <div>
-      <h3 className="uppercase font-semibold tracking-wide text-sm md:text-2xl">
+      <h3 className="uppercase font-semibold tracking-wide text-sm md:text-2xl mb-4">
         Advertised Jobs
       </h3>
       {loading && (
@@ -67,60 +125,7 @@ const JobTable = ({ basePath = "/job-details" }) => {
         </div>
       )}
       {!loading && !error && (
-        <div className="w-full overflow-x-scroll">
-          <table className="border-collapse w-full mt-6">
-            <thead>
-              <tr>
-                <td className="table-header">Reference Number</td>
-                <td className="table-header">Date</td>
-                <td className="table-header">Job Id</td>
-                <td className="table-header">Job Title</td>
-                <td className="table-header">Vacancy</td>
-                <td className="table-header">Start Date</td>
-                <td className="table-header">End Date</td>
-                <td className="table-header">Actions</td>
-              </tr>
-            </thead>
-            <tbody>
-              {advertisedJobs.length > 0 ? (
-                advertisedJobs.map((job) => (
-                  <tr className="table-row-custom" key={job.documentNo}>
-                    <td className="table-body">{job.documentNo}</td>
-                    <td className="table-body">{job.documentDate}</td>
-                    <td className="table-body">{job.jobId}</td>
-                    <td className="table-body">{job.jobTitle}</td>
-                    <td className="table-body">{job.vacancy}</td>
-                    <td className="table-body">{job.startDate}</td>
-                    <td className="table-body">{job.endDate}</td>
-                    <td className="table-body">
-                      <div className="flex items-center gap-2">
-                        <button 
-                          className="bg-cyan-700 text-white px-3 py-1 rounded hover:bg-cyan-800 transition-colors"
-                          onClick={() => navigate(`${basePath}/${job.jobId}`)}
-                        >
-                          Details
-                        </button>
-                        <button 
-                          className="p-1.5 text-cyan-700 hover:bg-cyan-50 rounded-md transition-colors border border-cyan-100"
-                          onClick={() => handleShare(job.jobId)}
-                          title="Share Job"
-                        >
-                          <IconShare size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="table-row-custom">
-                  <td className="table-body text-center" colSpan={10}>
-                    No data available in table
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DataTable columns={columns} data={advertisedJobs} />
       )}
     </div>
   );

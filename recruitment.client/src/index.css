@@ -18,6 +18,42 @@ body {
   .table-row-custom {
     @apply cursor-pointer even:bg-gray-100 hover:bg-gray-200/70;
   }
+
+  /* Primary button — gradient from brand primary hsl(224,52%,23%) */
+  .btn-primary {
+    background: linear-gradient(135deg, #1c2d5e 0%, #111b3a 100%);
+    color: #ffffff;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(28, 45, 94, 0.4);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Secondary button — solid secondary color #bfa529 */
+  .btn-secondary {
+    background-color: #bfa529;
+    color: #ffffff;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(191, 165, 41, 0.4);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Global Primary Gradient Background */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #1c2d5e 0%, #111b3a 100%);
+    background-attachment: fixed;
+  }
 }
 
 input {

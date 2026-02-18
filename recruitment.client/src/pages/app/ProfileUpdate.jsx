@@ -214,7 +214,7 @@ const ProfileUpdate = () => {
   if (fetching) {
     return (
       <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-cyan-600" size={40} />
+        <IconLoader2 className="animate-spin text-brand-navy" size={40} />
       </div>
     );
   }
@@ -238,7 +238,7 @@ const ProfileUpdate = () => {
                 name="firstName"
                 value={profile.firstName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-gray-100"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-gray-100"
                 readOnly 
                 title="Cannot be modified"
               />
@@ -250,7 +250,7 @@ const ProfileUpdate = () => {
                 name="middleName"
                 value={profile.middleName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-gray-100"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-gray-100"
                 readOnly
                  title="Cannot be modified"
               />
@@ -262,7 +262,7 @@ const ProfileUpdate = () => {
                 name="lastName"
                 value={profile.lastName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-gray-100"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-gray-100"
                  readOnly
                   title="Cannot be modified"
               />
@@ -275,7 +275,7 @@ const ProfileUpdate = () => {
                 name="idNumber"
                 value={profile.idNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-gray-100"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-gray-100"
                 readOnly
               />
             </div>
@@ -287,7 +287,7 @@ const ProfileUpdate = () => {
                 name="emailAddress"
                 value={profile.emailAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-gray-100"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-gray-100"
                 readOnly
               />
             </div>
@@ -298,7 +298,7 @@ const ProfileUpdate = () => {
                 name="initials"
                 value={profile.initials}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
                 required
               >
                   <option value="">Select Initials</option>
@@ -315,7 +315,7 @@ const ProfileUpdate = () => {
                 name="phoneNumber"
                 value={profile.phoneNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
             </div>
@@ -327,7 +327,7 @@ const ProfileUpdate = () => {
                 name="birthDate"
                 value={profile.birthDate || ''}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
               />
@@ -339,7 +339,7 @@ const ProfileUpdate = () => {
                 name="gender"
                 value={profile.gender}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
                 required
               >
                   <option value="">Select Gender</option>
@@ -354,7 +354,7 @@ const ProfileUpdate = () => {
                 name="maritalStatus"
                 value={profile.maritalStatus}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
                 required
               >
                   <option value="">Select Marital Status</option>
@@ -393,7 +393,7 @@ const ProfileUpdate = () => {
                 name="postalAddress"
                 value={profile.postalAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
             </div>
@@ -405,7 +405,7 @@ const ProfileUpdate = () => {
                 name="postalCode"
                 value={profile.postalCode}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
             </div>
@@ -422,7 +422,7 @@ const ProfileUpdate = () => {
                 name="disability"
                 value={profile.disability}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
               >
                   <option value="false">No</option>
                   <option value="true">Yes</option>
@@ -438,7 +438,7 @@ const ProfileUpdate = () => {
                     name="pwdNumber"
                     value={profile.pwdNumber}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                     required
                 />
                 </div>
@@ -461,7 +461,7 @@ const ProfileUpdate = () => {
           <div className="mt-8 flex justify-end">
             <button
               type="submit"
-              className="bg-cyan-600 text-white px-8 py-3 rounded-lg shadow-md hover:bg-cyan-700 transition-colors font-semibold flex items-center gap-2"
+              className="btn-primary px-8 py-3 rounded-lg shadow-md hover:opacity-90 transition-colors font-semibold flex items-center gap-2"
               disabled={loading}
             >
               {loading ? <IconLoader2 className="animate-spin" size={20} /> : <IconDeviceFloppy size={20} />}

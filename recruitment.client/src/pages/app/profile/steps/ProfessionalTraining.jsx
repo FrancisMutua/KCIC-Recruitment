@@ -166,7 +166,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAdd} className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <IconPlus size={20} className="text-cyan-600" /> Add Professional Training / Qualification
+          <IconPlus size={20} className="text-brand-navy" /> Add Professional Training / Qualification
         </h3>
         <p className="text-sm text-gray-500 -mt-2">This section is optional. Add any professional certifications, memberships, or training courses.</p>
 
@@ -246,7 +246,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors flex items-center gap-2"
+            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2"
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Training"}
@@ -320,7 +320,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         </button>
         <button
           onClick={onNext}
-          className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors"
+          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
         >
           Next Step
         </button>

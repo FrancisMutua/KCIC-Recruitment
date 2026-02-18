@@ -61,7 +61,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <IconLoader2 className="animate-spin text-cyan-600" size={40} />
+        <IconLoader2 className="animate-spin text-brand-navy" size={40} />
       </div>
     );
   }

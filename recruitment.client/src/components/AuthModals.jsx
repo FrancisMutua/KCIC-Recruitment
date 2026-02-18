@@ -9,7 +9,7 @@ import {
   IconUser,
   IconX,
 } from "@tabler/icons-react";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/logo.svg";
 import { useModal } from "../context/ModalContext";
 
 const AuthModals = () => {
@@ -182,28 +182,28 @@ const AuthModals = () => {
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
-            <img src={logo} alt="Biovax logo" className="w-72" />
+            <img src={logo} alt="KCA logo" className="w-24" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-cyan-800">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-navy">
             Login
           </h2>
           <form className="flex flex-col gap-5 px-4 pb-4" onSubmit={handleLogin}>
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                   size={20}
                 />
                 <input
                   type="text"
                   id="email-address"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Email Address"
                   required
                   value={emailAddress}
@@ -214,19 +214,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
               >
                 Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                   size={20}
                 />
                 <input
                   type="password"
                   id="password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Password"
                   required
                   value={password}
@@ -237,7 +237,7 @@ const AuthModals = () => {
             <div>
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="w-full btn-primary py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
                 disabled={loading}
               >
                 {loading ? (
@@ -254,14 +254,14 @@ const AuthModals = () => {
             <p>
               Do not have an account?{" "}
               <button
-                className="text-cyan-600 font-semibold hover:underline"
+                className="text-brand-navy font-semibold hover:underline"
                 onClick={openSignUp}
               >
                 Create an account
               </button>
             </p>
             <button
-              className="text-cyan-600 font-semibold hover:underline"
+              className="text-brand-navy font-semibold hover:underline"
               onClick={openForgotPassword}
             >
               Forgot Password?
@@ -278,9 +278,9 @@ const AuthModals = () => {
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
-            <img src={logo} alt="Biovax logo" className="w-72" />
+            <img src={logo} alt="KCA logo" className="w-24" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-cyan-800">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-navy">
             Forgot Password
           </h2>
           <form
@@ -290,19 +290,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                   size={20}
                 />
                 <input
                   type="text"
                   id="email-address"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Email Address"
                   required
                   value={emailAddress}
@@ -313,19 +313,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
               >
                 New Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                   size={20}
                 />
                 <input
                   type="password"
                   id="password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Password"
                   required
                   value={password}
@@ -336,19 +336,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="confirm-password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
               >
                 Confirm Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                   size={20}
                 />
                 <input
                   type="password"
                   id="confirm-password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Confirm Password"
                   required
                   value={confirmPassword}
@@ -359,7 +359,7 @@ const AuthModals = () => {
             <div>
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="w-full btn-primary py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
                 disabled={loading}
               >
                 {loading ? (
@@ -375,7 +375,7 @@ const AuthModals = () => {
           </form>
           <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
             <button
-              className="text-cyan-600 font-semibold hover:underline"
+              className="text-brand-gold font-semibold hover:underline"
               onClick={openLogin}
             >
               Back to login
@@ -392,9 +392,9 @@ const AuthModals = () => {
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
-            <img src={logo} alt="Biovax logo" className="w-72" />
+            <img src={logo} alt="KCA logo" className="w-24" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-cyan-800">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-navy">
             Create Account
           </h2>
           <form onSubmit={handleSubmitCreateAccount} className="px-4 pb-4">
@@ -402,19 +402,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="email-address"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Email Address
                 </label>
                 <div className="relative">
                   <IconMail
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="text"
                     id="email-address"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Email Address"
                     required
                     value={emailAddress}
@@ -425,19 +425,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="first-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   First Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="text"
                     id="first-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="First Name"
                     required
                     value={firstName}
@@ -448,19 +448,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="middle-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Middle Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="text"
                     id="middle-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Middle Name"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
@@ -470,19 +470,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="last-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Last Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="text"
                     id="last-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Last Name"
                     required
                     value={lastName}
@@ -493,19 +493,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="id-number"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Id Number
                 </label>
                 <div className="relative">
                   <IconId
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="text"
                     id="id-number"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Id Number"
                     required
                     value={idNumber}
@@ -516,19 +516,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="password"
                     id="password"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Password"
                     required
                     value={password}
@@ -539,19 +539,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="confirm-password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-cyan-900"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-navy"
                 >
                   Confirm Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-cyan-600"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-gold"
                     size={20}
                   />
                   <input
                     type="password"
                     id="confirm-password"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                     placeholder="Confirm Password"
                     required
                     value={confirmPassword}
@@ -563,7 +563,7 @@ const AuthModals = () => {
             <div className="mt-5">
               <button
                 type="submit"
-                className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2.5 rounded-lg w-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="btn-primary py-2.5 rounded-lg w-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
                 disabled={loading}
               >
                 {loading ? (
@@ -579,7 +579,7 @@ const AuthModals = () => {
           </form>
           <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
             <button
-              className="text-cyan-600 font-semibold hover:underline"
+              className="text-brand-gold font-semibold hover:underline"
               onClick={openLogin}
             >
               Back to login

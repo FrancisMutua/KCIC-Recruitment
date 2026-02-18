@@ -56,7 +56,7 @@ const Header = ({ onMenuClick }) => {
     const pathnames = location.pathname.split("/").filter((x) => x);
     return (
       <div className="flex items-center text-sm text-slate-500 font-medium overflow-hidden whitespace-nowrap">
-        <span className="hover:text-cyan-600 transition-colors cursor-default capitalize">Home</span>
+        <span className="hover:text-brand-navy transition-colors cursor-default capitalize">Home</span>
         {pathnames.map((value) => {
           // Skip 'app' in breadcrumbs to be cleaner
           if (value === "app") return null;
@@ -64,7 +64,7 @@ const Header = ({ onMenuClick }) => {
           return (
             <div key={value} className="flex items-center">
               <span className="mx-2 text-slate-300">/</span>
-              <span className="hover:text-cyan-600 transition-colors cursor-default capitalize">
+              <span className="hover:text-brand-navy transition-colors cursor-default capitalize">
                 {value.replace(/-/g, " ")}
               </span>
             </div>
@@ -93,7 +93,7 @@ const Header = ({ onMenuClick }) => {
 
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <button className="p-2 text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-full transition-all relative">
+        <button className="p-2 text-slate-400 hover:text-brand-navy hover:bg-brand-navy-50 rounded-full transition-all relative">
           <IconBell size={22} />
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
         </button>
@@ -105,7 +105,7 @@ const Header = ({ onMenuClick }) => {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-3 p-1.5 pr-3 hover:bg-slate-50 rounded-full transition-all border border-transparent hover:border-slate-100"
           >
-            <div className="bg-gradient-to-br from-cyan-400 to-cyan-600 p-0.5 rounded-full">
+            <div className="bg-gradient-to-br from-brand-gold to-brand-navy p-0.5 rounded-full">
               <IconUserCircle className="text-white bg-white/20 rounded-full" size={32} />
             </div>
             <div className="hidden md:block text-left">

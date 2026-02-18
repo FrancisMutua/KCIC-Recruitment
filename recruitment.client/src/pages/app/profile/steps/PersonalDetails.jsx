@@ -270,7 +270,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             onNext();
           }}
           disabled={saving}
-          className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {saving && <IconLoader2 size={18} className="animate-spin" />}
           {saving ? "Saving..." : "Next"}

@@ -195,7 +195,7 @@ const GlobalDropdown = ({
         <div className="relative">
           <select
             name={name}
-            className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white appearance-none`}
+            className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white appearance-none`}
             value={multiple ? selectedOptions.map((o) => o.value) : selectedOption}
             onChange={handleSelectChange}
             disabled={disabled || isLoading}
@@ -228,14 +228,14 @@ const GlobalDropdown = ({
 
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer bg-white transition-all ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "hover:border-cyan-500"} ${isOpen ? "ring-2 ring-cyan-500 border-cyan-500 shadow-sm" : ""}`}
+        className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer bg-white transition-all ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "hover:border-brand-navy"} ${isOpen ? "ring-2 ring-brand-navy border-brand-navy shadow-sm" : ""}`}
       >
         <div className="flex flex-wrap gap-1 items-center overflow-hidden">
           {multiple && selectedOptions.length > 0 ? (
             selectedOptions.map((opt) => (
               <span
                 key={opt.value}
-                className="bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded-md flex items-center text-xs border border-cyan-100"
+                className="bg-brand-navy text-white px-2 py-0.5 rounded-md flex items-center text-xs border border-brand-navy"
               >
                 {opt.text}
                 <button
@@ -257,7 +257,7 @@ const GlobalDropdown = ({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {isLoading && <IconLoader2 size={16} className="animate-spin text-cyan-500" />}
+          {isLoading && <IconLoader2 size={16} className="animate-spin text-brand-navy" />}
           <IconChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </div>
       </div>
@@ -293,15 +293,15 @@ const GlobalDropdown = ({
                   onClick={() => handleOptionSelect(option.value)}
                   className={`px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center justify-between ${
                     multiple && selectedOptions.some((opt) => opt.value === option.value)
-                      ? "bg-cyan-50 text-cyan-700 font-medium"
+                      ? "bg-brand-navy-50 text-brand-navy font-medium"
                       : !multiple && option.value === selectedOption
-                      ? "bg-cyan-50 text-cyan-700 font-medium"
+                      ? "bg-brand-navy-50 text-brand-navy font-medium"
                       : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   <span>{option.text}</span>
                   {(multiple && selectedOptions.some((opt) => opt.value === option.value)) || (!multiple && option.value === selectedOption) ? (
-                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-navy shadow-sm"></div>
                   ) : null}
                 </div>
               ))

@@ -171,7 +171,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAddKin} className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <IconPlus size={20} className="text-cyan-600" /> Add Next of Kin
+          <IconPlus size={20} className="text-brand-navy" /> Add Next of Kin
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
@@ -256,7 +256,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors flex items-center gap-2 "
+            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2 "
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Next of Kin"}
@@ -341,7 +341,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
             }
             onNext();
           }}
-          className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors"
+          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
         >
           Next Step
         </button>

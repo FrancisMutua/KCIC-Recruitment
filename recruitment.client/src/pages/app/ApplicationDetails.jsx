@@ -306,7 +306,7 @@ const ApplicationDetails = () => {
   if (loading) {
     return (
       <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-cyan-600" size={40} />
+        <IconLoader2 className="animate-spin text-brand-navy" size={40} />
       </div>
     );
   }
@@ -315,7 +315,7 @@ const ApplicationDetails = () => {
     <div className="space-y-4">
       <button
         onClick={() => navigate("/app/applications")}
-        className="flex items-center gap-2 text-cyan-700 hover:text-cyan-900 font-medium transition-colors"
+        className="flex items-center gap-2 text-brand-navy hover:text-brand-navy font-medium transition-colors"
       >
         <IconArrowLeft size={20} /> Back to My Applications
       </button>
@@ -345,7 +345,7 @@ const ApplicationDetails = () => {
             </p>
             <button 
               onClick={() => navigate("/app/applications")}
-              className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors"
+              className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
             >
               Go to My Applications
             </button>

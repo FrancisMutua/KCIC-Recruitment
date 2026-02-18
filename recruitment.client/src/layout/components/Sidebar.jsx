@@ -7,7 +7,7 @@ import {
   IconLogout,
   IconX
 } from "@tabler/icons-react";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.svg";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -41,17 +41,17 @@ const Sidebar = ({ isOpen, onClose }) => {
         w-64 lg:static lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-gradient-primary">
           {/* Logo Section */}
-          <div className="h-20 px-6 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
-            <img src={logo} alt="BioVax Logo" className="h-10 w-auto" />
-            <button className="lg:hidden text-slate-500" onClick={onClose}>
+          <div className="h-20 px-6 border-b border-brand-gold/30 flex justify-between items-center shrink-0">
+            <img src={logo} alt="KCA Logo" className="w-12" />
+            <button className="lg:hidden text-white/70 hover:text-white" onClick={onClose}>
               <IconX size={24} />
             </button>
           </div>
 
           {/* Navigation Section */}
-          <nav className="flex-1 overflow-y-auto pt-4 bg-cyan-600 space-y-1 relative overflow-x-hidden border-b-0!important">
+          <nav className="flex-1 overflow-y-auto pt-4 space-y-1 relative overflow-x-hidden border-b-0!important">
             {menuItems.map((item) => {
               const isActive = 
                   location.pathname === item.path || 
@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <>
                       {/* Top Inverted Curve */}
                       <div className="absolute -top-5 right-0 w-5 h-5 bg-slate-50 lg:block hidden z-10">
-                        <div className="w-full h-full bg-cyan-600 rounded-br-2xl"></div>
+                        <div className="w-full h-full bg-gradient-primary rounded-br-2xl"></div>
                       </div>
                       
                       {/* Gap filler to ensure seamless merge with main background */}
@@ -72,7 +72,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
                       {/* Bottom Inverted Curve */}
                       <div className="absolute -bottom-5 right-0 w-5 h-5 bg-slate-50 lg:block hidden z-10">
-                        <div className="w-full h-full bg-cyan-600 rounded-tr-2xl"></div>
+                        <div className="w-full h-full bg-gradient-primary rounded-tr-2xl"></div>
                       </div>
                     </>
                   )}
@@ -86,11 +86,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                       className={`
                         w-full flex items-center gap-3 px-4 py-3.5 transition-all duration-300 relative
                         ${isActive 
-                          ? 'bg-slate-50 text-cyan-600 font-bold rounded-l-[1.5rem] -mr-[1px]' 
+                          ? 'bg-slate-50 text-brand-navy font-bold rounded-l-[1.5rem] -mr-[1px]' 
                           : 'text-white hover:bg-white/10 rounded-xl mr-3'}
                       `}
                     >
-                      <span className={`${isActive ? 'text-cyan-600' : 'text-white'}`}>
+                      <span className={`${isActive ? 'text-brand-navy' : 'text-white'}`}>
                         {item.icon}
                       </span>
                       <span className="tracking-wide text-sm">{item.name}</span>
@@ -102,7 +102,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           </nav>
 
           {/* User/Logout Section */}
-          <div className="p-6 border-t border-none bg-cyan-600 ">
+          <div className="p-6 border-t border-white/10">
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium"

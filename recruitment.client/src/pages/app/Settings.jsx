@@ -69,7 +69,7 @@ const Settings = () => {
               <h4 className="font-semibold text-slate-800">Change Password</h4>
               <p className="text-sm text-slate-500 mt-1">Update your login credentials</p>
             </div>
-            <div className={`text-slate-300 group-hover:text-cyan-600 transition-transform duration-300 ${isChangePasswordOpen ? 'rotate-180' : ''}`}>
+            <div className={`text-slate-300 group-hover:text-brand-navy transition-transform duration-300 ${isChangePasswordOpen ? 'rotate-180' : ''}`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -87,14 +87,14 @@ const Settings = () => {
                     name="currentPassword"
                     value={passwords.currentPassword}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                     placeholder="Enter current password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-cyan-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-navy"
                   >
                     {showCurrentPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -125,14 +125,14 @@ const Settings = () => {
                     name="newPassword"
                     value={passwords.newPassword}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                     placeholder="Enter new password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-cyan-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-navy"
                   >
                      {showNewPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -159,7 +159,7 @@ const Settings = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-cyan-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-cyan-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="btn-primary px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {loading ? (
                     <>

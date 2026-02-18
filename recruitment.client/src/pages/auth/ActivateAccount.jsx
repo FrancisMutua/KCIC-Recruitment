@@ -55,7 +55,7 @@ const ActivateAccount = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         {status === "loading" && (
           <div className="flex flex-col items-center">
-            <IconLoader2 className="animate-spin text-cyan-500 mb-4" size={48} />
+            <IconLoader2 className="animate-spin text-brand-navy mb-4" size={48} />
             <h2 className="text-xl font-semibold mb-2">Activating Account</h2>
             <p className="text-gray-600">{message}</p>
           </div>
@@ -70,7 +70,7 @@ const ActivateAccount = () => {
             <p className="text-gray-600 mb-4">{message}</p>
             <button
               onClick={() => navigate("/")}
-              className="bg-cyan-500 text-white px-6 py-2 rounded hover:bg-cyan-600 transition-colors"
+              className="btn-primary px-6 py-2 rounded hover:opacity-90 transition-colors"
             >
               Go to Login
             </button>

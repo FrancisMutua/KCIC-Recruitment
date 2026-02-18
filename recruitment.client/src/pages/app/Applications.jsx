@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MoonLoader } from "react-spinners"; // Using MoonLoader to match JobTable
+import { MoonLoader } from "react-spinners";
+import { DataTable } from "../../components/ui/DataTable";
+import { Button } from "../../components/ui/button";
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -44,6 +46,54 @@ const Applications = () => {
     fetchApplications();
   }, [navigate]);
 
+  const columns = useMemo(() => [
+    {
+      header: "Application No",
+      accessorKey: "DocumentNo",
+    },
+    {
+      header: "Job Title",
+      accessorKey: "JobTitle",
+      cell: ({ row }) => row.original.JobTitle || "-",
+    },
+    {
+      header: "Date Applied",
+      accessorKey: "DocumentDate",
+    },
+    {
+      header: "Status",
+      accessorKey: "Status",
+      cell: ({ row }) => {
+        const app = row.original;
+        return (
+            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                app.Status === 'Open' ? 'bg-yellow-100 text-yellow-800' : 
+                app.Status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                'bg-blue-100 text-blue-800'
+            }`}>
+                {app.Status === 'Open' ? 'Draft' : app.Status}
+            </span>
+        );
+      }
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const app = row.original;
+        return (
+            <Button 
+                size="sm"
+                className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
+                onClick={() => navigate(`/app/application-details/${app.DocumentNo}`)}
+            >
+                Details
+            </Button>
+        );
+      },
+    },
+  ], [navigate]);
+
   return (
     <div className="py-4 px-2 md:px-6 bg-slate-50 min-h-screen">
       <div className="max-w-full mx-auto">
@@ -66,53 +116,7 @@ const Applications = () => {
         )}
 
         {!loading && !error && (
-            <div className="w-full overflow-x-scroll">
-                <table className="border-collapse w-full mt-6">
-                    <thead>
-                        <tr>
-                            <td className="table-header">Application No</td>
-                            <td className="table-header">Job Title</td>
-                            <td className="table-header">Date Applied</td>
-                            <td className="table-header">Status</td>
-                            <td className="table-header">Actions</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {applications.length > 0 ? (
-                            applications.map((app, index) => (
-                                <tr className="table-row-custom" key={index}>
-                                    <td className="table-body">{app.DocumentNo}</td>
-                                    <td className="table-body">{app.JobTitle || "-"}</td>
-                                    <td className="table-body">{app.DocumentDate}</td>
-                                    <td className="table-body">
-                                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            app.Status === 'Open' ? 'bg-yellow-100 text-yellow-800' : 
-                                            app.Status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                                            'bg-blue-100 text-blue-800'
-                                        }`}>
-                                            {app.Status === 'Open' ? 'Draft' : app.Status}
-                                        </span>
-                                    </td>
-                                    <td className="table-body">
-                                        <button 
-                                            className="bg-cyan-700 text-white px-3 py-1 rounded hover:bg-cyan-800 transition-colors"
-                                            onClick={() => navigate(`/app/application-details/${app.DocumentNo}`)}
-                                        >
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr className="table-row-custom">
-                                <td className="table-body text-center" colSpan={5}>
-                                    No applications found.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable columns={columns} data={applications} />
         )}
       </div>
     </div>

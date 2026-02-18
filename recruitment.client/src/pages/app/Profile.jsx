@@ -46,7 +46,7 @@ const Profile = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
-          <div className="w-32 h-32 bg-cyan-100 rounded-full mx-auto mb-4 border-4 border-cyan-50 flex items-center justify-center text-cyan-600 text-4xl font-bold">
+          <div className="w-32 h-32 btn-primary rounded-full mx-auto mb-4 border-4 border-brand-navy flex items-center justify-center text-4xl font-bold">
             {getInitials()}
           </div>
           <h3 className="text-xl font-bold text-slate-800">
@@ -106,7 +106,7 @@ const Profile = () => {
           </div>
           
           <div className="mt-8 pt-6 border-t border-slate-100">
-            <button className="bg-cyan-600 text-white px-10 py-3 rounded-xl font-semibold hover:bg-cyan-700 transition-all shadow-lg shadow-cyan-600/20" onClick={() => navigate('/app/profile-update')}>
+            <button className="btn-primary px-10 py-3 rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-brand-navy/20" onClick={() => navigate('/app/profile-update')}>
               Update Profile
             </button>
           </div>

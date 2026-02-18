@@ -145,7 +145,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
       {/* Upload Form */}
       <form onSubmit={handleUpload} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <IconUpload size={20} className="text-cyan-600" /> Upload Documents
+          <IconUpload size={20} className="text-brand-navy" /> Upload Documents
         </h3>
 
         <div className="grid grid-cols-1 gap-6">
@@ -155,7 +155,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
               id="file-input"
               type="file"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer border border-gray-200 rounded-md p-1"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-navy file:text-brand-navy hover:file:bg-brand-navy cursor-pointer border border-gray-200 rounded-md p-1"
               required
             />
             <p className="mt-1 text-xs text-gray-400">Supported formats: PDF, JPG, PNG, DOCX, XLSX (Max 5MB)</p>
@@ -166,7 +166,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
           <button
             type="submit"
             disabled={loading || !file}
-            className="flex items-center gap-2 bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors disabled:opacity-50"
           >
             {loading ? <IconLoader2 className="animate-spin" size={18} /> : <IconUpload size={18} />}
             {loading ? "Uploading..." : "Upload Document"}

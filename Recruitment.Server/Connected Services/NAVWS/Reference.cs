@@ -3672,7 +3672,7 @@ namespace NAVWS
         {
             if ((endpointConfiguration == EndpointConfiguration.Recruitment_Port))
             {
-                return new System.ServiceModel.EndpointAddress("http://108.181.152.166:7047/Biovax/WS/Ken Biovax Test/Codeunit/Recruitment");
+                return new System.ServiceModel.EndpointAddress("http://154.12.228.158:9047/KCA/WS/KCAU/Codeunit/Recruitment");
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }

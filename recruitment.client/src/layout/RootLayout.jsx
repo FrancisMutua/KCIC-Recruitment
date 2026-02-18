@@ -35,7 +35,7 @@ const RootLayout = () => {
         <ToastContainer
           position="top-center"
           autoClose={4000}
-          hideProgressBar={false}
+          hideProgressBar={true}
           newestOnTop
           closeOnClick
           pauseOnFocusLoss

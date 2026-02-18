@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/Recruitment.Server.csproj": {}
+    "/Users/simongideon/Documents/Appkings/PORTALS/KCA/Recruitment/Recruitment.Server/Recruitment.Server.csproj": {}
   },
   "projects": {
-    "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/Recruitment.Server.csproj": {
+    "/Users/simongideon/Documents/Appkings/PORTALS/KCA/Recruitment/Recruitment.Server/Recruitment.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/Recruitment.Server.csproj",
+        "projectUniqueName": "/Users/simongideon/Documents/Appkings/PORTALS/KCA/Recruitment/Recruitment.Server/Recruitment.Server.csproj",
         "projectName": "Recruitment.Server",
-        "projectPath": "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/Recruitment.Server.csproj",
+        "projectPath": "/Users/simongideon/Documents/Appkings/PORTALS/KCA/Recruitment/Recruitment.Server/Recruitment.Server.csproj",
         "packagesPath": "/Users/simongideon/.nuget/packages/",
-        "outputPath": "/Users/simongideon/Documents/Appkings/PORTALS/BIOVAX-/BioVax/Recruitment/Recruitment.Server/obj/",
+        "outputPath": "/Users/simongideon/Documents/Appkings/PORTALS/KCA/Recruitment/Recruitment.Server/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/simongideon/.nuget/NuGet/NuGet.Config"

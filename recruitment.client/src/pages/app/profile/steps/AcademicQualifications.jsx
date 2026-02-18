@@ -193,7 +193,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAddQualification} className="">
         <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-          <IconPlus size={20} className="text-cyan-600" /> Add Academic Qualification
+          <IconPlus size={20} className="text-brand-navy" /> Add Academic Qualification
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <GlobalDropdown
@@ -268,7 +268,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors flex items-center gap-2 "
+            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2 "
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Qualification"}
@@ -355,7 +355,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             }
             onNext();
           }}
-          className="bg-cyan-700 text-white px-6 py-2 rounded-md hover:bg-cyan-800 transition-colors"
+          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
         >
           Next Step
         </button>

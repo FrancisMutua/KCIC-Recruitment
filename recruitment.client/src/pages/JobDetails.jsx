@@ -126,7 +126,7 @@ const JobDetails = () => {
         </div>
         <button
           onClick={() => navigate("/")}
-          className="text-cyan-600 hover:underline flex items-center gap-1"
+          className="text-brand-navy hover:underline flex items-center gap-1"
         >
           <IconArrowLeft size={16} /> Back to Jobs
         </button>
@@ -138,14 +138,14 @@ const JobDetails = () => {
     <div className="py-2 px-2 md:px-4 max-w-full mx-auto">
       <button
         onClick={() => navigate("/")}
-        className="mb-6 flex items-center gap-2 text-cyan-700 hover:text-cyan-900 font-medium transition-colors"
+        className="mb-6 flex items-center gap-2 text-brand-navy hover:text-brand-navy font-medium transition-colors"
       >
         <IconArrowLeft size={20} /> Back to Jobs
       </button>
 
       {jobDetails && (
         <div className="bg-white overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-600 to-cyan-500 px-4 py-2 text-white">
+          <div className="bg-gradient-to-r from-brand-navy to-brand-navy-700 px-4 py-2 text-white">
             <div className="flex justify-between items-start md:items-center">
               <div>
                 <h2 className="text-lg md:text-2xl font-bold mb-2">
@@ -168,7 +168,7 @@ const JobDetails = () => {
             {/* Responsibilities */}
             <section>
               <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="w-2 h-8 bg-cyan-500 rounded-sm"></span>
+                <span className="w-2 h-8 bg-brand-navy rounded-sm"></span>
                 Key Responsibilities
               </h3>
               <div className="bg-gray-50 rounded-lg p-6">
@@ -191,7 +191,7 @@ const JobDetails = () => {
             {/* Requirements */}
             <section>
               <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="w-2 h-8 bg-cyan-500 rounded-sm"></span>
+                <span className="w-2 h-8 bg-brand-navy rounded-sm"></span>
                 Requirements
               </h3>
               <div className="bg-gray-50 rounded-lg p-6">
@@ -219,7 +219,7 @@ const JobDetails = () => {
               <button 
                 onClick={handleApply}
                 disabled={submitting}
-                className={`bg-cyan-600 text-white px-6 py-2.5 rounded-lg shadow-sm hover:bg-cyan-700 transition-colors font-semibold flex items-center gap-2 ${submitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                className={`btn-primary px-6 py-2.5 rounded-lg shadow-sm hover:opacity-90 transition-colors font-semibold flex items-center gap-2 ${submitting ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
                 {submitting && <MoonLoader size={16} color="#ffffff" />}
                 {submitting ? "Submitting..." : "Apply Now"}
