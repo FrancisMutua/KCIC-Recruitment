@@ -20,86 +20,86 @@ namespace Recruitment.Server.Controllers
         public async Task<IActionResult> Login(LoginDto login)
         {
             try
+            {
+                string username = login.username;
+                string password = login.password;
+
+                var hashedPasswordResponse = await _webportals.GetUserPasswordAsync(username);
+                string hashedPassword = hashedPasswordResponse.return_value;
+                    
+                if (string.IsNullOrEmpty(hashedPassword))
                 {
-                    string username = login.username;
-                    string password = login.password;
+                    throw new Exception("Invalid username or password.");
+                }
 
-                    var hashedPasswordResponse = await _webportals.GetUserPasswordAsync(username);
-                    string hashedPassword = hashedPasswordResponse.return_value;
+                bool isPasswordValid = false;
+                try
+                {
+                    isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+                }
+                catch (Exception)
+                {
                     
-                    if (string.IsNullOrEmpty(hashedPassword))
-                    {
-                         throw new Exception("Invalid username or password.");
-                    }
+                    isPasswordValid = false;
+                }
 
-                    bool isPasswordValid = false;
-                    try
-                    {
-                        isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-                    }
-                    catch (Exception)
-                    {
-                    
-                        isPasswordValid = false;
-                    }
+                if (!isPasswordValid) throw new Exception("Invalid username or password.");
 
-                    if (!isPasswordValid) throw new Exception("Invalid username or password.");
+                var response = await _webportals.UserLoginAsync(username);
+                var result = response.return_value;
 
-                    var response = await _webportals.UserLoginAsync(username);
-                    var result = response.return_value;
+                if (string.IsNullOrEmpty(result))
+                {
+                    throw new Exception("Failed to retrieve user details.");
+                }
 
-                    if (string.IsNullOrEmpty(result))
-                    {
-                        throw new Exception("Failed to retrieve user details.");
-                    }
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
 
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    };
+                var account = JsonSerializer.Deserialize<AccountDto>(result, options) ?? new AccountDto();
 
-                    var account = JsonSerializer.Deserialize<AccountDto>(result, options) ?? new AccountDto();
+                var user = new User { EmailAddress = account.EmailAddress, Password = password };
 
-                    var user = new User { EmailAddress = account.EmailAddress, Password = password };
-
-                    string accessToken = _authService.GenerateAccessToken(user);
-                    string refreshToken = _authService.GenerateRefreshToken();
+                string accessToken = _authService.GenerateAccessToken(user);
+                string refreshToken = _authService.GenerateRefreshToken();
                     
                    
-                    var tokenData = _authService.ValidateToken(accessToken);
-                    var expiresIn = (int)(tokenData.Expiration - DateTime.UtcNow).TotalSeconds;
+                var tokenData = _authService.ValidateToken(accessToken);
+                var expiresIn = (int)(tokenData.Expiration - DateTime.UtcNow).TotalSeconds;
 
                    
-                    bool isProfileUpdated = false;
-                    try
-                    {
-                        var profileStatus = await _webportals.IsProfileUpdatedAsync(username);
-                        isProfileUpdated = profileStatus.return_value;
-                    }
-                    catch
-                    {
+                bool isProfileUpdated = false;
+                try
+                {
+                    var profileStatus = await _webportals.IsProfileUpdatedAsync(username);
+                    isProfileUpdated = profileStatus.return_value;
+                }
+                catch
+                {
                         
-                        isProfileUpdated = false;
-                    }
+                    isProfileUpdated = false;
+                }
 
-                    return Ok(new ApiResponse<TokenDto>
-                    {
-                        Success = true,
-                        Data = new TokenDto
-                        {
-                            AccessToken = accessToken,
-                            RefreshToken = refreshToken,
-                            ExpiresIn = expiresIn,
-                            TokenType = "Bearer",
-                            IsProfileUpdated = isProfileUpdated
-                        }
-                    });
-                }
-                catch (Exception ex)
+                return Ok(new ApiResponse<TokenDto>
                 {
-                    _logger.LogError(ex, "Login error for {Username}", login?.username);
-                    return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.StartsWith("Invalid") ? ex.Message : "An error occurred during login. Please try again." });
-                }
+                    Success = true,
+                    Data = new TokenDto
+                    {
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken,
+                        ExpiresIn = expiresIn,
+                        TokenType = "Bearer",
+                        IsProfileUpdated = isProfileUpdated
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Login error for {Username}", login?.username);
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.StartsWith("Invalid") ? ex.Message : "An error occurred during login. Please try again." });
+            }
         }
         
 

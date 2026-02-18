@@ -1,3 +1,3 @@
 export const changeDocumentTitle = function (title) {
-  document.title = `${title} - Kenya Biovax`;
+  document.title = `${title} - KCA University`;
 };

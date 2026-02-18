@@ -4,7 +4,7 @@ const RootFooter = () => {
   return (
     <div className="mt-auto bg-gradient-primary text-white flex justify-center items-center flex-col py-5">
       <p>
-        Copright BioVax &copy; {new Date().getFullYear()}. All rights reserved.
+        Copright KCA University &copy; {new Date().getFullYear()}. All rights reserved.
       </p>
       <p>
         Powered by{" "}

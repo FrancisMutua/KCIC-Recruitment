@@ -45,13 +45,13 @@ export function DataTable({ columns, data }) {
     <div className="space-y-4 border rounded-lg p-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Search courses..."
+          placeholder="Search..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
-        <div className="text-sm text-muted-foreground">
-          Total: {data.length} courses
+        <div className="text-sm text-muted-foreground hidden md:block">
+            Total Records: {data.length}
         </div>
       </div>
       <div className="rounded-md border">
