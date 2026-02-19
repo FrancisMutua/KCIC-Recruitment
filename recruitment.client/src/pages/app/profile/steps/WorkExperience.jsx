@@ -88,7 +88,6 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       return;
     }
 
-    // Date Validation
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const start = new Date(formData.startDate);
