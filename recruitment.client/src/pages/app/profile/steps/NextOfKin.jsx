@@ -335,10 +335,6 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
         </button>
         <button
           onClick={() => {
-            if (kinList.length === 0) {
-              toast.error("Please add at least one Next of Kin before proceeding.");
-              return;
-            }
             onNext();
           }}
           className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"

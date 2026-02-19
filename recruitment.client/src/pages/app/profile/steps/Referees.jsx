@@ -331,10 +331,6 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         </button>
         <button
           onClick={() => {
-            if (refereesList.length === 0) {
-              toast.error("Please add at least one Referee before proceeding.");
-              return;
-            }
             onNext();
           }}
           className="flex items-center gap-2 btn-primary px-8 py-2 rounded-md hover:opacity-90 transition-colors shadow-sm"

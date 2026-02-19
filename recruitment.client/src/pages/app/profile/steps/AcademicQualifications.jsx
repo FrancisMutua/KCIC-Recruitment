@@ -348,11 +348,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         </button>
         <button
           onClick={() => {
-            const validQualifications = qualifications.filter(q => q.areaOfStudy || q.description || q.institution);
-            if (validQualifications.length === 0) {
-              toast.error("Please add at least one academic qualification before proceeding.");
-              return;
-            }
             onNext();
           }}
           className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"

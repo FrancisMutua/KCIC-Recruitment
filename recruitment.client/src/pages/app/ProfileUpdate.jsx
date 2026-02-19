@@ -221,7 +221,7 @@ const ProfileUpdate = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-2 px-2">
-      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100">
 
 
         <form onSubmit={handleSubmit} className="p-8">

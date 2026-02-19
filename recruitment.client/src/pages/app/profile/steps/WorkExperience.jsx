@@ -319,7 +319,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{e.position}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{e.institution}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {e.startDate} - {e.endDate}
+                      {e.startDate} - {e.endDate === "0001-01-01" ? "Currently Working Here" : e.endDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <button 

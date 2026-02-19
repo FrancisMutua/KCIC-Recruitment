@@ -4,7 +4,6 @@ import RootNav from "../pages/RootNav";
 import RootFooter from "../pages/RootFooter";
 import RootBrand from "../pages/RootBrand";
 import RootAdvertisedJobs from "../pages/RootAdvertisedJobs";
-import { ToastContainer } from "react-toastify";
 import { changeDocumentTitle } from "../scripts/script";
 
 
@@ -32,17 +31,6 @@ const RootLayout = () => {
         )}
         <Outlet />
         <RootFooter />
-        <ToastContainer
-          position="top-center"
-          autoClose={4000}
-          hideProgressBar={true}
-          newestOnTop
-          closeOnClick
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
       </div>
   );
 };

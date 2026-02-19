@@ -16,7 +16,13 @@ const ApplicationDetails = () => {
   const { applicationNo } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [activeStep, setActiveStep] = useState(0);
+  
+  // Initialize from Local Storage if available
+  const [activeStep, setActiveStep] = useState(() => {
+    const saved = localStorage.getItem(`app_step_${applicationNo}`);
+    return saved ? parseInt(saved, 10) : 0;
+  });
+
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [profile, setProfile] = useState({
@@ -39,6 +45,7 @@ const ApplicationDetails = () => {
     altPhoneNumber: "",
     county: "",
     subCounty: "",
+    wardCode: "",
     citizenship: "",
     kraPin: "",
     // Add placeholders if needed for other sections
@@ -151,6 +158,7 @@ const ApplicationDetails = () => {
             altPhoneNumber: data.AltPhoneNo || "",
             county: data.County || "",
             subCounty: data.SubCounty || "",
+            wardCode: data.Ward || data.WardCode || "",
             citizenship: data.Citizenship || "",
             kraPin: data.KRApin || "",
           });
@@ -174,6 +182,13 @@ const ApplicationDetails = () => {
     }
   }, [applicationNo, navigate]);
 
+  // Persist Step to Local Storage
+  useEffect(() => {
+    if (applicationNo) {
+      localStorage.setItem(`app_step_${applicationNo}`, activeStep);
+    }
+  }, [activeStep, applicationNo]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
@@ -182,6 +197,12 @@ const ApplicationDetails = () => {
   const [saving, setSaving] = useState(false);
 
   const handleUpdatePersonalDetails = async () => {
+    // If submitted, skip saving and just go next
+    if (isSubmitted) {
+      handleNext();
+      return;
+    }
+
     // Date of Birth Validation
     if (profile.birthDate) {
       const dob = new Date(profile.birthDate);
@@ -224,6 +245,7 @@ const ApplicationDetails = () => {
         country: profile.country,
         countyCode: profile.county,
         subCountyCode: profile.subCounty,
+        wardCode: profile.wardCode,
         postalAddress: profile.postalAddress,
         postalCode: profile.postalCode,
         disability: profile.disability === "true",
@@ -289,6 +311,8 @@ const ApplicationDetails = () => {
         if (result.success) {
           toast.success("Application successfully submitted!");
           setIsSubmitted(true);
+          // Clear saved step on completion
+          localStorage.removeItem(`app_step_${applicationNo}`);
           setTimeout(() => {
               navigate("/app/applications");
           }, 3000);
@@ -353,61 +377,59 @@ const ApplicationDetails = () => {
         )}
 
         {/* Step Content */}
-        {!isSubmitted && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-              {activeStep === 0 && (
-                  <PersonalDetails 
-                      profile={profile} 
-                      handleChange={handleChange} 
-                      onNext={handleUpdatePersonalDetails} 
-                      saving={saving}
-                  />
-              )}
-              {activeStep === 1 && (
-                  <AcademicQualifications 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onNext={handleNext} 
-                  />
-              )}
-              {activeStep === 2 && (
-                  <WorkExperience 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onNext={handleNext} 
-                  />
-              )}
-              {activeStep === 3 && (
-                  <ProfessionalTraining 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onNext={handleNext} 
-                  />
-              )}
-              {activeStep === 4 && (
-                  <NextOfKin 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onNext={handleNext} 
-                  />
-              )}
-              {activeStep === 5 && (
-                  <Referees 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onNext={handleNext} 
-                  />
-              )}
-              {activeStep === 6 && (
-                  <Attachments 
-                      applicationNo={applicationNo}
-                      onBack={handleBack} 
-                      onSubmit={handleSubmit} 
-                      loading={saving}
-                  />
-              )}
-          </div>
-        )}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            {activeStep === 0 && (
+                <PersonalDetails 
+                    profile={profile} 
+                    handleChange={handleChange} 
+                    onNext={handleUpdatePersonalDetails} 
+                    saving={saving}
+                />
+            )}
+            {activeStep === 1 && (
+                <AcademicQualifications 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onNext={handleNext} 
+                />
+            )}
+            {activeStep === 2 && (
+                <WorkExperience 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onNext={handleNext} 
+                />
+            )}
+            {activeStep === 3 && (
+                <ProfessionalTraining 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onNext={handleNext} 
+                />
+            )}
+            {activeStep === 4 && (
+                <NextOfKin 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onNext={handleNext} 
+                />
+            )}
+            {activeStep === 5 && (
+                <Referees 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onNext={handleNext} 
+                />
+            )}
+            {activeStep === 6 && (
+                <Attachments 
+                    applicationNo={applicationNo}
+                    onBack={handleBack} 
+                    onSubmit={handleSubmit} 
+                    loading={saving}
+                />
+            )}
+        </div>
       </div>
     </div>
   );

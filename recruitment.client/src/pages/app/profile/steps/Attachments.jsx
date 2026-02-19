@@ -166,7 +166,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
           <button
             type="submit"
             disabled={loading || !file}
-            className="flex items-center gap-2 btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 btn-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors disabled:opacity-50"
           >
             {loading ? <IconLoader2 className="animate-spin" size={18} /> : <IconUpload size={18} />}
             {loading ? "Uploading..." : "Upload Document"}

@@ -285,7 +285,7 @@ const GlobalDropdown = ({
             )}
           </div>
 
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-60 overflow-y-auto custom-scrollbar">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div
