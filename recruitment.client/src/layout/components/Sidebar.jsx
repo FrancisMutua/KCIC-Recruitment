@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       `}>
         <div className="flex flex-col h-full bg-gradient-primary">
           {/* Logo Section */}
-          <div className="h-20 px-6 border-b border-brand-gold/30 flex justify-between items-center shrink-0">
+          <div className="h-20 bg-white px-6 border-b border-brand-gold/30 flex justify-between items-center shrink-0">
             <img src={logo} alt="KCA Logo" className="w-12" />
             <button className="lg:hidden text-white/70 hover:text-white" onClick={onClose}>
               <IconX size={24} />
