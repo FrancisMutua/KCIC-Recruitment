@@ -57,3 +57,13 @@ full_build_output.txt
 *.userprefs
 *.launch
 *.file
+
+# Backend config & environment-specific settings (do not commit)
+Recruitment.Server/appsettings.json
+Recruitment.Server/appsettings.Development.json
+Recruitment.Server/appsettings.*.json
+Recruitment.Server/Properties/launchSettings.json
+Recruitment.Server/Properties/PublishProfiles/
+
+# Client build logs / local artifacts
+recruitment.client/build_output.txt
