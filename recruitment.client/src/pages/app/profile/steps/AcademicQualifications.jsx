@@ -14,8 +14,26 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     startDate: "",
     endDate: "",
     grade: "",
+    courseDescription: "",
     expiry: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const inputClass = (name, extra = "bg-white") =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshQualifications = async () => {
@@ -70,7 +88,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    updateField(name, value);
   };
 
   const handleAddQualification = async (e) => {
@@ -81,13 +99,19 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       { key: "areaOfStudy", label: "Area of Study" },
       { key: "course", label: "Level" },
       { key: "institution", label: "Institution" },
+      { key: "courseDescription", label: "Course Description" },
       { key: "startDate", label: "Start Date" },
       { key: "endDate", label: "End Date" },
-      { key: "grade", label: "Grade" }
+      { key: "grade", label: "Grade" },
+      { key: "expiry", label: "Expiry Date" }
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
     if (missing.length > 0) {
+      setFieldErrors(missing.reduce((errors, field) => {
+        errors[field.key] = `${field.label} is required.`;
+        return errors;
+      }, {}));
       toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
       return;
     }
@@ -99,19 +123,20 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     const end = new Date(formData.endDate);
 
     if (start > today) {
+      setFieldErrors({ startDate: "Start Date cannot be in the future." });
       toast.error("Start Date cannot be in the future");
       return;
     }
     if (end <= start) {
+      setFieldErrors({ endDate: "End Date must be after Start Date." });
       toast.error("End Date must be after Start Date");
       return;
     }
-    if (formData.expiry) {
-      const expiry = new Date(formData.expiry);
-      if (expiry <= today) {
-        toast.error("Certificate Expiry Date must be a future date");
-        return;
-      }
+    const expiry = new Date(formData.expiry);
+    if (expiry <= today) {
+      setFieldErrors({ expiry: "Certificate Expiry Date must be a future date." });
+      toast.error("Certificate Expiry Date must be a future date");
+      return;
     }
 
     try {
@@ -126,8 +151,8 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         startDate: formData.startDate,
         endDate: formData.endDate,
         grade: formData.grade,
-        courseDescription: formData.courseDescription,
-        expiry: formData.expiry || "0001-01-01"
+        courseDescription: formData.courseDescription || "",
+        expiry: formData.expiry
       };
 
       const response = await fetch("/api/job/add-academic-qualification", {
@@ -152,6 +177,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           courseDescription: "",
           expiry: ""
         });
+        setFieldErrors({});
         refreshQualifications();
       } else {
         toast.error(result.message || result.Message || "Failed to add qualification");
@@ -191,7 +217,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAddQualification} className="">
+      <form onSubmit={handleAddQualification} className="" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Academic Qualification
         </h3>
@@ -202,8 +228,9 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             label="Area of Study"
             name="areaOfStudy"
             value={formData.areaOfStudy}
-            onChange={(val) => handleChange({ target: { name: "areaOfStudy", value: val } })}
+            onChange={(val) => updateField("areaOfStudy", val)}
             required
+            error={fieldErrors.areaOfStudy}
           />
 
           <GlobalDropdown
@@ -212,8 +239,9 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             label="Level"
             name="course"
             value={formData.course}
-            onChange={(val) => handleChange({ target: { name: "course", value: val } })}
+            onChange={(val) => updateField("course", val)}
             required
+            error={fieldErrors.course}
           />
 
           <div>
@@ -223,34 +251,39 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
               name="institution" 
               value={formData.institution} 
               onChange={handleChange} 
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("institution")} 
               required 
             />
+            {renderError("institution")}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-red-500">*</span></label>
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required />
+            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className={inputClass("startDate")} required />
+            {renderError("startDate")}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">End Date <span className="text-red-500">*</span></label>
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required />
+            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} className={inputClass("endDate")} required />
+            {renderError("endDate")}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Grade <span className="text-red-500">*</span></label>
-            <input type="text" name="grade" value={formData.grade} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required />
+            <input type="text" name="grade" value={formData.grade} onChange={handleChange} className={inputClass("grade")} required />
+            {renderError("grade")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Expiry (If Applicable)</label>
-            <input type="date" name="expiry" value={formData.expiry} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" />
+            <label className="block text-sm font-medium text-gray-700">Expiry Date <span className="text-red-500">*</span></label>
+            <input type="date" name="expiry" value={formData.expiry} onChange={handleChange} className={inputClass("expiry")} required />
+            {renderError("expiry")}
           </div>
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Course Description</label>
+            <label className="block text-sm font-medium text-gray-700">Course Description <span className="text-red-500">*</span></label>
             <input 
               type="text" 
               name="courseDescription" 
@@ -258,8 +291,10 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
               onChange={handleChange} 
               maxLength={200}
               placeholder="Brief description (Max 200 chars)"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("courseDescription")} 
+              required
             />
+            {renderError("courseDescription")}
             <p className="text-xs text-gray-400 mt-1">{formData.courseDescription?.length || 0}/200</p>
           </div>
         </div>

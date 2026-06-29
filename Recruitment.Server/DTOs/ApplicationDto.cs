@@ -27,6 +27,10 @@ namespace Recruitment.Server.DTOs
         public string PWDNumber { get; set; } = string.Empty;
         public string KRAPin { get; set; } = string.Empty;
         public string Citizenship { get; set; } = string.Empty;
+        public string Ethnicity { get; set; } = string.Empty;
+        public decimal CurrentSalary { get; set; }
+        public decimal ExpectedSalary { get; set; }
+        public string NoticePeriod { get; set; } = string.Empty;
     }
 
     public class AcademicQualificationDto

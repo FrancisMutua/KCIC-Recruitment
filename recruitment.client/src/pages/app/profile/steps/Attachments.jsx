@@ -7,6 +7,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [file, setFile] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const fetchAttachments = useCallback(async () => {
     try {
@@ -44,17 +45,20 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
       const fileExt = selectedFile.name.substring(selectedFile.name.lastIndexOf(".")).toLowerCase();
       
       if (!allowedExtensions.includes(fileExt)) {
+        setFieldErrors({ file: "Unsupported file type." });
         toast.error("Unsupported file type");
         e.target.value = null;
         return;
       }
       
       if (selectedFile.size > 5 * 1024 * 1024) {
+        setFieldErrors({ file: "File size should not exceed 5MB." });
         toast.error("File size should not exceed 5MB");
         e.target.value = null;
         return;
       }
 
+      setFieldErrors({});
       setFile(selectedFile);
     }
   };
@@ -62,6 +66,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) {
+      setFieldErrors({ file: "Please select a file first." });
       toast.error("Please select a file first");
       return;
     }
@@ -97,6 +102,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
         if (result.success) {
           toast.success("Document uploaded successfully");
           setFile(null);
+          setFieldErrors({});
           document.getElementById("file-input").value = "";
           fetchAttachments();
         } else {
@@ -143,7 +149,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
   return (
     <div className="space-y-8">
       {/* Upload Form */}
-      <form onSubmit={handleUpload} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+      <form onSubmit={handleUpload} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconUpload size={20} className="text-brand-navy" /> Upload Documents
         </h3>
@@ -155,9 +161,10 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
               id="file-input"
               type="file"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-navy file:text-brand-navy hover:file:bg-brand-navy cursor-pointer border border-gray-200 rounded-md p-1"
+              className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-navy file:text-brand-navy hover:file:bg-brand-navy cursor-pointer border ${fieldErrors.file ? "border-red-500" : "border-gray-200"} rounded-md p-1`}
               required
             />
+            {fieldErrors.file && <p className="mt-1 text-xs text-red-500">{fieldErrors.file}</p>}
             <p className="mt-1 text-xs text-gray-400">Supported formats: PDF, JPG, PNG, DOCX, XLSX (Max 5MB)</p>
           </div>
         </div>

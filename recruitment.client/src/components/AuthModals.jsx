@@ -2,6 +2,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
+  IconEye,
+  IconEyeOff,
   IconId,
   IconLoader2,
   IconLock,
@@ -32,6 +34,7 @@ const AuthModals = () => {
   const [idNumber, setIdNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -224,14 +227,26 @@ const AuthModals = () => {
                   size={20}
                 />
                 <input
-                  type="password"
+                  type={showLoginPassword ? "text" : "password"}
                   id="password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
+                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all"
                   placeholder="Password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <button
+                  type="button"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-brand-navy transition-colors"
+                  onClick={() => setShowLoginPassword((current) => !current)}
+                  aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                >
+                  {showLoginPassword ? (
+                    <IconEyeOff size={20} />
+                  ) : (
+                    <IconEye size={20} />
+                  )}
+                </button>
               </div>
             </div>
             <div>

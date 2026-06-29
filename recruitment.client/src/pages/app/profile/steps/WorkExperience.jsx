@@ -14,6 +14,23 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     startDate: "",
     endDate: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const inputClass = (name, extra = "bg-white") =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshExperiences = async () => {
@@ -68,7 +85,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    updateField(name, type === "checkbox" ? checked : value);
   };
 
   const handleAddExperience = async (e) => {
@@ -78,12 +95,17 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     const requiredFields = [
       { key: "position", label: "Position" },
       { key: "institution", label: "Institution" },
+      { key: "responsibilities", label: "Responsibilities" },
       { key: "startDate", label: "Start Date" },
       ...(!formData.isCurrent ? [{ key: "endDate", label: "End Date" }] : [])
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
     if (missing.length > 0) {
+      setFieldErrors(missing.reduce((errors, field) => {
+        errors[field.key] = `${field.label} is required.`;
+        return errors;
+      }, {}));
       toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
       return;
     }
@@ -93,6 +115,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     const start = new Date(formData.startDate);
 
     if (start > today) {
+      setFieldErrors({ startDate: "Start Date cannot be in the future." });
       toast.error("Start Date cannot be in the future");
       return;
     }
@@ -100,10 +123,12 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     if (!formData.isCurrent && formData.endDate) {
       const end = new Date(formData.endDate);
       if (end <= start) {
+        setFieldErrors({ endDate: "End Date must be after Start Date." });
         toast.error("End Date must be after Start Date");
         return;
       }
       if (end > today) {
+        setFieldErrors({ endDate: "End Date cannot be in the future for a past position." });
         toast.error("End Date cannot be in the future for a past position. Check 'Currently Working Here' if this is your current job.");
         return;
       }
@@ -117,7 +142,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
         applicationNo,
         position: formData.position,
         institution: formData.institution,
-        responsibilities: formData.responsibilities,
+        responsibility: formData.responsibilities,
         isCurrent: formData.isCurrent,
         startDate: formData.startDate,
         endDate: formData.isCurrent ? "0001-01-01" : formData.endDate
@@ -143,6 +168,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
           startDate: "",
           endDate: ""
         });
+        setFieldErrors({});
         refreshExperiences();
       } else {
         toast.error(result.message || result.Message || "Failed to add work experience");
@@ -182,7 +208,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAddExperience} className="space-y-4">
+      <form onSubmit={handleAddExperience} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Work Experience
         </h3>
@@ -195,9 +221,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
               value={formData.position} 
               onChange={handleChange} 
               placeholder="Enter your job title or position"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("position")} 
               required 
             />
+            {renderError("position")}
           </div>
 
           <div>
@@ -208,9 +235,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
               value={formData.institution} 
               onChange={handleChange} 
               placeholder="Enter the name of the organization"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("institution")} 
               required 
             />
+            {renderError("institution")}
           </div>
 
           <div>
@@ -220,9 +248,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
               name="startDate" 
               value={formData.startDate} 
               onChange={handleChange} 
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("startDate")} 
               required 
             />
+            {renderError("startDate")}
           </div>
 
           {!formData.isCurrent && (
@@ -233,9 +262,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 name="endDate" 
                 value={formData.endDate} 
                 onChange={handleChange} 
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+                className={inputClass("endDate")} 
                 required 
               />
+              {renderError("endDate")}
             </div>
           )}
 
@@ -253,7 +283,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700">Responsibilities</label>
+            <label className="block text-sm font-medium text-gray-700">Responsibilities <span className="text-red-500">*</span></label>
             <textarea
               name="responsibilities"
               value={formData.responsibilities}
@@ -261,8 +291,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
               maxLength={500}
               rows={3}
               placeholder="Briefly describe your key responsibilities (Max 500 chars)"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white resize-none"
+              className={inputClass("responsibilities", "bg-white resize-none")}
+              required
             />
+            {renderError("responsibilities")}
             <p className="text-xs text-gray-400 mt-1">{formData.responsibilities?.length || 0}/500</p>
           </div>
         </div>

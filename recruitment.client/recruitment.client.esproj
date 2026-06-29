@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2752196">
   <PropertyGroup>
-    <StartupCommand>npm run dev</StartupCommand>
+    <StartupCommand Condition="'$(OS)' == 'Windows_NT'">npm run dev</StartupCommand>
+    <StartupCommand Condition="'$(OS)' != 'Windows_NT'">/bin/zsh start-spa-proxy.sh</StartupCommand>
+    <BuildCommand Condition="'$(OS)' == 'Windows_NT'">npm run build</BuildCommand>
+    <BuildCommand Condition="'$(OS)' != 'Windows_NT'">/bin/zsh build-spa-proxy.sh</BuildCommand>
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
     <JavaScriptTestFramework>Vitest</JavaScriptTestFramework>
     <!-- Allows the build (or compile) script located on package.json to run on Build -->

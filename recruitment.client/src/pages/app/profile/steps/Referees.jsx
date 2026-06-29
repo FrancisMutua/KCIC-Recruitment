@@ -12,8 +12,26 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
     lastName: "",
     phoneNo: "",
     email: "",
+    relationship: "",
     institution: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const inputClass = (name) =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 bg-white`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshReferees = async () => {
@@ -70,7 +88,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    updateField(name, value);
   };
 
   const handleAddReferee = async (e) => {
@@ -79,14 +97,20 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
     // Required Fields Validation
     const requiredFields = [
       { key: "firstName", label: "First Name" },
+      { key: "middleName", label: "Middle Name" },
       { key: "lastName", label: "Last Name" },
       { key: "phoneNo", label: "Phone Number" },
       { key: "email", label: "Email Address" },
+      { key: "relationship", label: "Relationship" },
       { key: "institution", label: "Institution" }
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
     if (missing.length > 0) {
+      setFieldErrors(missing.reduce((errors, field) => {
+        errors[field.key] = `${field.label} is required.`;
+        return errors;
+      }, {}));
       toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
       return;
     }
@@ -103,6 +127,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         lastName: formData.lastName,
         phoneNo: parseInt(formData.phoneNo) || 0,
         email: formData.email,
+        relationship: formData.relationship,
         institution: formData.institution
       };
 
@@ -124,8 +149,10 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
             lastName: "",
             phoneNo: "",
             email: "",
+            relationship: "",
             institution: ""
         });
+        setFieldErrors({});
         refreshReferees();
       } else {
         toast.error(result.message || result.Message || "Failed to add referee");
@@ -143,7 +170,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-relationship?id=${id}`, {
+      const response = await fetch(`/api/job/delete-relationship?id=${id}&applicationNo=${applicationNo}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${user.accessToken}`
@@ -165,7 +192,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAddReferee} className="space-y-4">
+      <form onSubmit={handleAddReferee} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Referee
         </h3>
@@ -178,21 +205,24 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               value={formData.firstName} 
               onChange={handleChange} 
               placeholder="Enter first name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("firstName")} 
               required 
             />
+            {renderError("firstName")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+            <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
             <input 
               type="text" 
               name="middleName" 
               value={formData.middleName} 
               onChange={handleChange} 
               placeholder="Enter middle name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("middleName")} 
+              required
             />
+            {renderError("middleName")}
           </div>
 
           <div>
@@ -203,9 +233,10 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               value={formData.lastName} 
               onChange={handleChange} 
               placeholder="Enter last name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("lastName")} 
               required 
             />
+            {renderError("lastName")}
           </div>
 
           <div>
@@ -216,9 +247,10 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               value={formData.phoneNo} 
               onChange={handleChange} 
               placeholder="e.g. 0712345678"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("phoneNo")} 
               required 
             />
+            {renderError("phoneNo")}
           </div>
 
           <div>
@@ -229,9 +261,24 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               value={formData.email} 
               onChange={handleChange} 
               placeholder="e.g. referee@example.com"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("email")} 
               required 
             />
+            {renderError("email")}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Relationship <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              name="relationship"
+              value={formData.relationship}
+              onChange={handleChange}
+              placeholder="e.g. Supervisor, Mentor, Colleague"
+              className={inputClass("relationship")}
+              required
+            />
+            {renderError("relationship")}
           </div>
 
           <div className="md:col-span-2 lg:col-span-3">
@@ -242,9 +289,10 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               value={formData.institution} 
               onChange={handleChange} 
               placeholder="Enter organization name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("institution")} 
               required
             />
+            {renderError("institution")}
           </div>
         </div>
 

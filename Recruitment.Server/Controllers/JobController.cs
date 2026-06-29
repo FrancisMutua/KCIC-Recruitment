@@ -180,31 +180,36 @@ namespace Recruitment.Server.Controllers
 
                 int.TryParse(request.PhoneNo, out int phoneNo);
                 int.TryParse(request.AltPhoneNo, out int altPhoneNo);
+                static string SafeString(string? value) => value ?? string.Empty;
 
                 var response = await _webportals.UpdateApplicationPersonalDetailsAsync(
-                    request.ApplicationNo,
-                    request.Salutation,
-                    request.FirstName,
-                    request.MiddleName,
-                    request.LastName,
-                    request.IDPassportNo,
-                    request.Email,
+                    SafeString(request.ApplicationNo),
+                    SafeString(request.Salutation),
+                    SafeString(request.FirstName),
+                    SafeString(request.MiddleName),
+                    SafeString(request.LastName),
+                    SafeString(request.IDPassportNo),
+                    SafeString(request.Email),
                     phoneNo,
                     altPhoneNo,
                     request.DateOfBirth,
                     ((int)request.Gender).ToString(),
                     ((int)request.MaritalStatus).ToString(),
-                    request.Country,
-                    request.CountyCode,
-                    request.SubCountyCode,
-                    request.WardCode,
-                    request.PostalAddress,
-                    request.PostalCode,
+                    SafeString(request.Country),
+                    SafeString(request.CountyCode),
+                    SafeString(request.SubCountyCode),
+                    SafeString(request.WardCode),
+                    SafeString(request.PostalAddress),
+                    SafeString(request.PostalCode),
                     request.Disability,
-                    request.DisabilityType,
-                    request.PWDNumber,
-                    request.KRAPin,
-                    request.Citizenship
+                    SafeString(request.DisabilityType),
+                    SafeString(request.PWDNumber),
+                    SafeString(request.KRAPin),
+                    SafeString(request.Citizenship),
+                    SafeString(request.Ethnicity),
+                    request.CurrentSalary,
+                    request.ExpectedSalary,
+                    SafeString(request.NoticePeriod)
                 );
 
                 if (response.return_value)

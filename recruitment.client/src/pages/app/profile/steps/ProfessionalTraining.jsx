@@ -13,6 +13,23 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     professionalMembership: "",
     trainingDescription: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const inputClass = (name, extra = "bg-white") =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshTraining = async () => {
@@ -67,7 +84,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    updateField(name, value);
   };
 
   const handleAdd = async (e) => {
@@ -77,17 +94,24 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     const requiredFields = [
       { key: "description", label: "Qualification / Training Name" },
       { key: "institution", label: "Institution" },
-      { key: "year", label: "Year" }
+      { key: "year", label: "Year" },
+      { key: "professionalMembership", label: "Professional Membership" },
+      { key: "trainingDescription", label: "Training Description" }
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
     if (missing.length > 0) {
+      setFieldErrors(missing.reduce((errors, field) => {
+        errors[field.key] = `${field.label} is required.`;
+        return errors;
+      }, {}));
       toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
       return;
     }
 
     const yearNum = parseInt(formData.year, 10);
     if (isNaN(yearNum) || yearNum < 1900 || yearNum > new Date().getFullYear()) {
+      setFieldErrors({ year: "Please enter a valid year." });
       toast.error("Please enter a valid year");
       return;
     }
@@ -124,6 +148,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
           professionalMembership: "",
           trainingDescription: ""
         });
+        setFieldErrors({});
         refreshTraining();
       } else {
         toast.error(result.message || result.Message || "Failed to add professional training");
@@ -164,7 +189,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAdd} className="space-y-4">
+      <form onSubmit={handleAdd} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Professional Training / Qualification
         </h3>
@@ -181,8 +206,10 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder="e.g. CPA, PMP, ACCA, Data Science Certificate"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white"
+              className={inputClass("description")}
+              required
             />
+            {renderError("description")}
           </div>
 
           <div>
@@ -197,8 +224,10 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
               min="1900"
               max={new Date().getFullYear()}
               placeholder={`e.g. ${new Date().getFullYear()}`}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white"
+              className={inputClass("year")}
+              required
             />
+            {renderError("year")}
           </div>
 
           <div className="col-span-full md:col-span-1">
@@ -211,33 +240,39 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
               value={formData.institution}
               onChange={handleChange}
               placeholder="Awarding body or institution"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white"
+              className={inputClass("institution")}
+              required
             />
+            {renderError("institution")}
           </div>
 
           <div className="col-span-full md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700">Professional Membership</label>
+            <label className="block text-sm font-medium text-gray-700">Professional Membership <span className="text-red-500">*</span></label>
             <input
               type="text"
               name="professionalMembership"
               value={formData.professionalMembership}
               onChange={handleChange}
-              placeholder="e.g. ICPAK, PMI, IEEE (optional)"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white"
+              placeholder="e.g. ICPAK, PMI, IEEE"
+              className={inputClass("professionalMembership")}
+              required
             />
+            {renderError("professionalMembership")}
           </div>
 
           <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700">Training Description</label>
+            <label className="block text-sm font-medium text-gray-700">Training Description <span className="text-red-500">*</span></label>
             <textarea
               name="trainingDescription"
               value={formData.trainingDescription}
               onChange={handleChange}
               maxLength={500}
               rows={3}
-              placeholder="Brief description of the training or qualification (optional, max 500 chars)"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white resize-none"
+              placeholder="Brief description of the training or qualification (max 500 chars)"
+              className={inputClass("trainingDescription", "bg-white resize-none")}
+              required
             />
+            {renderError("trainingDescription")}
             <p className="text-xs text-gray-400 mt-1">{formData.trainingDescription?.length || 0}/500</p>
           </div>
         </div>

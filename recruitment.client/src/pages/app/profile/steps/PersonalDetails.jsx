@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
 import { GenderOptions, MaritalStatusOptions } from "../../../../constants/enums";
@@ -6,6 +7,29 @@ import { GenderOptions, MaritalStatusOptions } from "../../../../constants/enums
 const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
   const [countyFilter, setCountyFilter] = useState("");
   const [subCountyFilter, setSubCountyFilter] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    handleChange({ target: { name, value } });
+  };
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    updateField(name, value);
+  };
+
+  const inputClass = (name, extra = "") =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-navy"} rounded-md shadow-sm p-2 ${extra}`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -17,96 +41,143 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* First Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">First Name</label>
-           <input type="text" name="firstName" value={profile.firstName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100" readOnly />
+           <label className="block text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
+           <input type="text" name="firstName" value={profile.firstName} onChange={handleFieldChange} className={inputClass("firstName", "bg-gray-100")} readOnly />
+           {renderError("firstName")}
         </div>
         {/* Middle Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">Middle Name</label>
-           <input type="text" name="middleName" value={profile.middleName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100" readOnly />
+           <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
+           <input type="text" name="middleName" value={profile.middleName} onChange={handleFieldChange} className={inputClass("middleName", "bg-gray-100")} readOnly />
+           {renderError("middleName")}
         </div>
         {/* Last Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">Last Name</label>
-           <input type="text" name="lastName" value={profile.lastName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100" readOnly />
+           <label className="block text-sm font-medium text-gray-700">Last Name <span className="text-red-500">*</span></label>
+           <input type="text" name="lastName" value={profile.lastName} onChange={handleFieldChange} className={inputClass("lastName", "bg-gray-100")} readOnly />
+           {renderError("lastName")}
         </div>
         
         {/* ID Number */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">ID / Passport No</label>
-           <input type="text" name="idNumber" value={profile.idNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100" readOnly />
+           <label className="block text-sm font-medium text-gray-700">ID / Passport No <span className="text-red-500">*</span></label>
+           <input type="text" name="idNumber" value={profile.idNumber} onChange={handleFieldChange} className={inputClass("idNumber", "bg-gray-100")} readOnly />
+           {renderError("idNumber")}
         </div>
 
         {/* KRA Pin */}
         <div>
            <label className="block text-sm font-medium text-gray-700">KRA Pin <span className="text-red-500">*</span></label>
-           <input type="text" name="kraPin" value={profile.kraPin} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+           <input type="text" name="kraPin" value={profile.kraPin} onChange={handleFieldChange} className={inputClass("kraPin")} required />
+           {renderError("kraPin")}
         </div>
 
         {/* Email Address */}
         <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
-            <input type="email" name="emailAddress" value={profile.emailAddress} disabled className="mt-1 block w-full border border-gray-300 bg-gray-100 rounded-md shadow-sm p-2 cursor-not-allowed" />
+            <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
+            <input type="email" name="emailAddress" value={profile.emailAddress} disabled className={inputClass("emailAddress", "bg-gray-100 cursor-not-allowed")} />
+            {renderError("emailAddress")}
         </div>
 
         {/* Initials */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Initials <span className="text-red-500">*</span></label>
-          <select name="initials" value={profile.initials} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required>
+          <select name="initials" value={profile.initials} onChange={handleFieldChange} className={inputClass("initials", "bg-white")} required>
               <option value="">Select Initials</option>
               <option value="0">Mr.</option>
               <option value="1">Miss.</option>
               <option value="2">Mrs.</option>
+              <option value="3">Dr.</option>
+              <option value="4">Prof.</option>
           </select>
+          {renderError("initials")}
         </div>
 
         {/* Phone Number */}
         <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
-            <input type="text" name="phoneNumber" value={profile.phoneNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+            <input type="text" name="phoneNumber" value={profile.phoneNumber} onChange={handleFieldChange} className={inputClass("phoneNumber")} required />
+            {renderError("phoneNumber")}
         </div>
 
         {/* Alt Phone Number */}
         <div>
-            <label className="block text-sm font-medium text-gray-700">Alt Phone Number</label>
-            <input type="text" name="altPhoneNumber" value={profile.altPhoneNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+            <label className="block text-sm font-medium text-gray-700">Alt Phone Number <span className="text-red-500">*</span></label>
+            <input type="text" name="altPhoneNumber" value={profile.altPhoneNumber} onChange={handleFieldChange} className={inputClass("altPhoneNumber")} required />
+            {renderError("altPhoneNumber")}
         </div>
 
         {/* Date of Birth */}
         <div>
              <label className="block text-sm font-medium text-gray-700">Date of Birth <span className="text-red-500">*</span></label>
-             <input type="date" name="birthDate" max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]} value={profile.birthDate || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+             <input type="date" name="birthDate" max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]} value={profile.birthDate || ''} onChange={handleFieldChange} className={inputClass("birthDate")} required />
+             {renderError("birthDate")}
         </div>
 
         {/* Gender */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Gender <span className="text-red-500">*</span></label>
-          <select name="gender" value={profile.gender} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required>
+          <select name="gender" value={profile.gender} onChange={handleFieldChange} className={inputClass("gender", "bg-white")} required>
               <option value="">Select Gender</option>
               {GenderOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
           </select>
+          {renderError("gender")}
         </div>
 
         {/* Marital Status */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-red-500">*</span></label>
-          <select name="maritalStatus" value={profile.maritalStatus} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required>
+          <select name="maritalStatus" value={profile.maritalStatus} onChange={handleFieldChange} className={inputClass("maritalStatus", "bg-white")} required>
               <option value="">Select Status</option>
               {MaritalStatusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
           </select>
+          {renderError("maritalStatus")}
         </div>
 
         {/* Citizenship */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Citizenship <span className="text-red-500">*</span></label>
-          <select name="citizenship" value={profile.citizenship} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" required>
+          <label className="block text-sm font-medium text-gray-700">Citizenship</label>
+          <select name="citizenship" value={profile.citizenship} onChange={handleFieldChange} className={inputClass("citizenship", "bg-white")}>
               <option value="">Select Citizenship</option>
               <option value="KE">Kenya</option>
           </select>
+        </div>
+
+        {/* Ethnicity (SOAP) */}
+        <GlobalDropdown
+          source="SOAP"
+          type="Ethnicity"
+          label="Ethnicity"
+          name="ethnicity"
+          value={profile.ethnicity}
+          onChange={(val) => updateField("ethnicity", val)}
+          required
+          error={fieldErrors.ethnicity}
+        />
+
+        {/* Current Salary */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Current Salary <span className="text-red-500">*</span></label>
+          <input type="number" name="currentSalary" value={profile.currentSalary} onChange={handleFieldChange} min="0" step="0.01" className={inputClass("currentSalary")} required />
+          {renderError("currentSalary")}
+        </div>
+
+        {/* Expected Salary */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Expected Salary <span className="text-red-500">*</span></label>
+          <input type="number" name="expectedSalary" value={profile.expectedSalary} onChange={handleFieldChange} min="0" step="0.01" className={inputClass("expectedSalary")} required />
+          {renderError("expectedSalary")}
+        </div>
+
+        {/* Notice Period */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Notice Period <span className="text-red-500">*</span></label>
+          <input type="text" name="noticePeriod" value={profile.noticePeriod} onChange={handleFieldChange} placeholder="e.g. 30 days" className={inputClass("noticePeriod")} required />
+          {renderError("noticePeriod")}
         </div>
 
         {/* Contact Header */}
@@ -124,8 +195,9 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           label="Country"
           name="country"
           value={profile.country}
-          onChange={(val) => handleChange({ target: { name: "country", value: val } })}
+          onChange={(val) => updateField("country", val)}
           required
+          error={fieldErrors.country}
         />
 
         {/* County (SOAP) */}
@@ -140,9 +212,10 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             // Convert to Title Case to match NAV format (e.g., "BARINGO" -> "Baringo")
             const titleCased = countyName.charAt(0).toUpperCase() + countyName.slice(1).toLowerCase();
             setCountyFilter(titleCased);
-            handleChange({ target: { name: "county", value: val } });
+            updateField("county", val);
           }}
           required
+          error={fieldErrors.county}
         />
 
         {/* Sub County (SOAP) */}
@@ -158,10 +231,11 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             // Convert to Title Case to match NAV format
             const titleCased = scName.charAt(0).toUpperCase() + scName.slice(1).toLowerCase();
             setSubCountyFilter(titleCased);
-            handleChange({ target: { name: "subCounty", value: val } });
+            updateField("subCounty", val);
           }}
           required
           disabled={!profile.county}
+          error={fieldErrors.subCounty}
         />
 
         {/* Ward (SOAP) */}
@@ -172,21 +246,24 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           label="Ward"
           name="wardCode"
           value={profile.wardCode}
-          onChange={(val) => handleChange({ target: { name: "wardCode", value: val } })}
+          onChange={(val) => updateField("wardCode", val)}
           required
           disabled={!profile.subCounty}
+          error={fieldErrors.wardCode}
         />
 
         {/* Postal Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Postal Address <span className="text-red-500">*</span></label>
-          <input type="text" name="postalAddress" value={profile.postalAddress} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+          <input type="text" name="postalAddress" value={profile.postalAddress} onChange={handleFieldChange} className={inputClass("postalAddress")} required />
+          {renderError("postalAddress")}
         </div>
 
         {/* Postal Code */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Postal Code <span className="text-red-500">*</span></label>
-          <input type="text" name="postalCode" value={profile.postalCode} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+          <input type="text" name="postalCode" value={profile.postalCode} onChange={handleFieldChange} className={inputClass("postalCode")} required />
+          {renderError("postalCode")}
         </div>
 
         {/* Other Header */}
@@ -197,7 +274,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         {/* Disability */}
         <div>
              <label className="block text-sm font-medium text-gray-700">Do you have a disability?</label>
-             <select name="disability" value={profile.disability} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white">
+             <select name="disability" value={profile.disability} onChange={handleFieldChange} className={inputClass("disability", "bg-white")}>
                  <option value="false">No</option>
                  <option value="true">Yes</option>
              </select>
@@ -213,13 +290,15 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
                   label="Disability Type"
                   name="disabilityStatus"
                   value={profile.disabilityStatus} 
-                  onChange={(val) => handleChange({ target: { name: "disabilityStatus", value: val } })}
+                  onChange={(val) => updateField("disabilityStatus", val)}
                   required
+                  error={fieldErrors.disabilityStatus}
                 />
                 
                 <div>
                     <label className="block text-sm font-medium text-gray-700">PWD Number <span className="text-red-500">*</span></label>
-                    <input type="text" name="pwdNumber" value={profile.pwdNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+                    <input type="text" name="pwdNumber" value={profile.pwdNumber} onChange={handleFieldChange} className={inputClass("pwdNumber")} required />
+                    {renderError("pwdNumber")}
                 </div>
             </>
         )}
@@ -230,14 +309,24 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <button
           onClick={(e) => {
             e.preventDefault();
+            const isMissing = (key) => profile[key] === undefined || profile[key] === null || profile[key].toString().trim() === "";
             const requiredFields = [
+              { key: "firstName", label: "First Name" },
+              { key: "middleName", label: "Middle Name" },
+              { key: "lastName", label: "Last Name" },
+              { key: "idNumber", label: "ID / Passport No" },
+              { key: "emailAddress", label: "Email Address" },
               { key: "kraPin", label: "KRA Pin" },
               { key: "initials", label: "Initials" },
               { key: "phoneNumber", label: "Phone Number" },
+              { key: "altPhoneNumber", label: "Alt Phone Number" },
               { key: "birthDate", label: "Date of Birth" },
               { key: "gender", label: "Gender" },
               { key: "maritalStatus", label: "Marital Status" },
-              { key: "citizenship", label: "Citizenship" },
+              { key: "ethnicity", label: "Ethnicity" },
+              { key: "currentSalary", label: "Current Salary" },
+              { key: "expectedSalary", label: "Expected Salary" },
+              { key: "noticePeriod", label: "Notice Period" },
               { key: "country", label: "Country" },
               { key: "county", label: "County" },
               { key: "subCounty", label: "Sub County" },
@@ -246,27 +335,33 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
               { key: "postalCode", label: "Postal Code" },
             ];
 
-            const missing = requiredFields.filter(field => !profile[field.key]);
+            const missing = requiredFields.filter(field => isMissing(field.key));
 
             if (missing.length > 0) {
-              import("react-toastify").then(({ toast }) => {
-                toast.error(`Please fill in the following required fields: ${missing.map(f => f.label).join(", ")}`);
-              });
+              const nextErrors = missing.reduce((errors, field) => {
+                errors[field.key] = `${field.label} is required.`;
+                return errors;
+              }, {});
+              setFieldErrors(nextErrors);
+              toast.error(`Please fill in the following required fields: ${missing.map(f => f.label).join(", ")}`);
               return;
             }
             
             // Disability specific validation
             if (profile.disability === "true" || profile.disability === true) {
                 if (!profile.disabilityStatus) {
-                    import("react-toastify").then(({ toast }) => toast.error("Please select a Disability Type"));
+                    setFieldErrors({ disabilityStatus: "Disability Type is required." });
+                    toast.error("Please select a Disability Type");
                     return;
                 }
                 if (!profile.pwdNumber) {
-                    import("react-toastify").then(({ toast }) => toast.error("Please enter PWD Number"));
+                    setFieldErrors({ pwdNumber: "PWD Number is required." });
+                    toast.error("Please enter PWD Number");
                     return;
                 }
             }
 
+            setFieldErrors({});
             onNext();
           }}
           disabled={saving}

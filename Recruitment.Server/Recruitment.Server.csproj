@@ -6,7 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SpaRoot>..\recruitment.client</SpaRoot>
     <SpaProxyServerUrl>https://localhost:44357</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyLaunchCommand Condition="'$(OS)' == 'Windows_NT'">npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyLaunchCommand Condition="'$(OS)' != 'Windows_NT'">/bin/zsh start-spa-proxy.sh</SpaProxyLaunchCommand>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

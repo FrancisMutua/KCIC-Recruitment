@@ -16,6 +16,10 @@ namespace NAVWS
     public interface Recruitment_Port
     {
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:AcceptOffer", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.AcceptOffer_Result> AcceptOfferAsync(NAVWS.AcceptOffer request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:ActivateUserAccount", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.ActivateUserAccount_Result> ActivateUserAccountAsync(NAVWS.ActivateUserAccount request);
@@ -62,6 +66,10 @@ namespace NAVWS
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetApplicantName_Result> GetApplicantNameAsync(NAVWS.GetApplicantName request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetApplicationInstructions", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.GetApplicationInstructions_Result> GetApplicationInstructionsAsync(NAVWS.GetApplicationInstructions request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetApplicationStatistics", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetApplicationStatistics_Result> GetApplicationStatisticsAsync(NAVWS.GetApplicationStatistics request);
@@ -82,9 +90,21 @@ namespace NAVWS
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetDisabilityTypes_Result> GetDisabilityTypesAsync(NAVWS.GetDisabilityTypes request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetEthnicity", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.GetEthnicity_Result> GetEthnicityAsync(NAVWS.GetEthnicity request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetJobAdvertDetails", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.GetJobAdvertDetails_Result> GetJobAdvertDetailsAsync(NAVWS.GetJobAdvertDetails request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetJobApplicationDetails", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetJobApplicationDetails_Result> GetJobApplicationDetailsAsync(NAVWS.GetJobApplicationDetails request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetJobCompetencies", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.GetJobCompetencies_Result> GetJobCompetenciesAsync(NAVWS.GetJobCompetencies request);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetJobDescription", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
@@ -244,6 +264,46 @@ namespace NAVWS
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:UserLogin", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.UserLogin_Result> UserLoginAsync(NAVWS.UserLogin request);
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="AcceptOffer", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class AcceptOffer
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string applicationNo;
+        
+        public AcceptOffer()
+        {
+        }
+        
+        public AcceptOffer(string applicationNo)
+        {
+            this.applicationNo = applicationNo;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="AcceptOffer_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class AcceptOffer_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public bool return_value;
+        
+        public AcceptOffer_Result()
+        {
+        }
+        
+        public AcceptOffer_Result(bool return_value)
+        {
+            this.return_value = return_value;
+        }
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -728,6 +788,46 @@ namespace NAVWS
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetApplicationInstructions", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetApplicationInstructions
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string applicationNo;
+        
+        public GetApplicationInstructions()
+        {
+        }
+        
+        public GetApplicationInstructions(string applicationNo)
+        {
+            this.applicationNo = applicationNo;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetApplicationInstructions_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetApplicationInstructions_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public GetApplicationInstructions_Result()
+        {
+        }
+        
+        public GetApplicationInstructions_Result(string return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(WrapperName="GetApplicationStatistics", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
     public partial class GetApplicationStatistics
     {
@@ -912,6 +1012,78 @@ namespace NAVWS
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetEthnicity", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetEthnicity
+    {
+        
+        public GetEthnicity()
+        {
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetEthnicity_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetEthnicity_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public GetEthnicity_Result()
+        {
+        }
+        
+        public GetEthnicity_Result(string return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetJobAdvertDetails", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetJobAdvertDetails
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string requisitionNo;
+        
+        public GetJobAdvertDetails()
+        {
+        }
+        
+        public GetJobAdvertDetails(string requisitionNo)
+        {
+            this.requisitionNo = requisitionNo;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetJobAdvertDetails_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetJobAdvertDetails_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public GetJobAdvertDetails_Result()
+        {
+        }
+        
+        public GetJobAdvertDetails_Result(string return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(WrapperName="GetJobApplicationDetails", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
     public partial class GetJobApplicationDetails
     {
@@ -944,6 +1116,46 @@ namespace NAVWS
         }
         
         public GetJobApplicationDetails_Result(string return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetJobCompetencies", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetJobCompetencies
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string jobId;
+        
+        public GetJobCompetencies()
+        {
+        }
+        
+        public GetJobCompetencies(string jobId)
+        {
+            this.jobId = jobId;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetJobCompetencies_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetJobCompetencies_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public GetJobCompetencies_Result()
+        {
+        }
+        
+        public GetJobCompetencies_Result(string return_value)
         {
             this.return_value = return_value;
         }
@@ -2512,6 +2724,18 @@ namespace NAVWS
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=22)]
         public string citizenship;
         
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=23)]
+        public string ethnicity;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=24)]
+        public decimal currentSalary;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=25)]
+        public decimal expectedSalary;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=26)]
+        public string noticePeriod;
+        
         public UpdateApplicationPersonalDetails()
         {
         }
@@ -2539,7 +2763,11 @@ namespace NAVWS
                     string disabilityType, 
                     string pWDNumber, 
                     string kRAPin, 
-                    string citizenship)
+                    string citizenship, 
+                    string ethnicity, 
+                    decimal currentSalary, 
+                    decimal expectedSalary, 
+                    string noticePeriod)
         {
             this.applicationNo = applicationNo;
             this.salutation = salutation;
@@ -2564,6 +2792,10 @@ namespace NAVWS
             this.pWDNumber = pWDNumber;
             this.kRAPin = kRAPin;
             this.citizenship = citizenship;
+            this.ethnicity = ethnicity;
+            this.currentSalary = currentSalary;
+            this.expectedSalary = expectedSalary;
+            this.noticePeriod = noticePeriod;
         }
     }
     
@@ -2802,6 +3034,19 @@ namespace NAVWS
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.AcceptOffer_Result> NAVWS.Recruitment_Port.AcceptOfferAsync(NAVWS.AcceptOffer request)
+        {
+            return base.Channel.AcceptOfferAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.AcceptOffer_Result> AcceptOfferAsync(string applicationNo)
+        {
+            NAVWS.AcceptOffer inValue = new NAVWS.AcceptOffer();
+            inValue.applicationNo = applicationNo;
+            return ((NAVWS.Recruitment_Port)(this)).AcceptOfferAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<NAVWS.ActivateUserAccount_Result> NAVWS.Recruitment_Port.ActivateUserAccountAsync(NAVWS.ActivateUserAccount request)
         {
             return base.Channel.ActivateUserAccountAsync(request);
@@ -2961,6 +3206,19 @@ namespace NAVWS
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.GetApplicationInstructions_Result> NAVWS.Recruitment_Port.GetApplicationInstructionsAsync(NAVWS.GetApplicationInstructions request)
+        {
+            return base.Channel.GetApplicationInstructionsAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.GetApplicationInstructions_Result> GetApplicationInstructionsAsync(string applicationNo)
+        {
+            NAVWS.GetApplicationInstructions inValue = new NAVWS.GetApplicationInstructions();
+            inValue.applicationNo = applicationNo;
+            return ((NAVWS.Recruitment_Port)(this)).GetApplicationInstructionsAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<NAVWS.GetApplicationStatistics_Result> NAVWS.Recruitment_Port.GetApplicationStatisticsAsync(NAVWS.GetApplicationStatistics request)
         {
             return base.Channel.GetApplicationStatisticsAsync(request);
@@ -3024,6 +3282,31 @@ namespace NAVWS
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.GetEthnicity_Result> NAVWS.Recruitment_Port.GetEthnicityAsync(NAVWS.GetEthnicity request)
+        {
+            return base.Channel.GetEthnicityAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.GetEthnicity_Result> GetEthnicityAsync()
+        {
+            NAVWS.GetEthnicity inValue = new NAVWS.GetEthnicity();
+            return ((NAVWS.Recruitment_Port)(this)).GetEthnicityAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.GetJobAdvertDetails_Result> NAVWS.Recruitment_Port.GetJobAdvertDetailsAsync(NAVWS.GetJobAdvertDetails request)
+        {
+            return base.Channel.GetJobAdvertDetailsAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.GetJobAdvertDetails_Result> GetJobAdvertDetailsAsync(string requisitionNo)
+        {
+            NAVWS.GetJobAdvertDetails inValue = new NAVWS.GetJobAdvertDetails();
+            inValue.requisitionNo = requisitionNo;
+            return ((NAVWS.Recruitment_Port)(this)).GetJobAdvertDetailsAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<NAVWS.GetJobApplicationDetails_Result> NAVWS.Recruitment_Port.GetJobApplicationDetailsAsync(NAVWS.GetJobApplicationDetails request)
         {
             return base.Channel.GetJobApplicationDetailsAsync(request);
@@ -3034,6 +3317,19 @@ namespace NAVWS
             NAVWS.GetJobApplicationDetails inValue = new NAVWS.GetJobApplicationDetails();
             inValue.applicationNo = applicationNo;
             return ((NAVWS.Recruitment_Port)(this)).GetJobApplicationDetailsAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.GetJobCompetencies_Result> NAVWS.Recruitment_Port.GetJobCompetenciesAsync(NAVWS.GetJobCompetencies request)
+        {
+            return base.Channel.GetJobCompetenciesAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.GetJobCompetencies_Result> GetJobCompetenciesAsync(string jobId)
+        {
+            NAVWS.GetJobCompetencies inValue = new NAVWS.GetJobCompetencies();
+            inValue.jobId = jobId;
+            return ((NAVWS.Recruitment_Port)(this)).GetJobCompetenciesAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -3561,7 +3857,11 @@ namespace NAVWS
                     string disabilityType, 
                     string pWDNumber, 
                     string kRAPin, 
-                    string citizenship)
+                    string citizenship, 
+                    string ethnicity, 
+                    decimal currentSalary, 
+                    decimal expectedSalary, 
+                    string noticePeriod)
         {
             NAVWS.UpdateApplicationPersonalDetails inValue = new NAVWS.UpdateApplicationPersonalDetails();
             inValue.applicationNo = applicationNo;
@@ -3587,6 +3887,10 @@ namespace NAVWS
             inValue.pWDNumber = pWDNumber;
             inValue.kRAPin = kRAPin;
             inValue.citizenship = citizenship;
+            inValue.ethnicity = ethnicity;
+            inValue.currentSalary = currentSalary;
+            inValue.expectedSalary = expectedSalary;
+            inValue.noticePeriod = noticePeriod;
             return ((NAVWS.Recruitment_Port)(this)).UpdateApplicationPersonalDetailsAsync(inValue);
         }
         

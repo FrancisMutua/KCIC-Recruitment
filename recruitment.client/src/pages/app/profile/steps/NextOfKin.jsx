@@ -16,6 +16,23 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
     relationship: "",
     institution: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const updateField = (name, value) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const inputClass = (name) =>
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 bg-white`;
+
+  const renderError = (name) =>
+    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshKin = async () => {
@@ -72,7 +89,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    updateField(name, value);
   };
 
   const handleAddKin = async (e) => {
@@ -81,14 +98,20 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
     // Required Fields Validation
     const requiredFields = [
       { key: "firstName", label: "First Name" },
+      { key: "middleName", label: "Middle Name" },
       { key: "lastName", label: "Last Name" },
       { key: "phoneNo", label: "Phone Number" },
       { key: "email", label: "Email Address" },
-      { key: "relationship", label: "Relationship" }
+      { key: "relationship", label: "Relationship" },
+      { key: "institution", label: "Institution" }
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
     if (missing.length > 0) {
+      setFieldErrors(missing.reduce((errors, field) => {
+        errors[field.key] = `${field.label} is required.`;
+        return errors;
+      }, {}));
       toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
       return;
     }
@@ -130,6 +153,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
             relationship: "",
             institution: ""
         });
+        setFieldErrors({});
         refreshKin();
       } else {
         toast.error(result.message || result.Message || "Failed to add Next of Kin");
@@ -169,7 +193,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAddKin} className="space-y-4">
+      <form onSubmit={handleAddKin} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Next of Kin
         </h3>
@@ -182,21 +206,24 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
               value={formData.firstName} 
               onChange={handleChange} 
               placeholder="Enter first name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("firstName")} 
               required 
             />
+            {renderError("firstName")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+            <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
             <input 
               type="text" 
               name="middleName" 
               value={formData.middleName} 
               onChange={handleChange} 
               placeholder="Enter middle name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("middleName")} 
+              required
             />
+            {renderError("middleName")}
           </div>
 
           <div>
@@ -207,9 +234,10 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
               value={formData.lastName} 
               onChange={handleChange} 
               placeholder="Enter last name"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("lastName")} 
               required 
             />
+            {renderError("lastName")}
           </div>
 
           <div>
@@ -220,9 +248,10 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
               value={formData.phoneNo} 
               onChange={handleChange} 
               placeholder="e.g. 0712345678"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("phoneNo")} 
               required 
             />
+            {renderError("phoneNo")}
           </div>
 
           <div>
@@ -233,9 +262,10 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
               value={formData.email} 
               onChange={handleChange} 
               placeholder="e.g. jane.doe@example.com"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("email")} 
               required 
             />
+            {renderError("email")}
           </div>
 
           <div>
@@ -246,9 +276,24 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
               value={formData.relationship} 
               onChange={handleChange} 
               placeholder="e.g. Spouse, Parent, Sibling"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white" 
+              className={inputClass("relationship")} 
               required 
             />
+            {renderError("relationship")}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              name="institution"
+              value={formData.institution}
+              onChange={handleChange}
+              placeholder="Enter institution or organization"
+              className={inputClass("institution")}
+              required
+            />
+            {renderError("institution")}
           </div>
         </div>
 

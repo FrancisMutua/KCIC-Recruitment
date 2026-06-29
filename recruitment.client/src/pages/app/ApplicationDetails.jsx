@@ -48,6 +48,10 @@ const ApplicationDetails = () => {
     wardCode: "",
     citizenship: "",
     kraPin: "",
+    ethnicity: "",
+    currentSalary: "",
+    expectedSalary: "",
+    noticePeriod: "",
     // Add placeholders if needed for other sections
   });
 
@@ -161,6 +165,10 @@ const ApplicationDetails = () => {
             wardCode: data.Ward || data.WardCode || "",
             citizenship: data.Citizenship || "",
             kraPin: data.KRApin || "",
+            ethnicity: data.Ethnicity || "",
+            currentSalary: data.CurrentSalary || "",
+            expectedSalary: data.ExpectedSalary || "",
+            noticePeriod: data.NoticePeriod || "",
           });
           
           if (data.Status === "Submitted" || data.Status === "Closed") {
@@ -194,12 +202,67 @@ const ApplicationDetails = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validatePersonalDetails = () => {
+    const isMissing = (key) =>
+      profile[key] === undefined ||
+      profile[key] === null ||
+      profile[key].toString().trim() === "";
+
+    const requiredFields = [
+      { key: "firstName", label: "First Name" },
+      { key: "middleName", label: "Middle Name" },
+      { key: "lastName", label: "Last Name" },
+      { key: "idNumber", label: "ID / Passport No" },
+      { key: "emailAddress", label: "Email Address" },
+      { key: "initials", label: "Initials" },
+      { key: "phoneNumber", label: "Phone Number" },
+      { key: "altPhoneNumber", label: "Alt Phone Number" },
+      { key: "birthDate", label: "Date of Birth" },
+      { key: "gender", label: "Gender" },
+      { key: "maritalStatus", label: "Marital Status" },
+      { key: "country", label: "Country" },
+      { key: "county", label: "County" },
+      { key: "subCounty", label: "Sub County" },
+      { key: "wardCode", label: "Ward" },
+      { key: "postalAddress", label: "Postal Address" },
+      { key: "postalCode", label: "Postal Code" },
+      { key: "kraPin", label: "KRA Pin" },
+      { key: "ethnicity", label: "Ethnicity" },
+      { key: "currentSalary", label: "Current Salary" },
+      { key: "expectedSalary", label: "Expected Salary" },
+      { key: "noticePeriod", label: "Notice Period" }
+    ];
+
+    const missing = requiredFields.filter((field) => isMissing(field.key));
+    if (missing.length > 0) {
+      toast.error(`Please fill in the following required fields: ${missing.map((f) => f.label).join(", ")}`);
+      return false;
+    }
+
+    if (profile.disability === "true" || profile.disability === true) {
+      if (isMissing("disabilityStatus")) {
+        toast.error("Please select a Disability Type");
+        return false;
+      }
+      if (isMissing("pwdNumber")) {
+        toast.error("Please enter PWD Number");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const [saving, setSaving] = useState(false);
 
   const handleUpdatePersonalDetails = async () => {
     // If submitted, skip saving and just go next
     if (isSubmitted) {
       handleNext();
+      return;
+    }
+
+    if (!validatePersonalDetails()) {
       return;
     }
 
@@ -252,7 +315,11 @@ const ApplicationDetails = () => {
         disabilityType: profile.disabilityStatus,
         pwdNumber: profile.pwdNumber,
         kraPin: profile.kraPin,
-        citizenship: profile.citizenship
+        citizenship: profile.citizenship,
+        ethnicity: profile.ethnicity,
+        currentSalary: parseFloat(profile.currentSalary) || 0,
+        expectedSalary: parseFloat(profile.expectedSalary) || 0,
+        noticePeriod: profile.noticePeriod
       };
 
       const response = await fetch("/api/job/update-personal-details", {
@@ -352,7 +419,9 @@ const ApplicationDetails = () => {
            <Stepper 
              steps={STEPS} 
              activeStep={activeStep} 
-             onStepClick={!isSubmitted ? setActiveStep : undefined} 
+             onStepClick={!isSubmitted ? (index) => {
+               if (index <= activeStep) setActiveStep(index);
+             } : undefined} 
              stepBgColor="bg-white"
            />
         </div>
