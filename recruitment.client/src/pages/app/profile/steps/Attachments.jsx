@@ -161,7 +161,7 @@ const Attachments = ({ applicationNo, onBack, onSubmit, loading: savingProfile }
               id="file-input"
               type="file"
               onChange={handleFileChange}
-              className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-navy file:text-brand-navy hover:file:bg-brand-navy cursor-pointer border ${fieldErrors.file ? "border-red-500" : "border-gray-200"} rounded-md p-1`}
+              className={`block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-navy file:text-white hover:file:bg-brand-navy cursor-pointer border ${fieldErrors.file ? "border-red-500" : "border-gray-200"} rounded-md p-1`}
               required
             />
             {fieldErrors.file && <p className="mt-1 text-xs text-red-500">{fieldErrors.file}</p>}

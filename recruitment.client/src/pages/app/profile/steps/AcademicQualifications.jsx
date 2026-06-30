@@ -8,7 +8,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
-    areaOfStudy: "",
     course: "",
     institution: "",
     startDate: "",
@@ -96,14 +95,12 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
     // Required Fields Validation
     const requiredFields = [
-      { key: "areaOfStudy", label: "Area of Study" },
       { key: "course", label: "Level" },
       { key: "institution", label: "Institution" },
       { key: "courseDescription", label: "Course Description" },
       { key: "startDate", label: "Start Date" },
       { key: "endDate", label: "End Date" },
-      { key: "grade", label: "Grade" },
-      { key: "expiry", label: "Expiry Date" }
+      { key: "grade", label: "Grade" }
     ];
 
     const missing = requiredFields.filter(f => !formData[f.key]);
@@ -132,8 +129,8 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       toast.error("End Date must be after Start Date");
       return;
     }
-    const expiry = new Date(formData.expiry);
-    if (expiry <= today) {
+    const expiry = formData.expiry ? new Date(formData.expiry) : null;
+    if (expiry && expiry <= today) {
       setFieldErrors({ expiry: "Certificate Expiry Date must be a future date." });
       toast.error("Certificate Expiry Date must be a future date");
       return;
@@ -145,14 +142,13 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       
       const payload = {
         applicationNo,
-        areaOfStudy: formData.areaOfStudy,
         course: formData.course,
         institution: formData.institution,
         startDate: formData.startDate,
         endDate: formData.endDate,
         grade: formData.grade,
         courseDescription: formData.courseDescription || "",
-        expiry: formData.expiry
+        expiry: formData.expiry || null
       };
 
       const response = await fetch("/api/job/add-academic-qualification", {
@@ -168,7 +164,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       if (result.success) {
         toast.success("Qualification added successfully");
         setFormData({
-          areaOfStudy: "",
           course: "",
           institution: "",
           startDate: "",
@@ -224,17 +219,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <GlobalDropdown
             source="SOAP"
-            type="Area of Study"
-            label="Area of Study"
-            name="areaOfStudy"
-            value={formData.areaOfStudy}
-            onChange={(val) => updateField("areaOfStudy", val)}
-            required
-            error={fieldErrors.areaOfStudy}
-          />
-
-          <GlobalDropdown
-            source="SOAP"
             type="AcademicQualifications"
             label="Level"
             name="course"
@@ -276,8 +260,8 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Expiry Date <span className="text-red-500">*</span></label>
-            <input type="date" name="expiry" value={formData.expiry} onChange={handleChange} className={inputClass("expiry")} required />
+            <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+            <input type="date" name="expiry" value={formData.expiry} onChange={handleChange} className={inputClass("expiry")} />
             {renderError("expiry")}
           </div>
 
@@ -321,7 +305,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Area of Study</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Level</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Institution</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
@@ -332,24 +315,23 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
-                   <td colSpan="6" className="px-6 py-10 text-center">
+                   <td colSpan="5" className="px-6 py-10 text-center">
                       <div className="flex justify-center items-center gap-2 text-gray-500">
                          <IconLoader2 className="animate-spin" /> Fetching qualifications...
                       </div>
                    </td>
                 </tr>
-              ) : qualifications.filter(q => q.areaOfStudy || q.description).length === 0 ? (
+              ) : qualifications.filter(q => q.description || q.institution).length === 0 ? (
                 <tr>
-                   <td colSpan="6" className="px-6 py-10 text-center text-gray-500 italic">
+                   <td colSpan="5" className="px-6 py-10 text-center text-gray-500 italic">
                       No qualifications added yet.
                    </td>
                 </tr>
               ) : (
                 qualifications
-                  .filter(q => q.areaOfStudy || q.description || q.institution)
+                  .filter(q => q.description || q.institution)
                   .map((q) => (
                   <tr key={q.lineNo} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{q.areaOfStudy}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.description}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.institution}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -266,7 +266,6 @@ namespace Recruitment.Server.Controllers
 
                 var response = await _webportals.AddAcademicQualificationAsync(
                     request.ApplicationNo,
-                    request.AreaOfStudy,
                     request.Course,
                     request.Institution,
                     request.StartDate,

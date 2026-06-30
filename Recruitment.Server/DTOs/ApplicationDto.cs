@@ -37,7 +37,6 @@ namespace Recruitment.Server.DTOs
     {
         public int LineNo { get; set; }
         public string ApplicationNo { get; set; } = string.Empty;
-        public string AreaOfStudy { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Institution { get; set; } = string.Empty;
         public string StartDate { get; set; } = string.Empty;
@@ -50,14 +49,13 @@ namespace Recruitment.Server.DTOs
     public class AddAcademicQualificationDto
     {
         public string ApplicationNo { get; set; } = string.Empty;
-        public string AreaOfStudy { get; set; } = string.Empty;
         public string Course { get; set; } = string.Empty;
         public string Institution { get; set; } = string.Empty;
         public string CourseDescription { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Grade { get; set; } = string.Empty;
-        public DateTime Expiry { get; set; }
+        public DateTime? Expiry { get; set; }
     }
 
     public class WorkExperienceDto
