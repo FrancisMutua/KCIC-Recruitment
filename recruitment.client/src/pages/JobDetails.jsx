@@ -95,7 +95,7 @@ const JobDetails = () => {
         const result = await response.json();
         
         if (result.success) {
-            toast.success("Application Submitted Successfully!");
+            toast.success("Your application has been started. Please complete the remaining details to submit it.");
             navigate(`/app/application-details/${result.data}`);
         } else {
              toast.error(result.message || "Submission failed");

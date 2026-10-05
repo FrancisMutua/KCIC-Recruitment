@@ -13,6 +13,8 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@tabler/icons-react": "^3.36.1",
     "@tanstack/react-table": "^8.21.3",
+    "baseline-browser-mapping": "^2.11.27",
+    "caniuse-lite": "^1.0.30001814",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.574.0",

@@ -219,7 +219,6 @@ const ApplicationDetails = () => {
       { key: "altPhoneNumber", label: "Alt Phone Number" },
       { key: "birthDate", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
-      { key: "maritalStatus", label: "Marital Status" },
       { key: "country", label: "Country" },
       { key: "county", label: "County" },
       { key: "subCounty", label: "Sub County" },
@@ -304,7 +303,9 @@ const ApplicationDetails = () => {
         altPhoneNo: String(profile.altPhoneNumber || ""),
         dateOfBirth: profile.birthDate,
         gender: parseInt(profile.gender) || 0,
-        maritalStatus: parseInt(profile.maritalStatus) || 0,
+        maritalStatus: profile.maritalStatus === "" || profile.maritalStatus == null
+          ? MaritalStatusEnum.Single
+          : Number(profile.maritalStatus),
         country: profile.country,
         countyCode: profile.county,
         subCountyCode: profile.subCounty,

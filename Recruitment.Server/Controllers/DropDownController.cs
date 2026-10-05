@@ -66,12 +66,7 @@ namespace Recruitment.Server.Controllers
                     dropDownList = await _dropDownService.GetDropDownLists(odataQuery, request.Code, request.Description, request.Merge);
                 }
 
-                if (dropDownList.Any())
-                {
-                    return Ok(new { success = true, data = dropDownList, message = "Dropdown list retrieved successfully." });
-                }
-
-                return NotFound(new { success = false, message = "No data found for the given parameters." });
+                return Ok(new { success = true, data = dropDownList ?? new List<DropDownOption>(), message = "Dropdown list retrieved successfully." });
             }
             catch (Exception ex)
             {

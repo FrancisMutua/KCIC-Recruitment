@@ -2,11 +2,9 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
-import { GenderOptions, MaritalStatusOptions } from "../../../../constants/enums";
+import { GenderOptions } from "../../../../constants/enums";
 
 const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
-  const [countyFilter, setCountyFilter] = useState("");
-  const [subCountyFilter, setSubCountyFilter] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
 
   const updateField = (name, value) => {
@@ -126,26 +124,17 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           {renderError("gender")}
         </div>
 
-        {/* Marital Status */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-red-500">*</span></label>
-          <select name="maritalStatus" value={profile.maritalStatus} onChange={handleFieldChange} className={inputClass("maritalStatus", "bg-white")} required>
-              <option value="">Select Status</option>
-              {MaritalStatusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-          </select>
-          {renderError("maritalStatus")}
-        </div>
-
         {/* Citizenship */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Citizenship</label>
-          <select name="citizenship" value={profile.citizenship} onChange={handleFieldChange} className={inputClass("citizenship", "bg-white")}>
-              <option value="">Select Citizenship</option>
-              <option value="KE">Kenya</option>
-          </select>
-        </div>
+        <GlobalDropdown
+          source="SOAP"
+          type="Citizenship"
+          label="Citizenship"
+          name="citizenship"
+          value={profile.citizenship}
+          onChange={(val) => updateField("citizenship", val)}
+          placeholder="Select Citizenship"
+          error={fieldErrors.citizenship}
+        />
 
         {/* Ethnicity (SOAP) */}
         <GlobalDropdown
@@ -207,11 +196,11 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           label="County"
           name="county"
           value={profile.county}
-          onChange={(val, opt) => {
-            const countyName = opt?.text || "";
-            // Convert to Title Case to match NAV format (e.g., "BARINGO" -> "Baringo")
-            const titleCased = countyName.charAt(0).toUpperCase() + countyName.slice(1).toLowerCase();
-            setCountyFilter(titleCased);
+          onChange={(val) => {
+            if (val !== profile.county) {
+              updateField("subCounty", "");
+              updateField("wardCode", "");
+            }
             updateField("county", val);
           }}
           required
@@ -222,15 +211,14 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <GlobalDropdown
           source="SOAP"
           type="SubCounty"
-          filters={{ County: countyFilter }}
+          filters={{ County: profile.county || "" }}
           label="Sub County"
           name="subCounty"
           value={profile.subCounty}
-          onChange={(val, opt) => {
-            const scName = opt?.text || "";
-            // Convert to Title Case to match NAV format
-            const titleCased = scName.charAt(0).toUpperCase() + scName.slice(1).toLowerCase();
-            setSubCountyFilter(titleCased);
+          onChange={(val) => {
+            if (val !== profile.subCounty) {
+              updateField("wardCode", "");
+            }
             updateField("subCounty", val);
           }}
           required
@@ -242,7 +230,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <GlobalDropdown
           source="SOAP"
           type="Ward"
-          filters={{ SubCounty: subCountyFilter }}
+          filters={{ SubCounty: profile.subCounty || "" }}
           label="Ward"
           name="wardCode"
           value={profile.wardCode}
@@ -322,7 +310,6 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
               { key: "altPhoneNumber", label: "Alt Phone Number" },
               { key: "birthDate", label: "Date of Birth" },
               { key: "gender", label: "Gender" },
-              { key: "maritalStatus", label: "Marital Status" },
               { key: "ethnicity", label: "Ethnicity" },
               { key: "currentSalary", label: "Current Salary" },
               { key: "expectedSalary", label: "Expected Salary" },

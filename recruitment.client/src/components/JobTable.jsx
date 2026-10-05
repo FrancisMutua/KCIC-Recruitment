@@ -23,7 +23,8 @@ const JobTable = ({ basePath = "/job-details" }) => {
         const response = await fetch("/api/job/advertisedjobs", { signal });
         const result = await response.json();
         if (result.success === false) throw new Error(result.message);
-        setAdvertisedJobs(result.data);
+        setAdvertisedJobs(result.data ?? []);
+        setError("");
       } catch (error) {
         if (error.name !== "AbortError") {
              setError(error.message);

@@ -25,9 +25,10 @@ namespace Recruitment.Server.Controllers
                 
                 _logger.LogInformation($"Raw AdvertisedJobs response from NAV: {result}");
 
-                if (string.IsNullOrEmpty(result))
+                // NAV may return null, empty, or a non-JSON error string when there are no jobs
+                if (string.IsNullOrWhiteSpace(result) || !result.TrimStart().StartsWith('['))
                 {
-                     return Ok(new ApiResponse<List<JobDto>> { Success = true, Data = new List<JobDto>() });
+                    return Ok(new ApiResponse<List<JobDto>> { Success = true, Data = new List<JobDto>() });
                 }
 
                 var options = new JsonSerializerOptions
@@ -38,10 +39,16 @@ namespace Recruitment.Server.Controllers
                 var jsonData = JsonSerializer.Deserialize<List<JobDto>>(result, options) ?? [];
                 return Ok(new ApiResponse<List<JobDto>> { Success = true, Data = jsonData });
             }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "Advertised jobs response was not valid JSON; returning empty list");
+                return Ok(new ApiResponse<List<JobDto>> { Success = true, Data = new List<JobDto>() });
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching advertised jobs");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to load advertised jobs. Please try again later." });
+                // NAV often faults when the advertised jobs filter returns no records
+                _logger.LogWarning(ex, "Error fetching advertised jobs; returning empty list");
+                return Ok(new ApiResponse<List<JobDto>> { Success = true, Data = new List<JobDto>() });
             }
         }
 
