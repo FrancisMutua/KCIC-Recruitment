@@ -95,7 +95,6 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       { key: "description", label: "Qualification / Training Name" },
       { key: "institution", label: "Institution" },
       { key: "year", label: "Year" },
-      { key: "professionalMembership", label: "Professional Membership" },
       { key: "trainingDescription", label: "Training Description" }
     ];
 
@@ -193,7 +192,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Professional Training / Qualification
         </h3>
-        <p className="text-sm text-gray-500 -mt-2">This section is optional. Add any professional certifications, memberships, or training courses.</p>
+        <p className="text-sm text-gray-500 -mt-2">Add professional qualifications and training relevant to the job. Professional memberships are recorded separately under Job Requirements.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="col-span-full md:col-span-2">
@@ -214,7 +213,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Year <span className="text-red-500">*</span>
+              Year Attained <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -246,19 +245,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
             {renderError("institution")}
           </div>
 
-          <div className="col-span-full md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700">Professional Membership <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              name="professionalMembership"
-              value={formData.professionalMembership}
-              onChange={handleChange}
-              placeholder="e.g. ICPAK, PMI, IEEE"
-              className={inputClass("professionalMembership")}
-              required
-            />
-            {renderError("professionalMembership")}
-          </div>
+
 
           <div className="col-span-full">
             <label className="block text-sm font-medium text-gray-700">Training Description <span className="text-red-500">*</span></label>
@@ -302,7 +289,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qualification / Training</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
+
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -327,7 +314,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.description}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{item.institution}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">{item.year}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.professionalMembership || "—"}</td>
+
                     <td className="px-6 py-4 text-center text-sm font-medium">
                       <button
                         onClick={() => handleDelete(item.lineNo)}

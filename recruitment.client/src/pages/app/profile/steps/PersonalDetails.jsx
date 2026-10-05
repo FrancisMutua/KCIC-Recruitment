@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
-import { GenderOptions, MaritalStatusOptions } from "../../../../constants/enums";
+import { GenderOptions } from "../../../../constants/enums";
 
 const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
   const [countyFilter, setCountyFilter] = useState("");
@@ -126,18 +126,6 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           {renderError("gender")}
         </div>
 
-        {/* Marital Status */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-red-500">*</span></label>
-          <select name="maritalStatus" value={profile.maritalStatus} onChange={handleFieldChange} className={inputClass("maritalStatus", "bg-white")} required>
-              <option value="">Select Status</option>
-              {MaritalStatusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-          </select>
-          {renderError("maritalStatus")}
-        </div>
-
         {/* Citizenship */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Citizenship</label>
@@ -204,7 +192,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <GlobalDropdown
           source="SOAP"
           type="County"
-          label="County"
+          label="Current County of Residence"
           name="county"
           value={profile.county}
           onChange={(val, opt) => {
@@ -312,25 +300,19 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             const isMissing = (key) => profile[key] === undefined || profile[key] === null || profile[key].toString().trim() === "";
             const requiredFields = [
               { key: "firstName", label: "First Name" },
-              { key: "middleName", label: "Middle Name" },
               { key: "lastName", label: "Last Name" },
               { key: "idNumber", label: "ID / Passport No" },
               { key: "emailAddress", label: "Email Address" },
               { key: "kraPin", label: "KRA Pin" },
               { key: "initials", label: "Initials" },
               { key: "phoneNumber", label: "Phone Number" },
-              { key: "altPhoneNumber", label: "Alt Phone Number" },
               { key: "birthDate", label: "Date of Birth" },
               { key: "gender", label: "Gender" },
-              { key: "maritalStatus", label: "Marital Status" },
               { key: "ethnicity", label: "Ethnicity" },
-              { key: "currentSalary", label: "Current Salary" },
               { key: "expectedSalary", label: "Expected Salary" },
-              { key: "noticePeriod", label: "Notice Period" },
               { key: "country", label: "Country" },
               { key: "county", label: "County" },
               { key: "subCounty", label: "Sub County" },
-              { key: "wardCode", label: "Ward" },
               { key: "postalAddress", label: "Postal Address" },
               { key: "postalCode", label: "Postal Code" },
             ];

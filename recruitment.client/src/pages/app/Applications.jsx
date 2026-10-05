@@ -71,7 +71,7 @@ const Applications = () => {
                 app.Status === 'Rejected' ? 'bg-red-100 text-red-800' :
                 'bg-blue-100 text-blue-800'
             }`}>
-                {app.Status === 'Open' ? 'Draft' : app.Status}
+                {app.CandidateStatus || (app.Status === 'Open' ? 'Draft' : app.Status)}
             </span>
         );
       }

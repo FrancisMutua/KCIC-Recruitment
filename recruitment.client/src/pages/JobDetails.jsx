@@ -1,13 +1,15 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
 import { IconArrowLeft, IconShare } from "@tabler/icons-react";
 import { useModal } from "../context/ModalContext";
 
 const JobDetails = () => {
   const { jobId } = useParams();
+  const [searchParams] = useSearchParams();
+  const requisitionNo = searchParams.get("requisitionNo") || "";
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +23,7 @@ const JobDetails = () => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/job/jobrequirements?jobId=${jobId}`, {
+        const response = await fetch(`/api/job/jobrequirements?jobId=${encodeURIComponent(jobId)}&requisitionNo=${encodeURIComponent(requisitionNo)}`, {
           signal,
         });
         const result = await response.json();
@@ -46,7 +48,7 @@ const JobDetails = () => {
     return () => {
       controller.abort();
     };
-  }, [jobId]);
+  }, [jobId, requisitionNo]);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -95,7 +97,7 @@ const JobDetails = () => {
         const result = await response.json();
         
         if (result.success) {
-            toast.success("Application Submitted Successfully!");
+            toast.success("Application draft created. Complete the steps to submit.");
             navigate(`/app/application-details/${result.data}`);
         } else {
              toast.error(result.message || "Submission failed");
@@ -165,6 +167,13 @@ const JobDetails = () => {
           </div>
 
           <div className="p-8 space-y-8">
+            <section className="grid sm:grid-cols-2 gap-4 rounded-lg bg-blue-50 p-5">
+              <p><strong>Requisition type:</strong> {jobDetails.jobInfo.requisitionType || 'As advertised'}</p>
+              <p><strong>Duty station:</strong> {jobDetails.jobInfo.dutyStation || 'As advertised'}</p>
+              <p><strong>Basic salary:</strong> {jobDetails.jobInfo.basicSalary ? Number(jobDetails.jobInfo.basicSalary).toLocaleString() : 'As advertised'}</p>
+              <p><strong>Allowances:</strong> {jobDetails.jobInfo.allowances ? Number(jobDetails.jobInfo.allowances).toLocaleString() : 'As advertised'}</p>
+              <p className="sm:col-span-2"><strong>Terms of employment:</strong> {jobDetails.jobInfo.employmentTerms || 'As advertised'}</p>
+            </section>
             {/* Responsibilities */}
             <section>
               <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">

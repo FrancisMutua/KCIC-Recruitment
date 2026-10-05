@@ -8,7 +8,8 @@ import PersonalDetails from "./profile/steps/PersonalDetails";
 import AcademicQualifications from "./profile/steps/AcademicQualifications";
 import WorkExperience from "./profile/steps/WorkExperience";
 import ProfessionalTraining from "./profile/steps/ProfessionalTraining";
-import NextOfKin from "./profile/steps/NextOfKin";
+import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
+import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
 import Attachments from "./profile/steps/Attachments";
 
@@ -60,9 +61,10 @@ const ApplicationDetails = () => {
     "Academic Qualifications",
     "Work Experience",
     "Professional Training",
-    "Next of Kin",
+    "Job Requirements",
     "Referees",
-    "Attachments"
+    "Attachments",
+    "Review and Submit"
   ];
 
   // Helper mappings (reused from ProfileUpdate logic)
@@ -171,7 +173,7 @@ const ApplicationDetails = () => {
             noticePeriod: data.NoticePeriod || "",
           });
           
-          if (data.Status === "Submitted" || data.Status === "Closed") {
+          if (data.Status === "Submitted" || data.Status === "Closed" || data.CandidateStatus === "Withdrawn") {
             setIsSubmitted(true);
           }
         } else {
@@ -210,27 +212,21 @@ const ApplicationDetails = () => {
 
     const requiredFields = [
       { key: "firstName", label: "First Name" },
-      { key: "middleName", label: "Middle Name" },
       { key: "lastName", label: "Last Name" },
       { key: "idNumber", label: "ID / Passport No" },
       { key: "emailAddress", label: "Email Address" },
       { key: "initials", label: "Initials" },
       { key: "phoneNumber", label: "Phone Number" },
-      { key: "altPhoneNumber", label: "Alt Phone Number" },
       { key: "birthDate", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
-      { key: "maritalStatus", label: "Marital Status" },
       { key: "country", label: "Country" },
       { key: "county", label: "County" },
       { key: "subCounty", label: "Sub County" },
-      { key: "wardCode", label: "Ward" },
       { key: "postalAddress", label: "Postal Address" },
       { key: "postalCode", label: "Postal Code" },
       { key: "kraPin", label: "KRA Pin" },
       { key: "ethnicity", label: "Ethnicity" },
-      { key: "currentSalary", label: "Current Salary" },
       { key: "expectedSalary", label: "Expected Salary" },
-      { key: "noticePeriod", label: "Notice Period" }
     ];
 
     const missing = requiredFields.filter((field) => isMissing(field.key));
@@ -426,27 +422,9 @@ const ApplicationDetails = () => {
            />
         </div>
 
-        {isSubmitted && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 text-center space-y-4 mb-6">
-            <div className="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-               <IconCheck size={32} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800">Application Submitted</h2>
-            <p className="text-gray-600 max-w-md mx-auto">
-              This application has already been submitted and is currently being processed. 
-              You can track its progress in the "My Applications" section.
-            </p>
-            <button 
-              onClick={() => navigate("/app/applications")}
-              className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
-            >
-              Go to My Applications
-            </button>
-          </div>
-        )}
+        {isSubmitted && <div className="bg-white rounded-xl shadow-sm p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted /></div>}
 
-        {/* Step Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-8 ${isSubmitted ? 'hidden' : ''}`}>
             {activeStep === 0 && (
                 <PersonalDetails 
                     profile={profile} 
@@ -477,7 +455,7 @@ const ApplicationDetails = () => {
                 />
             )}
             {activeStep === 4 && (
-                <NextOfKin 
+                <RecruitmentRequirements
                     applicationNo={applicationNo}
                     onBack={handleBack} 
                     onNext={handleNext} 
@@ -494,10 +472,12 @@ const ApplicationDetails = () => {
                 <Attachments 
                     applicationNo={applicationNo}
                     onBack={handleBack} 
-                    onSubmit={handleSubmit} 
+                    onNext={handleNext}
                     loading={saving}
                 />
             )}
+            {activeStep === 7 && <ApplicationReview applicationNo={applicationNo} profile={profile} onBack={handleBack} onSubmit={handleSubmit} loading={saving} />}
+
         </div>
       </div>
     </div>
