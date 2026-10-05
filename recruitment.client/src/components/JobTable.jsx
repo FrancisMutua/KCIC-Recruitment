@@ -42,8 +42,8 @@ const JobTable = ({ basePath = "/job-details" }) => {
     };
   }, []);
 
-  const handleShare = (jobId) => {
-    const url = `${window.location.origin}/job-details/${jobId}`;
+  const handleShare = (jobId, requisitionNo) => {
+    const url = `${window.location.origin}/job-details/${encodeURIComponent(jobId)}?requisitionNo=${encodeURIComponent(requisitionNo)}`;
     navigator.clipboard.writeText(url).then(() => {
       toast.success("Job link copied to clipboard!");
     }).catch(err => {
@@ -91,13 +91,13 @@ const JobTable = ({ basePath = "/job-details" }) => {
             <Button 
                 size="sm"
                 className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
-                onClick={() => navigate(`${basePath}/${job.jobId}`)}
+                onClick={() => navigate(`${basePath}/${encodeURIComponent(job.jobId)}?requisitionNo=${encodeURIComponent(job.documentNo)}`)}
             >
                 Details
             </Button>
             <button 
               className="p-1.5 text-brand-navy hover:bg-brand-navy rounded-md transition-colors border border-brand-navy"
-              onClick={() => handleShare(job.jobId)}
+              onClick={() => handleShare(job.jobId, job.documentNo)}
               title="Share Job"
             >
               <IconShare size={16} />

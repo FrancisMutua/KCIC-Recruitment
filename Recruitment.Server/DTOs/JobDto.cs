@@ -13,6 +13,17 @@ namespace Recruitment.Server.DTOs
     }
     public class JobDto
     {
+        public string RequisitionType { get; set; } = string.Empty;
+        public decimal BasicSalary { get; set; }
+        public decimal Allowances { get; set; }
+        public string DutyStation { get; set; } = string.Empty;
+        public string EmploymentTerms { get; set; } = string.Empty;
+        public bool AcademicJob { get; set; }
+        public bool ProfessionalTrainingRequired { get; set; }
+        public System.Text.Json.JsonElement RequiredDocuments { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
+        public System.Text.Json.JsonElement Questions { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
+        public System.Text.Json.JsonElement AllowanceDetails { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
+
         [JsonPropertyName("documentNo")]
         public string DocumentNo { get; set; }
 

@@ -193,7 +193,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <GlobalDropdown
           source="SOAP"
           type="County"
-          label="County"
+          label="Current County of Residence"
           name="county"
           value={profile.county}
           onChange={(val) => {
@@ -300,24 +300,19 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             const isMissing = (key) => profile[key] === undefined || profile[key] === null || profile[key].toString().trim() === "";
             const requiredFields = [
               { key: "firstName", label: "First Name" },
-              { key: "middleName", label: "Middle Name" },
               { key: "lastName", label: "Last Name" },
               { key: "idNumber", label: "ID / Passport No" },
               { key: "emailAddress", label: "Email Address" },
               { key: "kraPin", label: "KRA Pin" },
               { key: "initials", label: "Initials" },
               { key: "phoneNumber", label: "Phone Number" },
-              { key: "altPhoneNumber", label: "Alt Phone Number" },
               { key: "birthDate", label: "Date of Birth" },
               { key: "gender", label: "Gender" },
               { key: "ethnicity", label: "Ethnicity" },
-              { key: "currentSalary", label: "Current Salary" },
               { key: "expectedSalary", label: "Expected Salary" },
-              { key: "noticePeriod", label: "Notice Period" },
               { key: "country", label: "Country" },
               { key: "county", label: "County" },
               { key: "subCounty", label: "Sub County" },
-              { key: "wardCode", label: "Ward" },
               { key: "postalAddress", label: "Postal Address" },
               { key: "postalCode", label: "Postal Code" },
             ];

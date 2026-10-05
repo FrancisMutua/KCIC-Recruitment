@@ -78,6 +78,10 @@ namespace NAVWS
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetApplications_Result> GetApplicationsAsync(NAVWS.GetApplications request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetAreaOfStudy", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.GetAreaOfStudy_Result> GetAreaOfStudyAsync(NAVWS.GetAreaOfStudy request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:GetAttachedDocuments", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.GetAttachedDocuments_Result> GetAttachedDocumentsAsync(NAVWS.GetAttachedDocuments request);
@@ -211,6 +215,10 @@ namespace NAVWS
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:IsProfileUpdated", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         System.Threading.Tasks.Task<NAVWS.IsProfileUpdated_Result> IsProfileUpdatedAsync(NAVWS.IsProfileUpdated request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:ManageRecruitmentApplication", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Threading.Tasks.Task<NAVWS.ManageRecruitmentApplication_Result> ManageRecruitmentApplicationAsync(NAVWS.ManageRecruitmentApplication request);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:microsoft-dynamics-schemas/codeunit/Recruitment:RemoveAcademicQualification", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
@@ -372,7 +380,7 @@ namespace NAVWS
         {
         }
         
-        public AddAcademicQualification(string applicationNo, string course, string institution, System.DateTime startDate, System.DateTime endDate, string grade, System.DateTime? expiry, string courseDescription)
+        public AddAcademicQualification(string applicationNo, string course, string institution, System.DateTime startDate, System.DateTime endDate, string grade, System.DateTime expiry, string courseDescription)
         {
             this.applicationNo = applicationNo;
             this.course = course;
@@ -380,7 +388,7 @@ namespace NAVWS
             this.startDate = startDate;
             this.endDate = endDate;
             this.grade = grade;
-            this.expiry = expiry ?? System.DateTime.MinValue;
+            this.expiry = expiry;
             this.courseDescription = courseDescription;
         }
     }
@@ -892,6 +900,38 @@ namespace NAVWS
         }
         
         public GetApplications_Result(string return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetAreaOfStudy", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetAreaOfStudy
+    {
+        
+        public GetAreaOfStudy()
+        {
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="GetAreaOfStudy_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class GetAreaOfStudy_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public GetAreaOfStudy_Result()
+        {
+        }
+        
+        public GetAreaOfStudy_Result(string return_value)
         {
             this.return_value = return_value;
         }
@@ -1860,13 +1900,16 @@ namespace NAVWS
         public string course;
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=7)]
+        public string areaOfStudy;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=8)]
         public string courseDescription;
         
         public InsertAcademicQualification()
         {
         }
         
-        public InsertAcademicQualification(string applicationNo, string code, string institution, System.DateTime startDate, System.DateTime endDate, string grade, string course, string courseDescription)
+        public InsertAcademicQualification(string applicationNo, string code, string institution, System.DateTime startDate, System.DateTime endDate, string grade, string course, string areaOfStudy, string courseDescription)
         {
             this.applicationNo = applicationNo;
             this.code = code;
@@ -1875,6 +1918,7 @@ namespace NAVWS
             this.endDate = endDate;
             this.grade = grade;
             this.course = course;
+            this.areaOfStudy = areaOfStudy;
             this.courseDescription = courseDescription;
         }
     }
@@ -2309,6 +2353,54 @@ namespace NAVWS
         }
         
         public IsProfileUpdated_Result(bool return_value)
+        {
+            this.return_value = return_value;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="ManageRecruitmentApplication", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class ManageRecruitmentApplication
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string applicationNo;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=1)]
+        public string actionName;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=2)]
+        public string payload;
+        
+        public ManageRecruitmentApplication()
+        {
+        }
+        
+        public ManageRecruitmentApplication(string applicationNo, string actionName, string payload)
+        {
+            this.applicationNo = applicationNo;
+            this.actionName = actionName;
+            this.payload = payload;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="ManageRecruitmentApplication_Result", WrapperNamespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", IsWrapped=true)]
+    public partial class ManageRecruitmentApplication_Result
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:microsoft-dynamics-schemas/codeunit/Recruitment", Order=0)]
+        public string return_value;
+        
+        public ManageRecruitmentApplication_Result()
+        {
+        }
+        
+        public ManageRecruitmentApplication_Result(string return_value)
         {
             this.return_value = return_value;
         }
@@ -3021,7 +3113,7 @@ namespace NAVWS
             return base.Channel.AddAcademicQualificationAsync(request);
         }
         
-        public System.Threading.Tasks.Task<NAVWS.AddAcademicQualification_Result> AddAcademicQualificationAsync(string applicationNo, string course, string institution, System.DateTime startDate, System.DateTime endDate, string grade, System.DateTime? expiry, string courseDescription)
+        public System.Threading.Tasks.Task<NAVWS.AddAcademicQualification_Result> AddAcademicQualificationAsync(string applicationNo, string course, string institution, System.DateTime startDate, System.DateTime endDate, string grade, System.DateTime expiry, string courseDescription)
         {
             NAVWS.AddAcademicQualification inValue = new NAVWS.AddAcademicQualification();
             inValue.applicationNo = applicationNo;
@@ -3030,7 +3122,7 @@ namespace NAVWS
             inValue.startDate = startDate;
             inValue.endDate = endDate;
             inValue.grade = grade;
-            inValue.expiry = expiry ?? System.DateTime.MinValue;
+            inValue.expiry = expiry;
             inValue.courseDescription = courseDescription;
             return ((NAVWS.Recruitment_Port)(this)).AddAcademicQualificationAsync(inValue);
         }
@@ -3197,6 +3289,18 @@ namespace NAVWS
             NAVWS.GetApplications inValue = new NAVWS.GetApplications();
             inValue.username = username;
             return ((NAVWS.Recruitment_Port)(this)).GetApplicationsAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.GetAreaOfStudy_Result> NAVWS.Recruitment_Port.GetAreaOfStudyAsync(NAVWS.GetAreaOfStudy request)
+        {
+            return base.Channel.GetAreaOfStudyAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.GetAreaOfStudy_Result> GetAreaOfStudyAsync()
+        {
+            NAVWS.GetAreaOfStudy inValue = new NAVWS.GetAreaOfStudy();
+            return ((NAVWS.Recruitment_Port)(this)).GetAreaOfStudyAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -3514,7 +3618,7 @@ namespace NAVWS
             return base.Channel.InsertAcademicQualificationAsync(request);
         }
         
-        public System.Threading.Tasks.Task<NAVWS.InsertAcademicQualification_Result> InsertAcademicQualificationAsync(string applicationNo, string code, string institution, System.DateTime startDate, System.DateTime endDate, string grade, string course, string courseDescription)
+        public System.Threading.Tasks.Task<NAVWS.InsertAcademicQualification_Result> InsertAcademicQualificationAsync(string applicationNo, string code, string institution, System.DateTime startDate, System.DateTime endDate, string grade, string course, string areaOfStudy, string courseDescription)
         {
             NAVWS.InsertAcademicQualification inValue = new NAVWS.InsertAcademicQualification();
             inValue.applicationNo = applicationNo;
@@ -3524,6 +3628,7 @@ namespace NAVWS
             inValue.endDate = endDate;
             inValue.grade = grade;
             inValue.course = course;
+            inValue.areaOfStudy = areaOfStudy;
             inValue.courseDescription = courseDescription;
             return ((NAVWS.Recruitment_Port)(this)).InsertAcademicQualificationAsync(inValue);
         }
@@ -3663,6 +3768,21 @@ namespace NAVWS
             NAVWS.IsProfileUpdated inValue = new NAVWS.IsProfileUpdated();
             inValue.emailAddress = emailAddress;
             return ((NAVWS.Recruitment_Port)(this)).IsProfileUpdatedAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<NAVWS.ManageRecruitmentApplication_Result> NAVWS.Recruitment_Port.ManageRecruitmentApplicationAsync(NAVWS.ManageRecruitmentApplication request)
+        {
+            return base.Channel.ManageRecruitmentApplicationAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<NAVWS.ManageRecruitmentApplication_Result> ManageRecruitmentApplicationAsync(string applicationNo, string actionName, string payload)
+        {
+            NAVWS.ManageRecruitmentApplication inValue = new NAVWS.ManageRecruitmentApplication();
+            inValue.applicationNo = applicationNo;
+            inValue.actionName = actionName;
+            inValue.payload = payload;
+            return ((NAVWS.Recruitment_Port)(this)).ManageRecruitmentApplicationAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -3918,7 +4038,7 @@ namespace NAVWS
         {
             if ((endpointConfiguration == EndpointConfiguration.Recruitment_Port))
             {
-                return new System.ServiceModel.EndpointAddress("http://154.12.228.158:9047/KCA/WS/KCAU/Codeunit/Recruitment");
+                return new System.ServiceModel.EndpointAddress("http://192.168.200.130:7047/KCAU/WS/KCAU/Codeunit/Recruitment");
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }

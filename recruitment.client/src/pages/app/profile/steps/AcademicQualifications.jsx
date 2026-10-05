@@ -14,7 +14,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     endDate: "",
     grade: "",
     courseDescription: "",
-    expiry: ""
+    areaOfStudy: ""
   });
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -129,13 +129,6 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       toast.error("End Date must be after Start Date");
       return;
     }
-    const expiry = formData.expiry ? new Date(formData.expiry) : null;
-    if (expiry && expiry <= today) {
-      setFieldErrors({ expiry: "Certificate Expiry Date must be a future date." });
-      toast.error("Certificate Expiry Date must be a future date");
-      return;
-    }
-
     try {
       setLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
@@ -148,7 +141,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         endDate: formData.endDate,
         grade: formData.grade,
         courseDescription: formData.courseDescription || "",
-        expiry: formData.expiry || null
+        areaOfStudy: formData.areaOfStudy || ""
       };
 
       const response = await fetch("/api/job/add-academic-qualification", {
@@ -170,7 +163,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           endDate: "",
           grade: "",
           courseDescription: "",
-          expiry: ""
+          areaOfStudy: ""
         });
         setFieldErrors({});
         refreshQualifications();
@@ -259,11 +252,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             {renderError("grade")}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
-            <input type="date" name="expiry" value={formData.expiry} onChange={handleChange} className={inputClass("expiry")} />
-            {renderError("expiry")}
-          </div>
+          <GlobalDropdown source="SOAP" type="Area of Study" label="Area of Study" name="areaOfStudy" value={formData.areaOfStudy} onChange={(value) => updateField("areaOfStudy", value)} />
 
 
           <div>

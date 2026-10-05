@@ -91,12 +91,6 @@ const Profile = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1 capitalize">Marital Status</label>
-                <div className="p-3 bg-slate-50 rounded-lg text-slate-700 border border-slate-100">
-                  {getMaritalStatusLabel(getValue(profile?.MaritalStatus)) || <span className="italic text-slate-400">No data</span>}
-                </div>
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1 capitalize">Gender</label>
                 <div className="p-3 bg-slate-50 rounded-lg text-slate-700 border border-slate-100">
                   {getGenderLabel(getValue(profile?.Gender)) || <span className="italic text-slate-400">No data</span>}

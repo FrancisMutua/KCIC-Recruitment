@@ -2,6 +2,13 @@ using System;
 
 namespace Recruitment.Server.DTOs
 {
+    public class RecruitmentActionDto
+    {
+        public string ApplicationNo { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty;
+        public System.Text.Json.JsonElement Data { get; set; }
+    }
+
     public class PersonalDetailsUpdateDto
     {
         public string ApplicationNo { get; set; } = string.Empty;
@@ -42,6 +49,7 @@ namespace Recruitment.Server.DTOs
         public string StartDate { get; set; } = string.Empty;
         public string EndDate { get; set; } = string.Empty;
         public string CourseDescription  { get; set; } = string.Empty;
+        public string AreaOfStudy { get; set; } = string.Empty;
         public string Grade { get; set; } = string.Empty;
         public string Expiry { get; set; } = string.Empty;
     }
@@ -52,6 +60,7 @@ namespace Recruitment.Server.DTOs
         public string Course { get; set; } = string.Empty;
         public string Institution { get; set; } = string.Empty;
         public string CourseDescription { get; set; } = string.Empty;
+        public string AreaOfStudy { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Grade { get; set; } = string.Empty;
@@ -108,6 +117,8 @@ namespace Recruitment.Server.DTOs
 
     public class AttachmentDto
     {
+        public string DocumentType { get; set; } = string.Empty;
+        public string RequirementCode { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
         public string FileExtension { get; set; } = string.Empty;
         public DateTime DocumentDate { get; set; }
@@ -119,8 +130,9 @@ namespace Recruitment.Server.DTOs
         public string ApplicationNo { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
         public string Attachment { get; set; } = string.Empty; // Base64
-        public int TableId { get; set; } = 52178445;
-        public int DocType { get; set; } // 0: Academic, 1: Work, 2: App, 3: Other
+        public int TableId { get; set; } = 52178435;
+        public int DocType { get; set; } // Uses the recruitment document categories.
+        public string RequirementCode { get; set; } = string.Empty;
     }
 
     public class ProfessionalTrainingDto

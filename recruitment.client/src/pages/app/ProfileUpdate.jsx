@@ -348,24 +348,7 @@ const ProfileUpdate = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status <span className="text-red-500">*</span></label>
-               <select
-                name="maritalStatus"
-                value={profile.maritalStatus}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
-                required
-              >
-                  <option value="">Select Marital Status</option>
-                  <option value="0">Single</option>
-                  <option value="1">Married</option>
-                  <option value="2">Separated</option>
-                  <option value="3">Divorced</option>
-                  <option value="4">Widow(er)</option>
-                  <option value="5">Other</option>
-              </select>
-            </div>
+
             
              <div>
               <GlobalDropdown

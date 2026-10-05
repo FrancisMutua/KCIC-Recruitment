@@ -23,3 +23,10 @@ Simple setup instructions for running the solution in Visual Studio.
 5. Press **F5** (or click **Run/Debug**).
 
 Starting `Recruitment.Server` also starts the React client through the ASP.NET SPA proxy. You do not need to start `recruitment.client` separately.
+
+## Business Central compatibility
+
+Deploy the Recruitment codeunit exposing `GetApplicationInstructions`,
+`ManageRecruitmentApplication`, and `AcceptOffer` before deploying the requirements,
+document-management, and offer-response screens. When regenerating the NAVWS SOAP
+reference, verify these operations are included.

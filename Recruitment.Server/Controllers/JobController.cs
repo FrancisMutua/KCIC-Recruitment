@@ -53,7 +53,7 @@ namespace Recruitment.Server.Controllers
         }
 
         [HttpGet("jobrequirements")]
-        public async Task<IActionResult> JobRequirements(string jobId)
+        public async Task<IActionResult> JobRequirements(string jobId, string? requisitionNo = null)
         {
             try
             {
@@ -88,7 +88,11 @@ namespace Recruitment.Server.Controllers
                     ? JsonSerializer.Deserialize<List<JobDto>>(jobsResult, options)
                     : [];
 
-                var jobInfo = jobs?.FirstOrDefault(j => j.JobId == jobId);
+                var jobInfo = jobs?.FirstOrDefault(j => j.JobId == jobId && (string.IsNullOrEmpty(requisitionNo) || j.DocumentNo == requisitionNo));
+                if (jobInfo == null) return NotFound(new ApiResponse<object> { Success = false, Message = "This advert is no longer available." });
+                var advertRequirements = await _webportals.GetMinimumRequirementsAsync(jobInfo.DocumentNo);
+                if (!string.IsNullOrWhiteSpace(advertRequirements.return_value))
+                    requirements = JsonSerializer.Deserialize<List<JobRequirementDto>>(advertRequirements.return_value, options);
 
                 var jobDetails = new JobDetailsDto
                 {
@@ -116,7 +120,7 @@ namespace Recruitment.Server.Controllers
                 var response = await _webportals.SubmitJobApplicationAsync(request.Username, request.RequisitionNo, request.JobId);
                 var result = response.return_value;
 
-                return Ok(new ApiResponse<string> { Success = true, Message = "Application Submitted Successfully", Data = result });
+                return Ok(new ApiResponse<string> { Success = true, Message = "Application draft created", Data = result });
             }
             catch (Exception ex)
             {
@@ -271,25 +275,8 @@ namespace Recruitment.Server.Controllers
                 if (!await IsApplicationEditableAsync(request.ApplicationNo))
                     return BadRequest(new ApiResponse<object> { Success = false, Message = "Modifications are not allowed for submitted applications." });
 
-                var response = await _webportals.AddAcademicQualificationAsync(
-                    request.ApplicationNo,
-                    request.Course,
-                    request.Institution,
-                    request.StartDate,
-                    request.EndDate,
-                    request.Grade,
-                    request.Expiry,
-                    request.CourseDescription
-                );
-
-                if (response.return_value)
-                {
-                    return Ok(new ApiResponse<bool> { Success = true, Message = "Academic qualification added successfully", Data = true });
-                }
-                else
-                {
-                    return BadRequest(new ApiResponse<bool> { Success = false, Message = "Failed to add academic qualification in NAV", Data = false });
-                }
+                await _webportals.ManageRecruitmentApplicationAsync(request.ApplicationNo, "add-qualification", JsonSerializer.Serialize(request));
+                return Ok(new ApiResponse<bool> { Success = true, Message = "Academic qualification added successfully", Data = true });
             }
             catch (Exception ex)
             {
@@ -655,24 +642,14 @@ namespace Recruitment.Server.Controllers
         {
             try
             {
-                if (request == null) return BadRequest("Invalid request");
-                if (!await IsApplicationEditableAsync(request.ApplicationNo))
-                    return BadRequest(new ApiResponse<object> { Success = false, Message = "Modifications are not allowed for submitted applications." });
-
-                await _webportals.UploadDocumentAsync(
-                    request.ApplicationNo,
-                    request.FileName,
-                    request.Attachment,
-                    request.TableId,
-                    request.DocType
-                );
-
+                if (!await OwnsApplicationAsync(request.ApplicationNo)) return Forbid();
+                await _webportals.ManageRecruitmentApplicationAsync(request.ApplicationNo, "upload-document", JsonSerializer.Serialize(request));
                 return Ok(new ApiResponse<bool> { Success = true, Message = "Document uploaded successfully", Data = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error uploading document for {ApplicationNo}", request?.ApplicationNo);
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to upload document. Please ensure the file is valid." });
+                _logger.LogError(ex, "Error uploading recruitment document");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message });
             }
         }
 
@@ -701,7 +678,7 @@ namespace Recruitment.Server.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(applicationNo)) return BadRequest("Application No is required");
+                if (!await OwnsApplicationAsync(applicationNo)) return Forbid();
 
                 await _webportals.SubmitApplicationAsync(applicationNo);
 
@@ -710,8 +687,65 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error submitting final application {ApplicationNo}", applicationNo);
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to submit application. Please ensure all steps are completed." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message });
             }
+        }
+
+        [HttpGet("application-context")]
+        public async Task<IActionResult> RecruitmentContext(string applicationNo)
+        {
+            try
+            {
+                if (!await OwnsApplicationAsync(applicationNo)) return Forbid();
+                var response = await _webportals.GetApplicationInstructionsAsync(applicationNo);
+                return Ok(new ApiResponse<object> { Success = true, Data = JsonSerializer.Deserialize<object>(response.return_value) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading recruitment context");
+                return BadRequest(new ApiResponse<object> { Success = false, Message = "Could not load application requirements. Please try again." });
+            }
+        }
+
+        [HttpPost("application-action")]
+        public async Task<IActionResult> RecruitmentAction([FromBody] RecruitmentActionDto request)
+        {
+            try
+            {
+                if (!await OwnsApplicationAsync(request.ApplicationNo)) return Forbid();
+                var response = await _webportals.ManageRecruitmentApplicationAsync(request.ApplicationNo, request.Action, request.Data.ValueKind == JsonValueKind.Undefined ? "{}" : request.Data.GetRawText());
+                return Ok(new ApiResponse<object> { Success = true, Data = JsonSerializer.Deserialize<object>(response.return_value) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing recruitment action {Action}", request.Action);
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message });
+            }
+        }
+
+        [HttpPost("accept-offer")]
+        public async Task<IActionResult> AcceptOffer(string applicationNo)
+        {
+            try
+            {
+                if (!await OwnsApplicationAsync(applicationNo)) return Forbid();
+                var response = await _webportals.AcceptOfferAsync(applicationNo);
+                return Ok(new ApiResponse<bool> { Success = response.return_value, Data = response.return_value });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message });
+            }
+        }
+
+        private async Task<bool> OwnsApplicationAsync(string applicationNo)
+        {
+            var username = User.Claims.FirstOrDefault(x => x.Type == "username")?.Value;
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(applicationNo)) return false;
+            var response = await _webportals.GetJobApplicationDetailsAsync(applicationNo);
+            if (string.IsNullOrWhiteSpace(response.return_value)) return false;
+            using var document = JsonDocument.Parse(response.return_value);
+            return document.RootElement.TryGetProperty("Email", out var email) && string.Equals(email.GetString(), username, StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task<bool> IsApplicationEditableAsync(string applicationNo)
