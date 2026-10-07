@@ -13,9 +13,17 @@ namespace Recruitment.Server.DTOs
     }
     public class JobDto
     {
+        public string Purpose { get; set; } = string.Empty;
+        public string JobGrade { get; set; } = string.Empty;
+        public string DepartmentCode { get; set; } = string.Empty;
+        public string DepartmentName { get; set; } = string.Empty;
+        public string ReportingTo { get; set; } = string.Empty;
+        public string ReportingToName { get; set; } = string.Empty;
+        public string JobSpecialization { get; set; } = string.Empty;
+        public string TermsOfService { get; set; } = string.Empty;
         public string RequisitionType { get; set; } = string.Empty;
-        public decimal BasicSalary { get; set; }
-        public decimal Allowances { get; set; }
+        public decimal? BasicSalary { get; set; }
+        public decimal? Allowances { get; set; }
         public string DutyStation { get; set; } = string.Empty;
         public string EmploymentTerms { get; set; } = string.Empty;
         public bool AcademicJob { get; set; }
@@ -49,8 +57,16 @@ namespace Recruitment.Server.DTOs
         public string Status { get; set; }
     }
 
+    public class JobAdvertDto : JobDto
+    {
+        public string Requirements { get; set; } = string.Empty;
+        public string Responsibilities { get; set; } = string.Empty;
+        public string Competencies { get; set; } = string.Empty;
+    }
+
     public class JobDetailsDto
     {
+        public List<JobRequirementDto> Competencies { get; set; } = new();
         [JsonPropertyName("requirements")]
         public List<JobRequirementDto> Requirements { get; set; } = new();
 

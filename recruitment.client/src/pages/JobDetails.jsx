@@ -5,6 +5,8 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
 import { IconArrowLeft, IconShare } from "@tabler/icons-react";
 import { useModal } from "../context/ModalContext";
+import JobAdvertContent from "../components/JobAdvertContent";
+import { fixText } from "../lib/jobAdvert";
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -151,7 +153,7 @@ const JobDetails = () => {
             <div className="flex justify-between items-start md:items-center">
               <div>
                 <h2 className="text-lg md:text-2xl font-bold mb-2">
-                  Job Requirements & Responsibilities
+                  {fixText(jobDetails.jobInfo.jobTitle) || "Job Requirements & Responsibilities"}
                 </h2>
                 <p className="opacity-90">Job ID: {jobId}</p>
               </div>
@@ -167,61 +169,7 @@ const JobDetails = () => {
           </div>
 
           <div className="p-8 space-y-8">
-            <section className="grid sm:grid-cols-2 gap-4 rounded-lg bg-blue-50 p-5">
-              <p><strong>Requisition type:</strong> {jobDetails.jobInfo.requisitionType || 'As advertised'}</p>
-              <p><strong>Duty station:</strong> {jobDetails.jobInfo.dutyStation || 'As advertised'}</p>
-              <p><strong>Basic salary:</strong> {jobDetails.jobInfo.basicSalary ? Number(jobDetails.jobInfo.basicSalary).toLocaleString() : 'As advertised'}</p>
-              <p><strong>Allowances:</strong> {jobDetails.jobInfo.allowances ? Number(jobDetails.jobInfo.allowances).toLocaleString() : 'As advertised'}</p>
-              <p className="sm:col-span-2"><strong>Terms of employment:</strong> {jobDetails.jobInfo.employmentTerms || 'As advertised'}</p>
-            </section>
-            {/* Responsibilities */}
-            <section>
-              <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="w-2 h-8 bg-brand-navy rounded-sm"></span>
-                Key Responsibilities
-              </h3>
-              <div className="bg-gray-50 rounded-lg p-6">
-                 {jobDetails.responsibilities && jobDetails.responsibilities.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-2 text-gray-700">
-                      {jobDetails.responsibilities.map((resp, index) => (
-                        <li key={index} className="leading-relaxed pl-2">
-                          <span className="-ml-2">{resp.description}</span>
-                        </li>
-                      ))}
-                    </ul>
-                 ) : (
-                    <p className="text-gray-500 italic">No responsibilities listed.</p>
-                 )}
-              </div>
-            </section>
-
-            <div className="w-full h-px bg-gray-200"></div>
-
-            {/* Requirements */}
-            <section>
-              <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="w-2 h-8 bg-brand-navy rounded-sm"></span>
-                Requirements
-              </h3>
-              <div className="bg-gray-50 rounded-lg p-6">
-                {jobDetails.requirements && jobDetails.requirements.length > 0 ? (
-                  <ul className="list-disc list-inside space-y-2 text-gray-700">
-                    {jobDetails.requirements.map((req, index) => (
-                      <li key={index} className="leading-relaxed pl-2">
-                         <span className="-ml-2">
-                            {req.code !== 'ACADEMIC' && req.code !== 'PROFESSIONAL' ? (
-                                <strong>{req.code}: </strong>
-                            ) : null}
-                            {req.description}
-                         </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                   <p className="text-gray-500 italic">No requirements listed.</p>
-                )}
-              </div>
-            </section>
+            <JobAdvertContent details={jobDetails} />
           </div>
           
            <div className="bg-gray-50 px-8 py-6 border-t border-gray-200 flex justify-end">

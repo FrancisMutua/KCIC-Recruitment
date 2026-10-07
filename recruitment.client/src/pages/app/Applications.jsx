@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { MoonLoader } from "react-spinners";
 import { DataTable } from "../../components/ui/DataTable";
 import { Button } from "../../components/ui/button";
+import { fixText } from "../../lib/jobAdvert";
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const Applications = () => {
     {
       header: "Job Title",
       accessorKey: "JobTitle",
-      cell: ({ row }) => row.original.JobTitle || "-",
+      cell: ({ row }) => fixText(row.original.JobTitle) || "-",
     },
     {
       header: "Date Applied",

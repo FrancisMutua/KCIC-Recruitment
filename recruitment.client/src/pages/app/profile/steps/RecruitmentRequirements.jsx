@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { applicationAction, applicationContext } from '../../../../lib/recruitmentApi';
+import { fixText } from '../../../../lib/jobAdvert';
+import { validateResponses } from '../../../../lib/applicationValidation';
 
 const inputStyle = 'w-full border border-gray-300 rounded-md p-2 text-gray-800';
 
@@ -48,6 +50,7 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
   const [consent, setConsent] = useState({ HasGraduated: false, DataConsent: false, ReferenceConsent: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   useEffect(() => {
     let active = true;
     applicationContext(applicationNo).then((data) => {
@@ -60,6 +63,12 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
   }, [applicationNo]);
   const update = (index, values) => setAnswers((rows) => rows.map((row, i) => i === index ? { ...row, ...values } : row));
   const next = async () => {
+    const errors = validateResponses(answers, consent, context);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) {
+      toast.error('Please complete the highlighted required fields.');
+      return;
+    }
     setBusy(true);
     try {
       await applicationAction(applicationNo, 'save-responses', { ...consent, Responses: answers.map(({ Kind, LineNo, Has, Answer }) => ({ Kind, LineNo, Has, Answer })) });
@@ -72,16 +81,19 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
     <h3 className="text-xl font-semibold">Job requirements and supporting information</h3>
     <label className="flex items-center gap-2"><input type="checkbox" checked={consent.HasGraduated} onChange={(e) => setConsent({ ...consent, HasGraduated: e.target.checked })} />I have graduated at the time of this application.</label>
     {answers.map((answer, index) => <div key={`${answer.Kind}-${answer.LineNo}`} className="space-y-2">
-      <label className="block font-medium" htmlFor={`response-${index}`}>{answer.Description}{answer.Required ? ' *' : ''}</label>
+      <label className="block font-medium" htmlFor={`response-${index}`}>{fixText(answer.Description)}{answer.Required ? ' *' : ''}</label>
       {answer.Kind === 'requirement' ? <select id={`response-${index}`} className={inputStyle} value={answer.Has ?? 0} onChange={(e) => update(index, { Has: Number(e.target.value) })}><option value={0}>Select an answer</option><option value={2}>Yes</option><option value={1}>No</option></select>
         : answer.ResponseType === 'Yes/No' ? <select id={`response-${index}`} className={inputStyle} value={answer.Answer || ''} onChange={(e) => update(index, { Answer: e.target.value })}><option value="">Select an answer</option><option>Yes</option><option>No</option></select>
           : <input id={`response-${index}`} className={inputStyle} type={answer.ResponseType === 'Number' ? 'number' : 'text'} value={answer.Answer || ''} onChange={(e) => update(index, { Answer: e.target.value })} />}
+      {fieldErrors[`${answer.Kind}-${answer.LineNo}`] && <p role="alert" className="text-sm text-red-700">{fieldErrors[`${answer.Kind}-${answer.LineNo}`]}</p>}
     </div>)}
     <Evidence applicationNo={applicationNo} title="Professional memberships" kind="membership" rows={context.Memberships || []} onUpdated={setContext} />
     {context.AcademicJob && <><Evidence applicationNo={applicationNo} title="Publications" kind="publication" rows={context.Publications || []} onUpdated={setContext} /><Evidence applicationNo={applicationNo} title="Students supervised" kind="supervision" rows={context.Supervisions || []} onUpdated={setContext} /></>}
     <section className="space-y-4 border-t pt-6"><h3 className="text-lg font-semibold">Consent</h3>
-      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.DataConsent} onChange={(e) => setConsent({ ...consent, DataConsent: e.target.checked })} /><span>{context.DataConsentText}</span></label>
-      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.ReferenceConsent} onChange={(e) => setConsent({ ...consent, ReferenceConsent: e.target.checked })} /><span>{context.ReferenceConsentText}</span></label>
+      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.DataConsent} onChange={(e) => setConsent({ ...consent, DataConsent: e.target.checked })} /><span>{context.DataConsentText}{context.DataConsentRequired ? ' *' : ''}</span></label>
+      {fieldErrors.DataConsent && <p role="alert" className="text-sm text-red-700">{fieldErrors.DataConsent}</p>}
+      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.ReferenceConsent} onChange={(e) => setConsent({ ...consent, ReferenceConsent: e.target.checked })} /><span>{context.ReferenceConsentText}{context.ReferenceConsentRequired ? ' *' : ''}</span></label>
+      {fieldErrors.ReferenceConsent && <p role="alert" className="text-sm text-red-700">{fieldErrors.ReferenceConsent}</p>}
     </section>
     <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded bg-gray-200">Previous</button><button type="button" onClick={next} disabled={busy} className="btn-primary px-5 py-2 rounded">{busy ? 'Saving…' : 'Save and continue'}</button></div>
   </div>;

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
+import { validateDateRange } from "../../../../lib/dateValidation";
+import { isBlank } from "../../../../lib/applicationValidation";
 
 const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   const [qualifications, setQualifications] = useState([]);
@@ -20,6 +22,12 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
   const updateField = (name, value) => {
     setFieldErrors((prev) => {
+      if (name === "startDate" || name === "endDate") {
+        const next = { ...prev };
+        delete next.startDate;
+        delete next.endDate;
+        return { ...next, ...validateDateRange({ ...formData, [name]: value }, { allowFutureEnd: true, required: false }) };
+      }
       if (!prev[name]) return prev;
       const next = { ...prev };
       delete next[name];
@@ -32,7 +40,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p id={`qualification-${name}-error`} role="alert" className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshQualifications = async () => {
@@ -103,30 +111,17 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       { key: "grade", label: "Grade" }
     ];
 
-    const missing = requiredFields.filter(f => !formData[f.key]);
-    if (missing.length > 0) {
-      setFieldErrors(missing.reduce((errors, field) => {
+    const missing = requiredFields.filter(f => isBlank(formData[f.key]));
+    const errors = {
+      ...missing.reduce((errors, field) => {
         errors[field.key] = `${field.label} is required.`;
         return errors;
-      }, {}));
-      toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
-      return;
-    }
-
-    // Date Validation
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = new Date(formData.startDate);
-    const end = new Date(formData.endDate);
-
-    if (start > today) {
-      setFieldErrors({ startDate: "Start Date cannot be in the future." });
-      toast.error("Start Date cannot be in the future");
-      return;
-    }
-    if (end <= start) {
-      setFieldErrors({ endDate: "End Date must be after Start Date." });
-      toast.error("End Date must be after Start Date");
+      }, {}),
+      ...validateDateRange(formData, { allowFutureEnd: true })
+    };
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please correct the highlighted fields.");
       return;
     }
     try {
@@ -236,13 +231,13 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-red-500">*</span></label>
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className={inputClass("startDate")} required />
+            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} aria-invalid={!!fieldErrors.startDate} aria-describedby={fieldErrors.startDate ? "qualification-startDate-error" : undefined} className={inputClass("startDate")} required />
             {renderError("startDate")}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">End Date <span className="text-red-500">*</span></label>
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} className={inputClass("endDate")} required />
+            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} aria-invalid={!!fieldErrors.endDate} aria-describedby={fieldErrors.endDate ? "qualification-endDate-error" : undefined} className={inputClass("endDate")} required />
             {renderError("endDate")}
           </div>
 
@@ -252,7 +247,10 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             {renderError("grade")}
           </div>
 
-          <GlobalDropdown source="SOAP" type="Area of Study" label="Area of Study" name="areaOfStudy" value={formData.areaOfStudy} onChange={(value) => updateField("areaOfStudy", value)} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Area of Study</label>
+            <input type="text" name="areaOfStudy" value={formData.areaOfStudy} onChange={handleChange} className={inputClass("areaOfStudy")} />
+          </div>
 
 
           <div>

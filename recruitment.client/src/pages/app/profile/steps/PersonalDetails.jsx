@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
 import { GenderOptions } from "../../../../constants/enums";
+import { validatePersonalDetails } from "../../../../lib/applicationValidation";
 
 const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
   const [fieldErrors, setFieldErrors] = useState({});
@@ -45,7 +46,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         </div>
         {/* Middle Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
+           <label className="block text-sm font-medium text-gray-700">Middle Name</label>
            <input type="text" name="middleName" value={profile.middleName} onChange={handleFieldChange} className={inputClass("middleName", "bg-gray-100")} readOnly />
            {renderError("middleName")}
         </div>
@@ -77,14 +78,14 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
             {renderError("emailAddress")}
         </div>
 
-        {/* Initials */}
+        {/* The SOAP profile contract retains the legacy initials field name. */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Initials <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Salutation <span className="text-red-500">*</span></label>
           <select name="initials" value={profile.initials} onChange={handleFieldChange} className={inputClass("initials", "bg-white")} required>
-              <option value="">Select Initials</option>
+              <option value="">Select Salutation</option>
               <option value="0">Mr.</option>
-              <option value="1">Miss.</option>
-              <option value="2">Mrs.</option>
+              <option value="1">Mrs.</option>
+              <option value="2">Miss.</option>
               <option value="3">Dr.</option>
               <option value="4">Prof.</option>
           </select>
@@ -297,50 +298,11 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         <button
           onClick={(e) => {
             e.preventDefault();
-            const isMissing = (key) => profile[key] === undefined || profile[key] === null || profile[key].toString().trim() === "";
-            const requiredFields = [
-              { key: "firstName", label: "First Name" },
-              { key: "lastName", label: "Last Name" },
-              { key: "idNumber", label: "ID / Passport No" },
-              { key: "emailAddress", label: "Email Address" },
-              { key: "kraPin", label: "KRA Pin" },
-              { key: "initials", label: "Initials" },
-              { key: "phoneNumber", label: "Phone Number" },
-              { key: "birthDate", label: "Date of Birth" },
-              { key: "gender", label: "Gender" },
-              { key: "ethnicity", label: "Ethnicity" },
-              { key: "expectedSalary", label: "Expected Salary" },
-              { key: "country", label: "Country" },
-              { key: "county", label: "County" },
-              { key: "subCounty", label: "Sub County" },
-              { key: "postalAddress", label: "Postal Address" },
-              { key: "postalCode", label: "Postal Code" },
-            ];
-
-            const missing = requiredFields.filter(field => isMissing(field.key));
-
-            if (missing.length > 0) {
-              const nextErrors = missing.reduce((errors, field) => {
-                errors[field.key] = `${field.label} is required.`;
-                return errors;
-              }, {});
-              setFieldErrors(nextErrors);
-              toast.error(`Please fill in the following required fields: ${missing.map(f => f.label).join(", ")}`);
+            const errors = validatePersonalDetails(profile);
+            setFieldErrors(errors);
+            if (Object.keys(errors).length) {
+              toast.error("Please complete the highlighted required fields.");
               return;
-            }
-            
-            // Disability specific validation
-            if (profile.disability === "true" || profile.disability === true) {
-                if (!profile.disabilityStatus) {
-                    setFieldErrors({ disabilityStatus: "Disability Type is required." });
-                    toast.error("Please select a Disability Type");
-                    return;
-                }
-                if (!profile.pwdNumber) {
-                    setFieldErrors({ pwdNumber: "PWD Number is required." });
-                    toast.error("Please enter PWD Number");
-                    return;
-                }
             }
 
             setFieldErrors({});

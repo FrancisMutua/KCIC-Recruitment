@@ -3,11 +3,14 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../components/ui/GlobalDropdown";
+import { validatePersonalDetails, personalRequiredFields, salutationValue } from "../../lib/applicationValidation";
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
   const [profile, setProfile] = useState({
     emailAddress: "",
     firstName: "",
@@ -55,15 +58,7 @@ const ProfileUpdate = () => {
 
   // Helper to map Initials text to value
   const getInitialsValue = (initials) => {
-      if(!initials) return "";
-      const map = {
-          "Mr.": "0", "Mr": "0",
-          "Miss.": "1", "Miss": "1",
-          "Mrs.": "2", "Mrs": "2",
-          "Dr.": "3", "Dr": "3", // Assuming Dr might exist, if not purely strict
-          "Prof.": "4", "Prof": "4"
-      };
-      return map[initials] || map[initials.trim()] || "";
+      return salutationValue(initials);
   };
 
   // Helper to format NAV date (MM/DD/YY) to Input Date (YYYY-MM-DD)
@@ -85,7 +80,7 @@ const ProfileUpdate = () => {
               // Assume 20xx
               y = "20" + y; 
           }
-          return `${y}-${m}-${d}`;
+          return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
       }
       return dateStr;
   };
@@ -124,7 +119,7 @@ const ProfileUpdate = () => {
             // Map Dropdowns if text is returned
             maritalStatus: getMaritalStatusValue(d.MaritalStatus) || prev.maritalStatus,
             gender: getGenderValue(d.Gender) || prev.gender,
-            initials: getInitialsValue(d.Initials) || prev.initials,
+            initials: getInitialsValue(d.Salutation ?? d.Initials) || prev.initials,
             
             // Other fields not in the snippet but strictly mapped
             country: d.Country || prev.country,
@@ -148,26 +143,20 @@ const ProfileUpdate = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate Age (18+)
-    if (profile.birthDate) {
-      const dob = new Date(profile.birthDate);
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const m = today.getMonth() - dob.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
-      }
-
-      if (age < 18) {
-        toast.error("You must be at least 18 years old to update your profile.");
-        return;
-      }
+    const required = personalRequiredFields.filter(([key]) =>
+      ["initials", "phoneNumber", "birthDate", "gender", "country", "postalAddress", "postalCode"].includes(key));
+    const errors = validatePersonalDetails(profile, new Date(), required);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) {
+      toast.error("Please correct the highlighted fields.");
+      return;
     }
 
     setLoading(true);
@@ -224,7 +213,7 @@ const ProfileUpdate = () => {
       <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100">
 
 
-        <form onSubmit={handleSubmit} className="p-8">
+        <form onSubmit={handleSubmit} className="p-8" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Personal Details */}
             <div className="col-span-full border-b pb-2 mb-2">
@@ -293,7 +282,7 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Initials <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Salutation <span className="text-red-500">*</span></label>
               <select
                 name="initials"
                 value={profile.initials}
@@ -301,11 +290,14 @@ const ProfileUpdate = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none bg-white"
                 required
               >
-                  <option value="">Select Initials</option>
+                  <option value="">Select Salutation</option>
                   <option value="0">Mr.</option>
-                  <option value="1">Miss.</option>
-                  <option value="2">Mrs.</option>
+                  <option value="1">Mrs.</option>
+                  <option value="2">Miss.</option>
+                  <option value="3">Dr.</option>
+                  <option value="4">Prof.</option>
               </select>
+              {renderError("initials")}
             </div>
 
             <div>
@@ -318,6 +310,7 @@ const ProfileUpdate = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
+              {renderError("phoneNumber")}
             </div>
             
              <div>
@@ -331,6 +324,7 @@ const ProfileUpdate = () => {
                 required
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
               />
+              {renderError("birthDate")}
             </div>
 
             <div>
@@ -346,6 +340,7 @@ const ProfileUpdate = () => {
                   <option value="1">Female</option>
                   <option value="2">Male</option>
               </select>
+              {renderError("gender")}
             </div>
 
 
@@ -361,6 +356,7 @@ const ProfileUpdate = () => {
                 value={profile.country}
                 onChange={(val) => handleChange({ target: { name: "country", value: val } })}
                 required
+                error={fieldErrors.country}
               />
             </div>
 
@@ -379,6 +375,7 @@ const ProfileUpdate = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
+              {renderError("postalAddress")}
             </div>
 
             <div>
@@ -391,6 +388,7 @@ const ProfileUpdate = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                 required
               />
+              {renderError("postalCode")}
             </div>
             
 
@@ -424,6 +422,7 @@ const ProfileUpdate = () => {
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-navy focus:outline-none"
                     required
                 />
+                {renderError("pwdNumber")}
                 </div>
                 <div>
                 <GlobalDropdown
@@ -434,6 +433,7 @@ const ProfileUpdate = () => {
                     value={profile.disabilityStatus}
                     onChange={(val) => handleChange({ target: { name: "disabilityStatus", value: val } })}
                     required
+                    error={fieldErrors.disabilityStatus}
                 />
                 </div>
                 </>

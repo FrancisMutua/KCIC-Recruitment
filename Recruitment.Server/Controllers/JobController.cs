@@ -67,20 +67,6 @@ namespace Recruitment.Server.Controllers
                     PropertyNameCaseInsensitive = true
                 };
 
-                // Fetch Requirements
-                var reqResponse = await _webportals.GetJobRequirementsAsync(jobId);
-                var reqResult = reqResponse.return_value;
-                var requirements = !string.IsNullOrEmpty(reqResult) 
-                    ? JsonSerializer.Deserialize<List<JobRequirementDto>>(reqResult, options) 
-                    : new List<JobRequirementDto>();
-
-                // Fetch Responsibilities
-                var respResponse = await _webportals.GetJobResponsibilitiesAsync(jobId);
-                var respResult = respResponse.return_value;
-                var responsibilities = !string.IsNullOrEmpty(respResult) 
-                    ? JsonSerializer.Deserialize<List<JobResponsibilityDto>>(respResult, options) 
-                    : new List<JobResponsibilityDto>();
-
                 // Fetch Job Info (to get Requisition No / Document No)
                 var jobsResponse = await _webportals.GetAdvertisedJobsAsync();
                 var jobsResult = jobsResponse.return_value;
@@ -90,15 +76,37 @@ namespace Recruitment.Server.Controllers
 
                 var jobInfo = jobs?.FirstOrDefault(j => j.JobId == jobId && (string.IsNullOrEmpty(requisitionNo) || j.DocumentNo == requisitionNo));
                 if (jobInfo == null) return NotFound(new ApiResponse<object> { Success = false, Message = "This advert is no longer available." });
+                var advertResponse = await _webportals.GetJobAdvertDetailsAsync(jobInfo.DocumentNo);
+                if (string.IsNullOrWhiteSpace(advertResponse.return_value))
+                    return NotFound(new ApiResponse<object> { Success = false, Message = "This advert is no longer available." });
+                var advert = JsonSerializer.Deserialize<JobAdvertDto>(advertResponse.return_value, options)
+                    ?? throw new JsonException("Business Central returned an empty advert.");
+                advert.Vacancy = jobInfo.Vacancy;
+                advert.DocumentDate = jobInfo.DocumentDate;
+                advert.Status = jobInfo.Status;
+                var requirements = string.IsNullOrWhiteSpace(advert.Requirements)
+                    ? new List<JobRequirementDto>()
+                    : JsonSerializer.Deserialize<List<JobRequirementDto>>(advert.Requirements, options) ?? new();
+                var responsibilities = string.IsNullOrWhiteSpace(advert.Responsibilities)
+                    ? new List<JobResponsibilityDto>()
+                    : JsonSerializer.Deserialize<List<JobResponsibilityDto>>(advert.Responsibilities, options) ?? new();
+                var competencies = string.IsNullOrWhiteSpace(advert.Competencies)
+                    ? new List<JobRequirementDto>()
+                    : JsonSerializer.Deserialize<List<JobRequirementDto>>(advert.Competencies, options) ?? new();
                 var advertRequirements = await _webportals.GetMinimumRequirementsAsync(jobInfo.DocumentNo);
                 if (!string.IsNullOrWhiteSpace(advertRequirements.return_value))
-                    requirements = JsonSerializer.Deserialize<List<JobRequirementDto>>(advertRequirements.return_value, options);
+                {
+                    var minimumRequirements = JsonSerializer.Deserialize<List<JobRequirementDto>>(advertRequirements.return_value, options);
+                    if (minimumRequirements?.Any(row => !string.IsNullOrWhiteSpace(row.Description)) == true)
+                        requirements = minimumRequirements;
+                }
 
                 var jobDetails = new JobDetailsDto
                 {
                     Requirements = requirements ?? new List<JobRequirementDto>(),
                     Responsibilities = responsibilities ?? new List<JobResponsibilityDto>(),
-                    JobInfo = jobInfo ?? new JobDto()
+                    Competencies = competencies,
+                    JobInfo = advert
                 };
 
                 return Ok(new ApiResponse<JobDetailsDto> { Success = true, Data = jobDetails });

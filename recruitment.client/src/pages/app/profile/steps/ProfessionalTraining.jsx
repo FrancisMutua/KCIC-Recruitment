@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 
@@ -98,7 +99,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       { key: "trainingDescription", label: "Training Description" }
     ];
 
-    const missing = requiredFields.filter(f => !formData[f.key]);
+    const missing = requiredFields.filter(f => isBlank(formData[f.key]));
     if (missing.length > 0) {
       setFieldErrors(missing.reduce((errors, field) => {
         errors[field.key] = `${field.label} is required.`;
@@ -108,8 +109,8 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       return;
     }
 
-    const yearNum = parseInt(formData.year, 10);
-    if (isNaN(yearNum) || yearNum < 1900 || yearNum > new Date().getFullYear()) {
+    const yearNum = Number(formData.year);
+    if (!Number.isInteger(yearNum) || yearNum < 1900 || yearNum > new Date().getFullYear()) {
       setFieldErrors({ year: "Please enter a valid year." });
       toast.error("Please enter a valid year");
       return;

@@ -5,6 +5,7 @@ import { IconShare, IconEye } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 import { DataTable } from "./ui/DataTable";
 import { Button } from "./ui/button";
+import { fixText } from "../lib/jobAdvert";
 
 const JobTable = ({ basePath = "/job-details" }) => {
   const [advertisedJobs, setAdvertisedJobs] = useState([]);
@@ -68,6 +69,7 @@ const JobTable = ({ basePath = "/job-details" }) => {
     {
       header: "Job Title",
       accessorKey: "jobTitle",
+      cell: ({ row }) => fixText(row.original.jobTitle) || "-",
     },
     {
       header: "Vacancy",

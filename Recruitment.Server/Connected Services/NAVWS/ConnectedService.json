@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "ExtendedData": {
     "inputs": [
-      "http://154.12.228.158:9047/KCA/WS/KCAU/Codeunit/Recruitment"
+      "http://192.168.200.130:7047/KCAU/WS/KCAU/Codeunit/Recruitment"
     ],
     "collectionTypes": [
       "System.Array",

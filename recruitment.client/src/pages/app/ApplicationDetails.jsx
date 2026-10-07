@@ -5,9 +5,12 @@ import Stepper from "../../components/Stepper";
 import { GenderEnum, MaritalStatusEnum } from "../../constants/enums";
 import { toast } from "react-toastify";
 import PersonalDetails from "./profile/steps/PersonalDetails";
+import { validatePersonalDetails as getPersonalDetailsErrors, salutationValue, salutationText } from "../../lib/applicationValidation";
 import AcademicQualifications from "./profile/steps/AcademicQualifications";
 import WorkExperience from "./profile/steps/WorkExperience";
 import ProfessionalTraining from "./profile/steps/ProfessionalTraining";
+// Relative / Next of Kin is intentionally excluded from the application flow.
+// import NextOfKin from "./profile/steps/NextOfKin";
 import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
 import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
@@ -106,9 +109,7 @@ const ApplicationDetails = () => {
   }
 
   const getInitialsValue = (initials) => {
-      if(!initials) return "";
-      const map = { "Mr.": "0", "Mr": "0", "Miss.": "1", "Miss": "1", "Mrs.": "2", "Mrs": "2", "Dr.": "3", "Dr": "3", "Prof.": "4", "Prof": "4" };
-      return map[initials] || map[initials.trim()] || "";
+      return salutationValue(initials);
   };
 
   const formatNavDate = (dateStr) => {
@@ -119,7 +120,7 @@ const ApplicationDetails = () => {
           const m = parts[0], d = parts[1];
           let y = parts[2];
           if (y.length === 2) y = "20" + y; 
-          return `${y}-${m}-${d}`;
+          return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
       }
       return dateStr;
   };
@@ -168,8 +169,8 @@ const ApplicationDetails = () => {
             citizenship: data.Citizenship || "",
             kraPin: data.KRApin || "",
             ethnicity: data.Ethnicity || "",
-            currentSalary: data.CurrentSalary || "",
-            expectedSalary: data.ExpectedSalary || "",
+            currentSalary: data.CurrentSalary ?? "",
+            expectedSalary: data.ExpectedSalary ?? "",
             noticePeriod: data.NoticePeriod || "",
           });
           
@@ -205,45 +206,10 @@ const ApplicationDetails = () => {
   };
 
   const validatePersonalDetails = () => {
-    const isMissing = (key) =>
-      profile[key] === undefined ||
-      profile[key] === null ||
-      profile[key].toString().trim() === "";
-
-    const requiredFields = [
-      { key: "firstName", label: "First Name" },
-      { key: "lastName", label: "Last Name" },
-      { key: "idNumber", label: "ID / Passport No" },
-      { key: "emailAddress", label: "Email Address" },
-      { key: "initials", label: "Initials" },
-      { key: "phoneNumber", label: "Phone Number" },
-      { key: "birthDate", label: "Date of Birth" },
-      { key: "gender", label: "Gender" },
-      { key: "country", label: "Country" },
-      { key: "county", label: "County" },
-      { key: "subCounty", label: "Sub County" },
-      { key: "postalAddress", label: "Postal Address" },
-      { key: "postalCode", label: "Postal Code" },
-      { key: "kraPin", label: "KRA Pin" },
-      { key: "ethnicity", label: "Ethnicity" },
-      { key: "expectedSalary", label: "Expected Salary" },
-    ];
-
-    const missing = requiredFields.filter((field) => isMissing(field.key));
-    if (missing.length > 0) {
-      toast.error(`Please fill in the following required fields: ${missing.map((f) => f.label).join(", ")}`);
+    const errors = getPersonalDetailsErrors(profile);
+    if (Object.keys(errors).length) {
+      toast.error(Object.values(errors).join(" "));
       return false;
-    }
-
-    if (profile.disability === "true" || profile.disability === true) {
-      if (isMissing("disabilityStatus")) {
-        toast.error("Please select a Disability Type");
-        return false;
-      }
-      if (isMissing("pwdNumber")) {
-        toast.error("Please enter PWD Number");
-        return false;
-      }
     }
 
     return true;
@@ -260,28 +226,6 @@ const ApplicationDetails = () => {
 
     if (!validatePersonalDetails()) {
       return;
-    }
-
-    // Date of Birth Validation
-    if (profile.birthDate) {
-      const dob = new Date(profile.birthDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (dob >= today) {
-        toast.error("Date of Birth must be in the past");
-        return;
-      }
-
-      const ageInYears = (today - dob) / (1000 * 60 * 60 * 24 * 365.25);
-      if (ageInYears < 16) {
-        toast.error("Applicant must be at least 16 years old");
-        return;
-      }
-      if (ageInYears > 100) {
-        toast.error("Please enter a valid Date of Birth");
-        return;
-      }
     }
 
     try {
@@ -345,8 +289,7 @@ const ApplicationDetails = () => {
   };
 
   const getInitialsText = (value) => {
-    const map = { "0": "Mr.", "1": "Miss.", "2": "Mrs.", "3": "Dr.", "4": "Prof." };
-    return map[value] || "";
+    return salutationText(value);
   };
 
   const handleNext = () => {

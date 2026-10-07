@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
+import { validateDateRange } from "../../../../lib/dateValidation";
+import { isBlank } from "../../../../lib/applicationValidation";
 
 const WorkExperience = ({ applicationNo, onBack, onNext }) => {
   const [experiences, setExperiences] = useState([]);
@@ -18,6 +20,12 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
 
   const updateField = (name, value) => {
     setFieldErrors((prev) => {
+      if (name === "startDate" || name === "endDate" || name === "isCurrent") {
+        const next = { ...prev };
+        delete next.startDate;
+        delete next.endDate;
+        return { ...next, ...validateDateRange({ ...formData, [name]: value }, { required: false }) };
+      }
       if (!prev[name]) return prev;
       const next = { ...prev };
       delete next[name];
@@ -30,7 +38,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p id={`experience-${name}-error`} role="alert" className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshExperiences = async () => {
@@ -100,38 +108,18 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       ...(!formData.isCurrent ? [{ key: "endDate", label: "End Date" }] : [])
     ];
 
-    const missing = requiredFields.filter(f => !formData[f.key]);
-    if (missing.length > 0) {
-      setFieldErrors(missing.reduce((errors, field) => {
+    const missing = requiredFields.filter(f => isBlank(formData[f.key]));
+    const errors = {
+      ...missing.reduce((errors, field) => {
         errors[field.key] = `${field.label} is required.`;
         return errors;
-      }, {}));
-      toast.error(`Please fill in: ${missing.map(f => f.label).join(", ")}`);
+      }, {}),
+      ...validateDateRange(formData)
+    };
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please correct the highlighted fields.");
       return;
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = new Date(formData.startDate);
-
-    if (start > today) {
-      setFieldErrors({ startDate: "Start Date cannot be in the future." });
-      toast.error("Start Date cannot be in the future");
-      return;
-    }
-
-    if (!formData.isCurrent && formData.endDate) {
-      const end = new Date(formData.endDate);
-      if (end <= start) {
-        setFieldErrors({ endDate: "End Date must be after Start Date." });
-        toast.error("End Date must be after Start Date");
-        return;
-      }
-      if (end > today) {
-        setFieldErrors({ endDate: "End Date cannot be in the future for a past position." });
-        toast.error("End Date cannot be in the future for a past position. Check 'Currently Working Here' if this is your current job.");
-        return;
-      }
     }
 
     try {
@@ -246,6 +234,8 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
             <input 
               type="date" 
               name="startDate" 
+              aria-invalid={!!fieldErrors.startDate}
+              aria-describedby={fieldErrors.startDate ? "experience-startDate-error" : undefined}
               value={formData.startDate} 
               onChange={handleChange} 
               className={inputClass("startDate")} 
@@ -260,6 +250,8 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
               <input 
                 type="date" 
                 name="endDate" 
+                aria-invalid={!!fieldErrors.endDate}
+                aria-describedby={fieldErrors.endDate ? "experience-endDate-error" : undefined}
                 value={formData.endDate} 
                 onChange={handleChange} 
                 className={inputClass("endDate")} 

@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
+import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2, IconDeviceFloppy } from "@tabler/icons-react";
+import { applicationContext } from "../../../../lib/recruitmentApi";
+import { getRefereeSubmissionStatus } from "../../../../lib/refereeValidation";
 
 const Referees = ({ applicationNo, onBack, onNext }) => {
   const [refereesList, setRefereesList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [minimumReferees, setMinimumReferees] = useState(undefined);
   const [formData, setFormData] = useState({
     firstName: "",
-    middleName: "",
     lastName: "",
     phoneNo: "",
     email: "",
@@ -37,12 +40,17 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
   const refreshReferees = async () => {
     try {
       setFetching(true);
+      setMinimumReferees(undefined);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
-        headers: { "Authorization": `Bearer ${user.accessToken}` }
-      });
+      const [response, context] = await Promise.all([
+        fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+          headers: { "Authorization": `Bearer ${user.accessToken}` }
+        }),
+        applicationContext(applicationNo)
+      ]);
       const result = await response.json();
       if (result.success) {
+        setMinimumReferees(context.MinimumReferees);
         const filtered = (result.data || []).filter(item => item.type === "Referees");
         setRefereesList(filtered);
       } else {
@@ -62,13 +70,18 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
     const load = async () => {
       try {
         setFetching(true);
+        setMinimumReferees(undefined);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
-          headers: { "Authorization": `Bearer ${user.accessToken}` }
-        });
+        const [response, context] = await Promise.all([
+          fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+            headers: { "Authorization": `Bearer ${user.accessToken}` }
+          }),
+          applicationContext(applicationNo)
+        ]);
         const result = await response.json();
         if (cancelled) return;
         if (result.success) {
+          setMinimumReferees(context.MinimumReferees);
           const filtered = (result.data || []).filter(item => item.type === "Referees");
           setRefereesList(filtered);
         } else {
@@ -91,13 +104,14 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
     updateField(name, value);
   };
 
+  const refereeStatus = getRefereeSubmissionStatus(minimumReferees, refereesList.length);
+
   const handleAddReferee = async (e) => {
     e.preventDefault();
 
     // Required Fields Validation
     const requiredFields = [
       { key: "firstName", label: "First Name" },
-      { key: "middleName", label: "Middle Name" },
       { key: "lastName", label: "Last Name" },
       { key: "phoneNo", label: "Phone Number" },
       { key: "email", label: "Email Address" },
@@ -105,7 +119,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       { key: "institution", label: "Institution" }
     ];
 
-    const missing = requiredFields.filter(f => !formData[f.key]);
+    const missing = requiredFields.filter(f => isBlank(formData[f.key]));
     if (missing.length > 0) {
       setFieldErrors(missing.reduce((errors, field) => {
         errors[field.key] = `${field.label} is required.`;
@@ -123,7 +137,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         type: "referee",
         applicationNo,
         firstName: formData.firstName,
-        middleName: formData.middleName,
+        middleName: "",
         lastName: formData.lastName,
         phoneNo: parseInt(formData.phoneNo) || 0,
         email: formData.email,
@@ -145,7 +159,6 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         toast.success("Referee added successfully");
         setFormData({
             firstName: "",
-            middleName: "",
             lastName: "",
             phoneNo: "",
             email: "",
@@ -196,6 +209,9 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-navy" /> Add Referee
         </h3>
+        {!fetching && <p className="text-sm text-gray-600">
+          {refereeStatus.blocked ? refereeStatus.message : `Minimum requirement met: ${refereesList.length} referees added (minimum ${minimumReferees}).`}
+        </p>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
@@ -209,20 +225,6 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
               required 
             />
             {renderError("firstName")}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
-            <input 
-              type="text" 
-              name="middleName" 
-              value={formData.middleName} 
-              onChange={handleChange} 
-              placeholder="Enter middle name"
-              className={inputClass("middleName")} 
-              required
-            />
-            {renderError("middleName")}
           </div>
 
           <div>
@@ -343,7 +345,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
                 refereesList.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {item.firstName} {item.middleName} {item.lastName}
+                        {item.firstName} {item.lastName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         <div>{item.phoneNo}</div>
@@ -381,7 +383,8 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
           onClick={() => {
             onNext();
           }}
-          className="flex items-center gap-2 btn-primary px-8 py-2 rounded-md hover:opacity-90 transition-colors shadow-sm"
+          disabled={fetching || loading || refereeStatus.blocked}
+          className="flex items-center gap-2 btn-primary px-8 py-2 rounded-md hover:opacity-90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>

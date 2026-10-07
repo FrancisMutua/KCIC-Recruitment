@@ -9,4 +9,5 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
 OUTPUT_DIR="${1:-/Users/simongideon/Documents/confAlt/Live}"
 
-dotnet publish "$SCRIPT_DIR/Recruitment.Server/Recruitment.Server.csproj" -c Release -o "$OUTPUT_DIR"
+dotnet publish "$SCRIPT_DIR/Recruitment.Server/Recruitment.Server.csproj" \
+  -c Release -p:PublishProfile=Live -o "$OUTPUT_DIR"
