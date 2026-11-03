@@ -33,7 +33,7 @@ yarn-error.log*
 *.xml
 *.log
 DisplayLayer/
-Recruitment.sln.DotSettings.user
+TelPosta-Recruitment.sln.DotSettings.user
 
 # Rider / JetBrains
 .idea/
@@ -59,8 +59,8 @@ full_build_output.txt
 *.file
 
 # Backend environment-specific settings
-Recruitment.Server/Properties/PublishProfiles/*
-!Recruitment.Server/Properties/PublishProfiles/Live.pubxml
+TelPosta-Recruitment.Server/Properties/PublishProfiles/*
+!TelPosta-Recruitment.Server/Properties/PublishProfiles/Live.pubxml
 
 # Client build logs / local artifacts
-recruitment.client/build_output.txt
+telposta-recruitment.client/build_output.txt

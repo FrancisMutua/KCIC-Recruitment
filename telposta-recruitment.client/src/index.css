@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+@layer components {
+  .table-header {
+    @apply border border-gray-200 p-4 uppercase text-sm text-left font-semibold text-gray-900;
+  }
+
+  .table-body {
+    @apply border border-gray-300 p-4 text-gray-500;
+  }
+
+  .table-row-custom {
+    @apply cursor-pointer even:bg-gray-100 hover:bg-gray-200/70;
+  }
+
+  /* Primary button — gradient from brand navy */
+  .btn-primary {
+    background: linear-gradient(135deg, #2e3175 0%, #1c1e4a 100%);
+    color: #ffffff;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(46, 49, 117, 0.4);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Secondary button — solid brand green (600 for AA contrast with white text) */
+  .btn-secondary {
+    background-color: #2b7a40;
+    color: #ffffff;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(43, 122, 64, 0.4);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Global Primary Gradient Background */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #2e3175 0%, #1c1e4a 100%);
+    background-attachment: fixed;
+  }
+}
+
+
+input {
+  border-radius: 0.375rem !important;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

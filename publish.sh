@@ -1,7 +1,7 @@
 #!/bin/zsh
-# Publishes Recruitment.Server (including the recruitment.client SPA build) to the Live folder.
+# Publishes TelPosta-Recruitment.Server (including the telposta-recruitment.client SPA build) to the Live folder.
 # Exists because Rider's built-in "Publish to Folder" wizard does not reliably build the
-# recruitment.client.esproj (Microsoft.VisualStudio.JavaScript.Sdk) project reference on macOS,
+# telposta-recruitment.client.esproj (Microsoft.VisualStudio.JavaScript.Sdk) project reference on macOS,
 # which results in an empty output folder. Running dotnet publish directly does not have this problem.
 
 set -e
@@ -9,5 +9,5 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
 OUTPUT_DIR="${1:-/Users/simongideon/Documents/confAlt/Live}"
 
-dotnet publish "$SCRIPT_DIR/Recruitment.Server/Recruitment.Server.csproj" \
+dotnet publish "$SCRIPT_DIR/TelPosta-Recruitment.Server/TelPosta-Recruitment.Server.csproj" \
   -c Release -p:PublishProfile=Live -o "$OUTPUT_DIR"
