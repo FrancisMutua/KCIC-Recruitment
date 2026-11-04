@@ -33,7 +33,7 @@ yarn-error.log*
 *.xml
 *.log
 DisplayLayer/
-TelPosta-Recruitment.sln.DotSettings.user
+Garissa-Recruitment.sln.DotSettings.user
 
 # Rider / JetBrains
 .idea/
@@ -59,8 +59,11 @@ full_build_output.txt
 *.file
 
 # Backend environment-specific settings
-TelPosta-Recruitment.Server/Properties/PublishProfiles/*
-!TelPosta-Recruitment.Server/Properties/PublishProfiles/Live.pubxml
+Garissa-Recruitment.Server/Properties/PublishProfiles/*
+!Garissa-Recruitment.Server/Properties/PublishProfiles/Live.pubxml
 
 # Client build logs / local artifacts
-telposta-recruitment.client/build_output.txt
+garissa-recruitment.client/build_output.txt
+
+# Debug output from the JS project build on macOS (backslash in the folder name)
+garissa-recruitment.client/obj\\*
