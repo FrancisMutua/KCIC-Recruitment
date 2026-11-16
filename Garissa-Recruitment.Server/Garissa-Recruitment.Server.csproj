@@ -24,9 +24,4 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Http" Version="8.*" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="8.*" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="8.*" />
-  </ItemGroup>
 </Project>

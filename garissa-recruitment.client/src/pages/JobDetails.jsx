@@ -66,8 +66,7 @@ const JobDetails = () => {
 
   const handleApply = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
-    const userProfile = JSON.parse(localStorage.getItem("userProfile"));
-    
+
     if (!user || !user.accessToken) {
       openLogin();
     } else {
@@ -79,10 +78,7 @@ const JobDetails = () => {
 
         setSubmitting(true);
         
-        const username = userProfile?.EmailAddress || userProfile?.emailAddress || user?.emailAddress || "";
-
         const payload = {
-            username: username, 
             jobId: jobId,
             requisitionNo: jobDetails.jobInfo.documentNo
         };
@@ -99,7 +95,7 @@ const JobDetails = () => {
         const result = await response.json();
         
         if (result.success) {
-            toast.success("Your application has been started. Please complete the remaining details to submit it.");
+            toast.success("Your application is open. Complete each step and submit it before the advert closes.");
             navigate(`/app/application-details/${result.data}`);
         } else {
              toast.error(result.message || "Submission failed");

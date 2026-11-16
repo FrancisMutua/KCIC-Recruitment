@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
-import { IconPlus, IconTrash, IconLoader2, IconDeviceFloppy } from "@tabler/icons-react";
-import { applicationContext } from "../../../../lib/recruitmentApi";
+import { IconPlus, IconLoader2, IconDeviceFloppy } from "@tabler/icons-react";
+import { applicationContext, PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { getRefereeSubmissionStatus } from "../../../../lib/refereeValidation";
 
 const Referees = ({ applicationNo, onBack, onNext }) => {
@@ -43,7 +43,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       setMinimumReferees(undefined);
       const user = JSON.parse(localStorage.getItem("user"));
       const [response, context] = await Promise.all([
-        fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+        fetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         }),
         applicationContext(applicationNo)
@@ -51,7 +51,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       const result = await response.json();
       if (result.success) {
         setMinimumReferees(context.MinimumReferees);
-        const filtered = (result.data || []).filter(item => item.type === "Referees");
+        const filtered = result.data || [];
         setRefereesList(filtered);
       } else {
         toast.error(result.message || "Failed to fetch referees");
@@ -73,7 +73,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         setMinimumReferees(undefined);
         const user = JSON.parse(localStorage.getItem("user"));
         const [response, context] = await Promise.all([
-          fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+          fetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
             headers: { "Authorization": `Bearer ${user.accessToken}` }
           }),
           applicationContext(applicationNo)
@@ -82,7 +82,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         if (cancelled) return;
         if (result.success) {
           setMinimumReferees(context.MinimumReferees);
-          const filtered = (result.data || []).filter(item => item.type === "Referees");
+          const filtered = result.data || [];
           setRefereesList(filtered);
         } else {
           toast.error(result.message || "Failed to fetch referees");
@@ -129,23 +129,29 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       return;
     }
 
+    const fullName = `${formData.firstName.trim()}  ${formData.lastName.trim()}`.toLowerCase();
+    if (refereesList.some((item) => (item.names || "").toLowerCase() === fullName)) {
+      toast.error("This referee is already on your application.");
+      return;
+    }
+    if (!window.confirm(`Add ${formData.firstName} ${formData.lastName} as a referee? Referees cannot be removed later.`)) return;
+
     try {
       setLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
       
       const payload = {
-        type: "referee",
         applicationNo,
         firstName: formData.firstName,
         middleName: "",
         lastName: formData.lastName,
-        phoneNo: parseInt(formData.phoneNo) || 0,
+        phoneNo: String(formData.phoneNo).trim(),
         email: formData.email,
         relationship: formData.relationship,
         institution: formData.institution
       };
 
-      const response = await fetch("/api/job/add-relationship", {
+      const response = await fetch("/api/job/add-referee", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -178,30 +184,6 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
-
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-relationship?id=${id}&applicationNo=${applicationNo}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${user.accessToken}`
-        }
-      });
-      const result = await response.json();
-      if (result.success) {
-        toast.success("Record deleted");
-        refreshReferees();
-      } else {
-        toast.error(result.message || result.Message || "Failed to delete record");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error deleting record");
-    }
-  };
-
   return (
     <div className="space-y-8">
       {/* Form Section */}
@@ -212,6 +194,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         {!fetching && <p className="text-sm text-gray-600">
           {refereeStatus.blocked ? refereeStatus.message : `Minimum requirement met: ${refereesList.length} referees added (minimum ${minimumReferees}).`}
         </p>}
+        <p className="text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
@@ -244,7 +227,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
             <input 
-              type="number" 
+              type="tel" 
               name="phoneNo" 
               value={formData.phoneNo} 
               onChange={handleChange} 
@@ -323,13 +306,12 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization / Institution</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
-                   <td colSpan="4" className="px-6 py-10 text-center">
+                   <td colSpan="3" className="px-6 py-10 text-center">
                       <div className="flex justify-center items-center gap-2 text-gray-500">
                          <IconLoader2 className="animate-spin" /> Fetching records...
                       </div>
@@ -337,15 +319,15 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
                 </tr>
               ) : refereesList.length === 0 ? (
                 <tr>
-                   <td colSpan="4" className="px-6 py-10 text-center text-gray-500 italic">
+                   <td colSpan="3" className="px-6 py-10 text-center text-gray-500 italic">
                       No referees added yet.
                    </td>
                 </tr>
               ) : (
                 refereesList.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.names} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {item.firstName} {item.lastName}
+                        {item.names}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         <div>{item.phoneNo}</div>
@@ -353,15 +335,6 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {item.institution}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button 
-                        onClick={() => handleDelete(item.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
-                        title="Delete"
-                      >
-                        <IconTrash size={18} />
-                      </button>
                     </td>
                   </tr>
                 ))

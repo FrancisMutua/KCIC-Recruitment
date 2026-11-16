@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
-import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
+import { IconPlus, IconLoader2 } from "@tabler/icons-react";
+import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 
 const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   const [trainingList, setTrainingList] = useState([]);
@@ -10,9 +11,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   const [formData, setFormData] = useState({
     description: "",
     institution: "",
-    year: "",
-    professionalMembership: "",
-    trainingDescription: ""
+    year: ""
   });
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -37,7 +36,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/professional-training?applicationNo=${applicationNo}`, {
+      const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await response.json();
@@ -61,7 +60,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/professional-training?applicationNo=${applicationNo}`, {
+        const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await response.json();
@@ -95,8 +94,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     const requiredFields = [
       { key: "description", label: "Qualification / Training Name" },
       { key: "institution", label: "Institution" },
-      { key: "year", label: "Year" },
-      { key: "trainingDescription", label: "Training Description" }
+      { key: "year", label: "Year" }
     ];
 
     const missing = requiredFields.filter(f => isBlank(formData[f.key]));
@@ -115,6 +113,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       toast.error("Please enter a valid year");
       return;
     }
+    if (!window.confirm(`Save "${formData.description}" (${formData.institution}, ${yearNum})? This record cannot be removed later.`)) return;
 
     try {
       setLoading(true);
@@ -124,9 +123,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         applicationNo,
         description: formData.description,
         institution: formData.institution,
-        year: yearNum,
-        professionalMembership: formData.professionalMembership,
-        trainingDescription: formData.trainingDescription
+        year: yearNum
       };
 
       const response = await fetch("/api/job/add-professional-training", {
@@ -144,9 +141,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         setFormData({
           description: "",
           institution: "",
-          year: "",
-          professionalMembership: "",
-          trainingDescription: ""
+          year: ""
         });
         setFieldErrors({});
         refreshTraining();
@@ -158,31 +153,6 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       toast.error("Error adding professional training");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDelete = async (lineNo) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
-
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(
-        `/api/job/delete-professional-training?applicationNo=${applicationNo}&lineNo=${lineNo}`,
-        {
-          method: "DELETE",
-          headers: { "Authorization": `Bearer ${user.accessToken}` }
-        }
-      );
-      const result = await response.json();
-      if (result.success) {
-        toast.success("Record deleted");
-        refreshTraining();
-      } else {
-        toast.error(result.message || result.Message || "Failed to delete record");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error deleting record");
     }
   };
 
@@ -206,6 +176,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder="e.g. CPA, PMP, ACCA, Data Science Certificate"
+              maxLength={100}
               className={inputClass("description")}
               required
             />
@@ -240,6 +211,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
               value={formData.institution}
               onChange={handleChange}
               placeholder="Awarding body or institution"
+              maxLength={100}
               className={inputClass("institution")}
               required
             />
@@ -248,23 +220,9 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
 
 
-          <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700">Training Description <span className="text-red-500">*</span></label>
-            <textarea
-              name="trainingDescription"
-              value={formData.trainingDescription}
-              onChange={handleChange}
-              maxLength={500}
-              rows={3}
-              placeholder="Brief description of the training or qualification (max 500 chars)"
-              className={inputClass("trainingDescription", "bg-white resize-none")}
-              required
-            />
-            {renderError("trainingDescription")}
-            <p className="text-xs text-gray-400 mt-1">{formData.trainingDescription?.length || 0}/500</p>
-          </div>
         </div>
 
+        <p className="mt-4 text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
         <div className="mt-6 flex justify-end">
           <button
             type="submit"
@@ -291,13 +249,12 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
 
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center">
+                  <td colSpan="3" className="px-6 py-10 text-center">
                     <div className="flex justify-center items-center gap-2 text-gray-500">
                       <IconLoader2 className="animate-spin" /> Fetching records...
                     </div>
@@ -305,26 +262,17 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
                 </tr>
               ) : trainingList.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-gray-500 italic">
+                  <td colSpan="3" className="px-6 py-10 text-center text-gray-500 italic">
                     No professional training records added yet.
                   </td>
                 </tr>
               ) : (
                 trainingList.map((item) => (
-                  <tr key={item.lineNo} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.description}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{item.institution}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">{item.year}</td>
 
-                    <td className="px-6 py-4 text-center text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(item.lineNo)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
-                        title="Delete"
-                      >
-                        <IconTrash size={18} />
-                      </button>
-                    </td>
                   </tr>
                 ))
               )}

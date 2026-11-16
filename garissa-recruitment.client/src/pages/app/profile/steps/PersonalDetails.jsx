@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
-import { GenderOptions } from "../../../../constants/enums";
+import { GenderOptions, MaritalStatusOptions } from "../../../../constants/enums";
 import { validatePersonalDetails } from "../../../../lib/applicationValidation";
 
 const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
@@ -101,8 +101,8 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* Alt Phone Number */}
         <div>
-            <label className="block text-sm font-medium text-gray-700">Alt Phone Number <span className="text-red-500">*</span></label>
-            <input type="text" name="altPhoneNumber" value={profile.altPhoneNumber} onChange={handleFieldChange} className={inputClass("altPhoneNumber")} required />
+            <label className="block text-sm font-medium text-gray-700">Alt Phone Number</label>
+            <input type="text" name="altPhoneNumber" value={profile.altPhoneNumber} onChange={handleFieldChange} className={inputClass("altPhoneNumber")} />
             {renderError("altPhoneNumber")}
         </div>
 
@@ -125,7 +125,19 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           {renderError("gender")}
         </div>
 
-        {/* Citizenship */}
+        {/* Marital Status */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-red-500">*</span></label>
+          <select name="maritalStatus" value={profile.maritalStatus} onChange={handleFieldChange} className={inputClass("maritalStatus", "bg-white")} required>
+              <option value="">Select Marital Status</option>
+              {MaritalStatusOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+          </select>
+          {renderError("maritalStatus")}
+        </div>
+
+        {/* Citizenship (country codes) */}
         <GlobalDropdown
           source="SOAP"
           type="Citizenship"
@@ -134,48 +146,15 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           value={profile.citizenship}
           onChange={(val) => updateField("citizenship", val)}
           placeholder="Select Citizenship"
+          required
           error={fieldErrors.citizenship}
         />
-
-        {/* Ethnicity (SOAP) */}
-        <GlobalDropdown
-          source="SOAP"
-          type="Ethnicity"
-          label="Ethnicity"
-          name="ethnicity"
-          value={profile.ethnicity}
-          onChange={(val) => updateField("ethnicity", val)}
-          required
-          error={fieldErrors.ethnicity}
-        />
-
-        {/* Current Salary */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Current Salary <span className="text-red-500">*</span></label>
-          <input type="number" name="currentSalary" value={profile.currentSalary} onChange={handleFieldChange} min="0" step="0.01" className={inputClass("currentSalary")} required />
-          {renderError("currentSalary")}
-        </div>
-
-        {/* Expected Salary */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Expected Salary <span className="text-red-500">*</span></label>
-          <input type="number" name="expectedSalary" value={profile.expectedSalary} onChange={handleFieldChange} min="0" step="0.01" className={inputClass("expectedSalary")} required />
-          {renderError("expectedSalary")}
-        </div>
-
-        {/* Notice Period */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Notice Period <span className="text-red-500">*</span></label>
-          <input type="text" name="noticePeriod" value={profile.noticePeriod} onChange={handleFieldChange} placeholder="e.g. 30 days" className={inputClass("noticePeriod")} required />
-          {renderError("noticePeriod")}
-        </div>
 
         {/* Contact Header */}
         <div className="col-span-full border-b pb-2 mb-2 mt-4">
             <h3 className="text-lg font-semibold text-gray-700">Contact & Location</h3>
         </div>
 
-        {/* Country */}
         {/* Country */}
         <GlobalDropdown
           source="SOAP"
@@ -197,48 +176,9 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
           label="Current County of Residence"
           name="county"
           value={profile.county}
-          onChange={(val) => {
-            if (val !== profile.county) {
-              updateField("subCounty", "");
-              updateField("wardCode", "");
-            }
-            updateField("county", val);
-          }}
+          onChange={(val) => updateField("county", val)}
           required
           error={fieldErrors.county}
-        />
-
-        {/* Sub County (SOAP) */}
-        <GlobalDropdown
-          source="SOAP"
-          type="SubCounty"
-          filters={{ County: profile.county || "" }}
-          label="Sub County"
-          name="subCounty"
-          value={profile.subCounty}
-          onChange={(val) => {
-            if (val !== profile.subCounty) {
-              updateField("wardCode", "");
-            }
-            updateField("subCounty", val);
-          }}
-          required
-          disabled={!profile.county}
-          error={fieldErrors.subCounty}
-        />
-
-        {/* Ward (SOAP) */}
-        <GlobalDropdown
-          source="SOAP"
-          type="Ward"
-          filters={{ SubCounty: profile.subCounty || "" }}
-          label="Ward"
-          name="wardCode"
-          value={profile.wardCode}
-          onChange={(val) => updateField("wardCode", val)}
-          required
-          disabled={!profile.subCounty}
-          error={fieldErrors.wardCode}
         />
 
         {/* Postal Address */}

@@ -1,34 +1,33 @@
-export const GenderEnum = {
-  None: 0,
-  Female: 1,
-  Male: 2,
-  NonBinary: 3,
-  SelfDescribed: 4,
-  PreferNotToAnswer: 5,
-};
+// Option values must match Business Central (Garissa) option fields exactly.
 
-export const MaritalStatusEnum = {
-  Single: 0,
-  Married: 1,
-  Divorced: 2,
-  Widow: 3,
-  Widower: 4,
-  Complicated: 5,
-};
-
+// "HRM-Job Applications (B)".Gender: " ",Male,Female,Other
 export const GenderOptions = [
-  { value: GenderEnum.Female, label: "Female" },
-  { value: GenderEnum.Male, label: "Male" },
-  { value: GenderEnum.NonBinary, label: "Non-Binary" },
-  { value: GenderEnum.SelfDescribed, label: "Self-Described" },
-  { value: GenderEnum.PreferNotToAnswer, label: "Prefer Not to Answer" },
+  { value: 1, label: "Male" },
+  { value: 2, label: "Female" },
 ];
 
+// "HRM-Job Applications (B)"."Marital Status": " ",Single,Married,Separated,Divorced,"Widow(er)",Other
 export const MaritalStatusOptions = [
-  { value: MaritalStatusEnum.Single, label: "Single" },
-  { value: MaritalStatusEnum.Married, label: "Married" },
-  { value: MaritalStatusEnum.Divorced, label: "Divorced" },
-  { value: MaritalStatusEnum.Widow, label: "Widow" },
-  { value: MaritalStatusEnum.Widower, label: "Widower" },
-  { value: MaritalStatusEnum.Complicated, label: "Complicated" },
+  { value: 1, label: "Single" },
+  { value: 2, label: "Married" },
+  { value: 3, label: "Separated" },
+  { value: 4, label: "Divorced" },
+  { value: 5, label: "Widow(er)" },
+  { value: 6, label: "Other" },
 ];
+
+// OnlineUsers."Marital Status" (applicant profile): Single,Married
+export const ProfileMaritalStatusOptions = [
+  { value: 0, label: "Single" },
+  { value: 1, label: "Married" },
+];
+
+/** Maps BC option text (as returned by Format()) back to its option value; "" when unknown. */
+export function optionValue(options, text) {
+  if (text == null) return "";
+  const value = String(text).trim();
+  if (value === "") return "";
+  if (options.some((option) => String(option.value) === value)) return value;
+  const match = options.find((option) => option.label.toLowerCase() === value.toLowerCase());
+  return match ? String(match.value) : "";
+}

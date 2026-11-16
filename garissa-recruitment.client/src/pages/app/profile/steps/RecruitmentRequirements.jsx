@@ -1,100 +1,83 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { applicationAction, applicationContext } from '../../../../lib/recruitmentApi';
+import { applicationContext, hasDeclared, post, setDeclared, PERMANENT_RECORD_NOTE } from '../../../../lib/recruitmentApi';
 import { fixText } from '../../../../lib/jobAdvert';
-import { validateResponses } from '../../../../lib/applicationValidation';
+import { isBlank } from '../../../../lib/applicationValidation';
 
-const inputStyle = 'w-full border border-gray-300 rounded-md p-2 text-gray-800';
+const inputStyle = 'mt-1 w-full border border-gray-300 rounded-md p-2 text-gray-800 bg-white';
+const emptyMembership = { BodyName: '', MembershipNo: '', MembershipDate: '', Status: 1 };
 
-function Evidence({ applicationNo, kind, title, rows, onUpdated, readOnly }) {
-  const [form, setForm] = useState({ Description: '', Link: '', Year: '', Quantity: '', Institution: '', MembershipNo: '' });
+function Memberships({ applicationNo, rows, onSaved, readOnly }) {
+  const [form, setForm] = useState(emptyMembership);
   const [busy, setBusy] = useState(false);
   const change = (event) => setForm({ ...form, [event.target.name]: event.target.value });
   const save = async () => {
-    if (!form.Description.trim()) return toast.info('Enter a description for this record.');
+    if (isBlank(form.BodyName)) return toast.info('Enter the name of the professional body.');
+    if (isBlank(form.MembershipNo)) return toast.info('Enter your membership number.');
+    if (rows.some((row) => (row.Description || '').toUpperCase() === form.BodyName.trim().toUpperCase())) {
+      return toast.error('You have already added a membership for this professional body.');
+    }
+    if (!window.confirm(`Add membership of ${form.BodyName}? It cannot be removed later.`)) return;
     setBusy(true);
     try {
-      const context = await applicationAction(applicationNo, 'save-evidence', { ...form, Kind: kind, Year: Number(form.Year) || 0, Quantity: Number(form.Quantity) || 0 });
-      onUpdated(context);
-      setForm({ Description: '', Link: '', Year: '', Quantity: '', Institution: '', MembershipNo: '' });
+      await post('add-professional-membership', {
+        applicationNo, bodyName: form.BodyName.trim(), membershipNo: form.MembershipNo.trim(),
+        membershipDate: form.MembershipDate || null, status: Number(form.Status),
+      });
+      toast.success('Professional membership added.');
+      setForm(emptyMembership);
+      onSaved();
     } catch (error) { toast.error(error.message); } finally { setBusy(false); }
   };
-  const remove = async (lineNo) => {
-    setBusy(true);
-    try { onUpdated(await applicationAction(applicationNo, 'delete-evidence', { Kind: kind, LineNo: lineNo })); }
-    catch (error) { toast.error(error.message); } finally { setBusy(false); }
-  };
   return <section className="space-y-3 border-t pt-6">
-    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-    <ul className="space-y-2">{rows.map((row) => <li key={row.LineNo} className="border rounded-lg p-3 flex justify-between gap-3">
-      <div><strong>{row.Description}</strong><p className="text-sm text-gray-600">{[row.Institution, row.Year || '', row.MembershipNo, kind === 'supervision' ? `${row.Quantity} students` : ''].filter(Boolean).join(' · ')}</p>
-        {row.Link && (/^https?:\/\//i.test(row.Link) ? <a className="text-blue-700 underline break-all" href={row.Link} target="_blank" rel="noreferrer">{row.Link}</a> : <span>{row.Link}</span>)}
-      </div>
-      {!readOnly && <button type="button" disabled={busy} onClick={() => remove(row.LineNo)} className="text-red-700">Remove</button>}
-    </li>)}</ul>
+    <h3 className="text-lg font-semibold text-gray-800">Professional memberships</h3>
+    <p className="text-sm text-gray-600">Add any professional bodies you belong to (optional).</p>
+    {rows.length > 0 ? <ul className="space-y-2">{rows.map((row) => <li key={row.Id} className="border rounded-lg p-3">
+      <strong>{row.Description}</strong>
+      <p className="text-sm text-gray-600">{[row.MembershipNo && `No. ${row.MembershipNo}`, row.MembershipDate && `Since ${row.MembershipDate}`, row.Status].filter(Boolean).join(' · ')}</p>
+    </li>)}</ul> : <p className="text-sm text-gray-500 italic">No memberships added.</p>}
     {!readOnly && <div className="grid sm:grid-cols-2 gap-3">
-      <label>Description<input className={inputStyle} name="Description" value={form.Description} onChange={change} placeholder={kind === 'publication' ? 'Publication title' : kind === 'supervision' ? 'Programme / level supervised' : 'Professional body'} /></label>
-      <label>Institution / professional body<input className={inputStyle} name="Institution" value={form.Institution} onChange={change} /></label>
-      <label>Year<input className={inputStyle} type="number" name="Year" value={form.Year} onChange={change} /></label>
-      {kind === 'membership' ? <label>Membership number<input className={inputStyle} name="MembershipNo" value={form.MembershipNo} onChange={change} /></label>
-        : <label>{kind === 'publication' ? 'Publication link' : 'Supporting link'}<input className={inputStyle} name="Link" value={form.Link} onChange={change} placeholder="https://" /></label>}
-      {kind === 'supervision' && <label>Number of students supervised<input className={inputStyle} type="number" min="0" name="Quantity" value={form.Quantity} onChange={change} /></label>}
-      <div className="sm:col-span-2"><button type="button" onClick={save} disabled={busy} className="btn-primary px-4 py-2 rounded-md">{busy ? 'Saving…' : 'Add record'}</button></div>
+      <label className="text-sm font-medium text-gray-700">Professional body<input className={inputStyle} name="BodyName" maxLength={60} value={form.BodyName} onChange={change} placeholder="e.g. ICPAK" /></label>
+      <label className="text-sm font-medium text-gray-700">Membership number<input className={inputStyle} name="MembershipNo" maxLength={50} value={form.MembershipNo} onChange={change} /></label>
+      <label className="text-sm font-medium text-gray-700">Member since<input className={inputStyle} type="date" name="MembershipDate" value={form.MembershipDate} onChange={change} /></label>
+      <label className="text-sm font-medium text-gray-700">Status<select className={inputStyle} name="Status" value={form.Status} onChange={change}><option value={1}>Active</option><option value={2}>Inactive</option></select></label>
+      <p className="sm:col-span-2 text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
+      <div className="sm:col-span-2"><button type="button" onClick={save} disabled={busy} className="btn-primary px-4 py-2 rounded-md">{busy ? 'Saving…' : 'Add membership'}</button></div>
     </div>}
   </section>;
 }
 
 export default function RecruitmentRequirements({ applicationNo, onBack, onNext }) {
   const [context, setContext] = useState(null);
-  const [answers, setAnswers] = useState([]);
-  const [consent, setConsent] = useState({ HasGraduated: false, DataConsent: false, ReferenceConsent: false });
-  const [busy, setBusy] = useState(false);
+  const [declared, setDeclaredState] = useState(() => hasDeclared(applicationNo));
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
-  useEffect(() => {
-    let active = true;
-    applicationContext(applicationNo).then((data) => {
-      if (!active) return;
-      setContext(data);
-      setConsent({ HasGraduated: data.HasGraduated, DataConsent: data.DataConsent, ReferenceConsent: data.ReferenceConsent });
-      setAnswers([...(data.MinimumRequirements || []).map((row) => ({ ...row, Kind: 'requirement' })), ...(data.Questions || []).map((row) => ({ ...row, Kind: 'question' }))]);
-    }).catch((e) => active && setError(e.message));
-    return () => { active = false; };
-  }, [applicationNo]);
-  const update = (index, values) => setAnswers((rows) => rows.map((row, i) => i === index ? { ...row, ...values } : row));
-  const next = async () => {
-    const errors = validateResponses(answers, consent, context);
-    setFieldErrors(errors);
-    if (Object.keys(errors).length) {
-      toast.error('Please complete the highlighted required fields.');
+  const load = useCallback(() => applicationContext(applicationNo).then(setContext).catch((e) => setError(e.message)), [applicationNo]);
+  useEffect(() => { load(); }, [load]);
+
+  const toggleDeclaration = (checked) => { setDeclared(applicationNo, checked); setDeclaredState(checked); };
+  const next = () => {
+    if (context?.MinimumRequirements?.length && !declared) {
+      toast.error('Confirm that you meet the minimum requirements to continue.');
       return;
     }
-    setBusy(true);
-    try {
-      await applicationAction(applicationNo, 'save-responses', { ...consent, Responses: answers.map(({ Kind, LineNo, Has, Answer }) => ({ Kind, LineNo, Has, Answer })) });
-      onNext();
-    } catch (e) { toast.error(e.message); } finally { setBusy(false); }
+    onNext();
   };
+
   if (error) return <p role="alert" className="text-red-700">{error}</p>;
-  if (!context) return <p>Loading application requirements…</p>;
+  if (!context) return <p>Loading job requirements…</p>;
+  const requirements = context.MinimumRequirements || [];
   return <div className="space-y-6">
-    <h3 className="text-xl font-semibold">Job requirements and supporting information</h3>
-    <label className="flex items-center gap-2"><input type="checkbox" checked={consent.HasGraduated} onChange={(e) => setConsent({ ...consent, HasGraduated: e.target.checked })} />I have graduated at the time of this application.</label>
-    {answers.map((answer, index) => <div key={`${answer.Kind}-${answer.LineNo}`} className="space-y-2">
-      <label className="block font-medium" htmlFor={`response-${index}`}>{fixText(answer.Description)}{answer.Required ? ' *' : ''}</label>
-      {answer.Kind === 'requirement' ? <select id={`response-${index}`} className={inputStyle} value={answer.Has ?? 0} onChange={(e) => update(index, { Has: Number(e.target.value) })}><option value={0}>Select an answer</option><option value={2}>Yes</option><option value={1}>No</option></select>
-        : answer.ResponseType === 'Yes/No' ? <select id={`response-${index}`} className={inputStyle} value={answer.Answer || ''} onChange={(e) => update(index, { Answer: e.target.value })}><option value="">Select an answer</option><option>Yes</option><option>No</option></select>
-          : <input id={`response-${index}`} className={inputStyle} type={answer.ResponseType === 'Number' ? 'number' : 'text'} value={answer.Answer || ''} onChange={(e) => update(index, { Answer: e.target.value })} />}
-      {fieldErrors[`${answer.Kind}-${answer.LineNo}`] && <p role="alert" className="text-sm text-red-700">{fieldErrors[`${answer.Kind}-${answer.LineNo}`]}</p>}
-    </div>)}
-    <Evidence applicationNo={applicationNo} title="Professional memberships" kind="membership" rows={context.Memberships || []} onUpdated={setContext} />
-    {context.AcademicJob && <><Evidence applicationNo={applicationNo} title="Publications" kind="publication" rows={context.Publications || []} onUpdated={setContext} /><Evidence applicationNo={applicationNo} title="Students supervised" kind="supervision" rows={context.Supervisions || []} onUpdated={setContext} /></>}
-    <section className="space-y-4 border-t pt-6"><h3 className="text-lg font-semibold">Consent</h3>
-      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.DataConsent} onChange={(e) => setConsent({ ...consent, DataConsent: e.target.checked })} /><span>{context.DataConsentText}{context.DataConsentRequired ? ' *' : ''}</span></label>
-      {fieldErrors.DataConsent && <p role="alert" className="text-sm text-red-700">{fieldErrors.DataConsent}</p>}
-      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={consent.ReferenceConsent} onChange={(e) => setConsent({ ...consent, ReferenceConsent: e.target.checked })} /><span>{context.ReferenceConsentText}{context.ReferenceConsentRequired ? ' *' : ''}</span></label>
-      {fieldErrors.ReferenceConsent && <p role="alert" className="text-sm text-red-700">{fieldErrors.ReferenceConsent}</p>}
-    </section>
-    <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded bg-gray-200">Previous</button><button type="button" onClick={next} disabled={busy} className="btn-primary px-5 py-2 rounded">{busy ? 'Saving…' : 'Save and continue'}</button></div>
+    <h3 className="text-xl font-semibold">Minimum requirements for {fixText(context.JobTitle) || 'this position'}</h3>
+    {requirements.length > 0 ? <>
+      <ol className="list-decimal pl-8 space-y-2 bg-gray-50 rounded-lg p-6 text-gray-700">
+        {requirements.map((row, index) => <li key={`${row.Code}-${index}`}>{fixText(row.Description || row.Code)}</li>)}
+      </ol>
+      <label className="flex items-start gap-3">
+        <input type="checkbox" className="mt-1" checked={declared} disabled={!context.CanEdit} onChange={(e) => toggleDeclaration(e.target.checked)} />
+        <span>I confirm that I meet the minimum requirements listed above and that the information in this application is true. <span className="text-red-500">*</span></span>
+      </label>
+    </> : <p className="text-gray-600">No minimum requirements are listed for this position.</p>}
+    <Memberships applicationNo={applicationNo} rows={context.Memberships || []} onSaved={load} readOnly={!context.CanEdit} />
+    <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded bg-gray-200">Previous</button><button type="button" onClick={next} className="btn-primary px-5 py-2 rounded">Save and continue</button></div>
   </div>;
 }

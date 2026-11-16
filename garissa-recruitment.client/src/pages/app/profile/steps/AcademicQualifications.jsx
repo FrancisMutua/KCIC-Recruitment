@@ -47,7 +47,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/academic-qualifications?applicationNo=${applicationNo}`, {
+      const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await response.json();
@@ -71,7 +71,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/academic-qualifications?applicationNo=${applicationNo}`, {
+        const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await response.json();
@@ -173,12 +173,12 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     }
   };
 
-  const handleDelete = async (lineNo) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this qualification?")) return;
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-academic-qualification?applicationNo=${applicationNo}&lineNo=${lineNo}`, {
+      const response = await fetch(`/api/job/delete-academic-qualification?applicationNo=${encodeURIComponent(applicationNo)}&id=${encodeURIComponent(id)}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${user.accessToken}`
@@ -224,6 +224,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
               value={formData.institution} 
               onChange={handleChange} 
               className={inputClass("institution")} 
+              maxLength={30}
               required 
             />
             {renderError("institution")}
@@ -243,13 +244,13 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Grade <span className="text-red-500">*</span></label>
-            <input type="text" name="grade" value={formData.grade} onChange={handleChange} className={inputClass("grade")} required />
+            <input type="text" name="grade" value={formData.grade} onChange={handleChange} maxLength={30} className={inputClass("grade")} required />
             {renderError("grade")}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Area of Study</label>
-            <input type="text" name="areaOfStudy" value={formData.areaOfStudy} onChange={handleChange} className={inputClass("areaOfStudy")} />
+            <input type="text" name="areaOfStudy" value={formData.areaOfStudy} onChange={handleChange} maxLength={20} className={inputClass("areaOfStudy")} />
           </div>
 
 
@@ -293,6 +294,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Level</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Course</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Institution</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
@@ -302,7 +304,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
             <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
-                   <td colSpan="5" className="px-6 py-10 text-center">
+                   <td colSpan="6" className="px-6 py-10 text-center">
                       <div className="flex justify-center items-center gap-2 text-gray-500">
                          <IconLoader2 className="animate-spin" /> Fetching qualifications...
                       </div>
@@ -310,7 +312,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
                 </tr>
               ) : qualifications.filter(q => q.description || q.institution).length === 0 ? (
                 <tr>
-                   <td colSpan="5" className="px-6 py-10 text-center text-gray-500 italic">
+                   <td colSpan="6" className="px-6 py-10 text-center text-gray-500 italic">
                       No qualifications added yet.
                    </td>
                 </tr>
@@ -318,7 +320,8 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
                 qualifications
                   .filter(q => q.description || q.institution)
                   .map((q) => (
-                  <tr key={q.lineNo} className="hover:bg-gray-50 transition-colors">
+                  <tr key={q.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.code}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.description}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.institution}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -327,7 +330,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.grade}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <button 
-                        onClick={() => handleDelete(q.lineNo)}
+                        onClick={() => handleDelete(q.id)}
                         className="text-red-500 hover:text-red-700 transition-colors p-1"
                         title="Delete"
                       >

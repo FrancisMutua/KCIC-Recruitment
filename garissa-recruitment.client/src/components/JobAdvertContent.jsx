@@ -13,7 +13,7 @@ function AdvertSection({ title, rows }) {
 
 export default function JobAdvertContent({ details }) {
   const job = details.jobInfo;
-  const fields = advertFields(job);
+  const fields = advertFields(job).filter(([, value]) => value !== "");
   const allowances = advertRows(job.allowanceDetails).filter((row) => (row.Description ?? row.description ?? "").trim());
   return <div className="space-y-8">
     <dl className="grid sm:grid-cols-2 gap-4 rounded-lg bg-blue-50 p-5">

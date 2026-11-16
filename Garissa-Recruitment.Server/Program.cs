@@ -15,7 +15,10 @@ builder.Services.AddSwaggerGen();
 
 // Add services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IWebService, WebService>();
+// Business Central codeunit 50034 "Recruitment" (SOAP)
+builder.Services.AddHttpClient<BusinessCentralSoapClient>();
+builder.Services.AddScoped<IRecruitmentService, RecruitmentService>();
+builder.Services.Configure<Recruitment.Server.Models.RecruitmentOptions>(builder.Configuration.GetSection("Recruitment"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IDropDownService, DropDownService>();
 

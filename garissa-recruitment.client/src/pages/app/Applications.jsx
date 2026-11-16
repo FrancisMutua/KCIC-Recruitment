@@ -65,14 +65,17 @@ const Applications = () => {
       header: "Status",
       accessorKey: "Status",
       cell: ({ row }) => {
-        const app = row.original;
+        const status = row.original.CandidateStatus || "Draft";
+        const style = {
+          Draft: 'bg-yellow-100 text-yellow-800',
+          Submitted: 'bg-blue-100 text-blue-800',
+          'Under review': 'bg-indigo-100 text-indigo-800',
+          'Not successful': 'bg-red-100 text-red-800',
+          Closed: 'bg-gray-100 text-gray-700',
+        }[status] || 'bg-blue-100 text-blue-800';
         return (
-            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                app.Status === 'Open' ? 'bg-yellow-100 text-yellow-800' : 
-                app.Status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`}>
-                {app.CandidateStatus || (app.Status === 'Open' ? 'Draft' : app.Status)}
+            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${style}`}>
+                {status}
             </span>
         );
       }
@@ -88,7 +91,7 @@ const Applications = () => {
                 className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
                 onClick={() => navigate(`/app/application-details/${app.DocumentNo}`)}
             >
-                Details
+                {app.Submitted ? "Track" : "Continue"}
             </Button>
         );
       },
@@ -114,6 +117,12 @@ const Applications = () => {
                 {error}
             </div>
             </div>
+        )}
+
+        {!loading && !error && applications.length > 0 && (
+            <p className="text-sm text-gray-600 mb-4">
+                Draft applications have not been sent to Garissa University yet. Open them with Continue and submit them before the advert closes.
+            </p>
         )}
 
         {!loading && !error && (

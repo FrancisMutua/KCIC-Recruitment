@@ -2,13 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   personalRequiredFields, validatePersonalDetails, validateBirthDate, salutationValue, salutationText,
-  isBlank, validateResponses, missingRequiredDocuments, applicationMandatoryErrors
+  isBlank, missingRequiredDocuments
 } from "./applicationValidation.js";
+import { GenderOptions, MaritalStatusOptions, optionValue } from "../constants/enums.js";
 
 const today = new Date(2026, 5, 15);
 const completeProfile = () => ({
   ...Object.fromEntries(personalRequiredFields.map(([key]) => [key, "value"])),
-  initials: 0, currentSalary: 0, expectedSalary: 0, birthDate: "2008-06-15"
+  initials: 0, birthDate: "2008-06-15"
 });
 
 test("all mandatory personal fields reject empty and whitespace values", () => {
@@ -19,7 +20,7 @@ test("all mandatory personal fields reject empty and whitespace values", () => {
   }
 });
 
-test("middle name is optional, and zero salutation/salary are preserved", () => {
+test("middle name is optional, and zero salutation is preserved", () => {
   assert.deepEqual(validatePersonalDetails(completeProfile(), today), {});
   for (const value of [0, "0", "Mr", "Mr."]) assert.equal(salutationValue(value), "0");
   assert.equal(salutationValue("Prof."), "4");
@@ -34,10 +35,16 @@ test("middle name is optional, and zero salutation/salary are preserved", () => 
   assert.equal(isBlank("  "), true);
 });
 
-test("conditional disability fields and invalid amounts are enforced", () => {
-  const profile = { ...completeProfile(), disability: "true", expectedSalary: -1, currentSalary: "NaN" };
-  const errors = validatePersonalDetails(profile, today);
-  for (const key of ["pwdNumber", "disabilityStatus", "expectedSalary", "currentSalary"]) assert.ok(errors[key]);
+test("conditional disability fields are enforced only when a disability is declared", () => {
+  const errors = validatePersonalDetails({ ...completeProfile(), disability: "true" }, today);
+  for (const key of ["pwdNumber", "disabilityStatus"]) assert.ok(errors[key]);
+  assert.deepEqual(validatePersonalDetails({ ...completeProfile(), disability: "false" }, today), {});
+});
+
+test("fields Business Central does not store are not required", () => {
+  for (const key of ["ethnicity", "currentSalary", "expectedSalary", "noticePeriod", "subCounty", "wardCode", "altPhoneNumber"]) {
+    assert.ok(!personalRequiredFields.some(([field]) => field === key), key);
+  }
 });
 
 test("DOB validates actual calendar and exact eighteenth birthday", () => {
@@ -48,41 +55,21 @@ test("DOB validates actual calendar and exact eighteenth birthday", () => {
   assert.match(validateBirthDate("1900-01-01", today), /valid/);
 });
 
-test("required answers and configured consents are enforced, No and zero are valid answers", () => {
-  const answers = [
-    { Kind: "requirement", LineNo: 1, Required: true, Has: 0 },
-    { Kind: "question", LineNo: 2, Required: true, ResponseType: "Number", Answer: " " }
-  ];
-  const context = { DataConsentRequired: true, ReferenceConsentRequired: true };
-  assert.equal(Object.keys(validateResponses(answers, {}, context)).length, 4);
-  assert.deepEqual(validateResponses([
-    { ...answers[0], Has: 1 }, { ...answers[1], Answer: "0" }
-  ], { DataConsent: true, ReferenceConsent: true }, context), {});
-  assert.deepEqual(validateResponses([{ Kind: "question", LineNo: 3, Required: false, Answer: "" }], {}, {}), {});
+test("required document categories must each have an upload", () => {
+  const context = { DocumentCategories: [
+    { Required: true, Code: "CV", Description: "CV" },
+    { Required: false, Code: "OTHER", Description: "Other" }
+  ] };
+  assert.equal(missingRequiredDocuments(context, [{ requirementCode: "OTHER" }]).length, 1);
+  assert.deepEqual(missingRequiredDocuments(context, [{ requirementCode: "CV" }]), []);
+  assert.deepEqual(missingRequiredDocuments({}, []), []);
 });
 
-test("required uploads match the advert requirement code", () => {
-  const context = { RequiredDocuments: [{ Required: true, Code: "CERT", Description: "Certificate" }] };
-  assert.equal(missingRequiredDocuments(context, [{ requirementCode: "" }]).length, 1);
-  assert.deepEqual(missingRequiredDocuments(context, [{ requirementCode: "CERT" }]), []);
-});
-
-test("final mandatory checks do not depend on optional completeness settings", () => {
-  const errors = applicationMandatoryErrors(completeProfile(), {
-    EnforceCompleteness: false, DataConsentRequired: true, ProfessionalQualificationMandatory: true
-  }, [], [], today);
-  assert.equal(errors.length, 2);
-});
-
-test("a complete application with optional middle name and zero salary can submit", () => {
-  const context = {
-    DataConsentRequired: true, ReferenceConsentRequired: true,
-    DataConsent: true, ReferenceConsent: true, ProfessionalQualificationMandatory: true,
-    MinimumRequirements: [{ LineNo: 1, Required: true, Has: 2 }],
-    Questions: [{ LineNo: 2, Required: true, ResponseType: "Number", Answer: "0" }],
-    RequiredDocuments: [{ Code: "CERT", Required: true }]
-  };
-  assert.deepEqual(applicationMandatoryErrors(
-    completeProfile(), context, [{ requirementCode: "CERT" }], [{ Description: "Training" }], today
-  ), []);
+test("gender and marital status use Business Central option values", () => {
+  assert.equal(optionValue(GenderOptions, "Male"), "1");
+  assert.equal(optionValue(GenderOptions, "Female"), "2");
+  assert.equal(optionValue(GenderOptions, " "), "");
+  assert.equal(optionValue(MaritalStatusOptions, "Widow(er)"), "5");
+  assert.equal(optionValue(MaritalStatusOptions, "2"), "2");
+  assert.equal(optionValue(MaritalStatusOptions, "Complicated"), "");
 });

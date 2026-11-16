@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
+import { IconPlus, IconLoader2 } from "@tabler/icons-react";
+import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
 
@@ -45,7 +46,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/work-experience?applicationNo=${applicationNo}`, {
+      const response = await fetch(`/api/job/work-experience?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await response.json();
@@ -69,7 +70,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/work-experience?applicationNo=${applicationNo}`, {
+        const response = await fetch(`/api/job/work-experience?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await response.json();
@@ -103,7 +104,6 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     const requiredFields = [
       { key: "position", label: "Position" },
       { key: "institution", label: "Institution" },
-      { key: "responsibilities", label: "Responsibilities" },
       { key: "startDate", label: "Start Date" },
       ...(!formData.isCurrent ? [{ key: "endDate", label: "End Date" }] : [])
     ];
@@ -121,6 +121,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       toast.error("Please correct the highlighted fields.");
       return;
     }
+    if (!window.confirm(`Save "${formData.position}" at ${formData.institution}? This record cannot be removed later.`)) return;
 
     try {
       setLoading(true);
@@ -130,10 +131,9 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
         applicationNo,
         position: formData.position,
         institution: formData.institution,
-        responsibility: formData.responsibilities,
         isCurrent: formData.isCurrent,
         startDate: formData.startDate,
-        endDate: formData.isCurrent ? "0001-01-01" : formData.endDate
+        endDate: formData.isCurrent ? null : formData.endDate
       };
 
       const response = await fetch("/api/job/add-work-experience", {
@@ -166,30 +166,6 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       toast.error("Error adding work experience");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDelete = async (lineNo) => {
-    if (!window.confirm("Are you sure you want to delete this experience?")) return;
-
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-work-experience?applicationNo=${applicationNo}&lineNo=${lineNo}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${user.accessToken}`
-        }
-      });
-      const result = await response.json();
-      if (result.success) {
-        toast.success("Experience deleted");
-        refreshExperiences();
-      } else {
-        toast.error(result.message || result.Message || "Failed to delete experience");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error deleting experience");
     }
   };
 
@@ -274,23 +250,9 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
             </label>
           </div>
 
-          <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700">Responsibilities <span className="text-red-500">*</span></label>
-            <textarea
-              name="responsibilities"
-              value={formData.responsibilities}
-              onChange={handleChange}
-              maxLength={500}
-              rows={3}
-              placeholder="Briefly describe your key responsibilities (Max 500 chars)"
-              className={inputClass("responsibilities", "bg-white resize-none")}
-              required
-            />
-            {renderError("responsibilities")}
-            <p className="text-xs text-gray-400 mt-1">{formData.responsibilities?.length || 0}/500</p>
-          </div>
         </div>
 
+        <p className="mt-4 text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
         <div className="mt-6 flex justify-end">
           <button
             type="submit"
@@ -316,13 +278,12 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Position</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Institution / Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
-                   <td colSpan="4" className="px-6 py-10 text-center">
+                   <td colSpan="3" className="px-6 py-10 text-center">
                       <div className="flex justify-center items-center gap-2 text-gray-500">
                          <IconLoader2 className="animate-spin" /> Fetching experiences...
                       </div>
@@ -330,7 +291,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 </tr>
               ) : experiences.filter(e => e.position || e.institution).length === 0 ? (
                 <tr>
-                   <td colSpan="4" className="px-6 py-10 text-center text-gray-500 italic">
+                   <td colSpan="3" className="px-6 py-10 text-center text-gray-500 italic">
                       No work experience added yet.
                    </td>
                 </tr>
@@ -338,20 +299,11 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 experiences
                   .filter(e => e.position || e.institution)
                   .map((e) => (
-                  <tr key={e.lineNo} className="hover:bg-gray-50 transition-colors">
+                  <tr key={`${e.institution}-${e.position}`} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{e.position}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{e.institution}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {e.startDate} - {e.endDate === "0001-01-01" ? "Currently Working Here" : e.endDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button 
-                        onClick={() => handleDelete(e.lineNo)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
-                        title="Delete"
-                      >
-                        <IconTrash size={18} />
-                      </button>
+                      {e.startDate} - {e.isCurrentPosition || !e.endDate ? "Present" : e.endDate}
                     </td>
                   </tr>
                 ))

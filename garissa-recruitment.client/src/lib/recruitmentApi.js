@@ -9,19 +9,27 @@ export async function recruitmentRequest(path, options = {}) {
   return result.data;
 }
 
-export const applicationContext = (applicationNo) => recruitmentRequest(`application-context?applicationNo=${encodeURIComponent(applicationNo)}`);
-export const applicationAction = (applicationNo, action, data = {}) => recruitmentRequest('application-action', {
-  method: 'POST', body: JSON.stringify({ applicationNo, action, data }),
-});
+const query = (applicationNo) => `applicationNo=${encodeURIComponent(applicationNo)}`;
 
-export function saveDownload(file) {
-  const bytes = Uint8Array.from(atob(file.Content), (character) => character.charCodeAt(0));
-  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = file.FileName || 'document.pdf';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+/** Rules and progress for one application (status, minimum referees, document categories, memberships). */
+export const applicationContext = (applicationNo) => recruitmentRequest(`application-context?${query(applicationNo)}`);
+
+/** Items still missing before Business Central will accept the submission. */
+export const submissionCheck = (applicationNo) => recruitmentRequest(`submission-check?${query(applicationNo)}`);
+
+export const post = (path, body) => recruitmentRequest(path, { method: 'POST', body: JSON.stringify(body) });
+
+// Business Central cannot remove these records once saved (no usable delete in codeunit 50034).
+export const PERMANENT_RECORD_NOTE = 'Records in this section cannot be removed once added, so please check the details before saving.';
+
+// The applicant's declaration that they meet the advert's minimum requirements is kept in this browser.
+export const declarationKey = (applicationNo) => `app_declaration_${applicationNo}`;
+export function hasDeclared(applicationNo) {
+  try { return localStorage.getItem(declarationKey(applicationNo)) === 'yes'; } catch { return false; }
+}
+export function setDeclared(applicationNo, value) {
+  try {
+    if (value) localStorage.setItem(declarationKey(applicationNo), 'yes');
+    else localStorage.removeItem(declarationKey(applicationNo));
+  } catch { /* storage unavailable */ }
 }

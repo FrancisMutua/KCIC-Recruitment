@@ -1,13 +1,14 @@
+import { parseDate } from "./dateValidation.js";
+
+// Fields stored on "HRM-Job Applications (B)" by codeunit 50034 UpdateApplicationPersonalDetails.
 export const personalRequiredFields = [
   ["firstName", "First Name"], ["lastName", "Last Name"],
   ["idNumber", "ID / Passport No"], ["emailAddress", "Email Address"],
   ["initials", "Salutation"], ["kraPin", "KRA Pin"],
-  ["phoneNumber", "Phone Number"], ["altPhoneNumber", "Alt Phone Number"],
-  ["birthDate", "Date of Birth"], ["gender", "Gender"], ["ethnicity", "Ethnicity"],
-  ["currentSalary", "Current Salary"], ["expectedSalary", "Expected Salary"],
-  ["noticePeriod", "Notice Period"], ["country", "Country"],
-  ["county", "Current County of Residence"], ["subCounty", "Sub County"],
-  ["wardCode", "Ward"], ["postalAddress", "Postal Address"], ["postalCode", "Postal Code"]
+  ["phoneNumber", "Phone Number"],
+  ["birthDate", "Date of Birth"], ["gender", "Gender"], ["maritalStatus", "Marital Status"],
+  ["citizenship", "Citizenship"], ["country", "Country"],
+  ["county", "Current County of Residence"], ["postalAddress", "Postal Address"], ["postalCode", "Postal Code"]
 ];
 
 export function validatePersonalDetails(profile, today = new Date(), requiredFields = personalRequiredFields) {
@@ -21,59 +22,22 @@ export function validatePersonalDetails(profile, today = new Date(), requiredFie
       errors[key] = `${label} is required.`;
     }
   }
-  for (const key of ["currentSalary", "expectedSalary"]) {
-    if (fields.some(([field]) => field === key) && !errors[key] && (!Number.isFinite(Number(profile[key])) || Number(profile[key]) < 0)) {
-      errors[key] = "Enter a valid amount of zero or more.";
-    }
-  }
   if (!errors.birthDate) {
     const error = validateBirthDate(profile.birthDate, today);
     if (error) errors.birthDate = error;
   }
-  if (!errors.initials && salutationValue(profile.initials) === "") errors.initials = "Select a valid Salutation.";
-  return errors;
-}
-
-export function validateResponses(answers, consent, context) {
-  const errors = {};
-  for (const answer of answers) {
-    const key = `${answer.Kind}-${answer.LineNo}`;
-    if (answer.Kind === "requirement") {
-      if (answer.Required && ![1, 2].includes(Number(answer.Has))) errors[key] = "Select Yes or No.";
-    } else if (answer.Required && isBlank(answer.Answer)) {
-      errors[key] = "An answer is required.";
-    } else if (!isBlank(answer.Answer) && answer.ResponseType === "Number" && !Number.isFinite(Number(answer.Answer))) {
-      errors[key] = "Enter a valid number.";
-    }
+  if (fields.some(([key]) => key === "initials") && !errors.initials && salutationValue(profile.initials) === "") {
+    errors.initials = "Select a valid Salutation.";
   }
-  if (context.DataConsentRequired && !consent.DataConsent) errors.DataConsent = "Data collection consent is required.";
-  if (context.ReferenceConsentRequired && !consent.ReferenceConsent) errors.ReferenceConsent = "Reference-check consent is required.";
   return errors;
 }
 
+/** Required document categories (from the application context) with no uploaded file. */
 export function missingRequiredDocuments(context, documents) {
-  return (context.RequiredDocuments || []).filter((row) => row.Required &&
+  return (context.DocumentCategories || []).filter((row) => row.Required &&
     !documents.some((doc) => (doc.requirementCode ?? doc.RequirementCode) === row.Code))
-    .map((row) => `Attach the required document: ${row.Description}`);
+    .map((row) => `Attach your ${row.Description}.`);
 }
-
-export function applicationMandatoryErrors(profile, context, documents, training, today = new Date()) {
-  const answers = [
-    ...(context.MinimumRequirements || []).map((row) => ({ ...row, Kind: "requirement" })),
-    ...(context.Questions || []).map((row) => ({ ...row, Kind: "question" }))
-  ];
-  const responseErrors = validateResponses(answers, context, context);
-  return [
-    ...Object.values(validatePersonalDetails(profile, today)),
-    ...Object.entries(responseErrors).map(([key, error]) => {
-      const row = answers.find((answer) => `${answer.Kind}-${answer.LineNo}` === key);
-      return row ? `${row.Description}: ${error}` : error;
-    }),
-    ...missingRequiredDocuments(context, documents),
-    ...(context.ProfessionalQualificationMandatory && !training.length ? ["Add a professional qualification or training record."] : [])
-  ];
-}
-import { parseDate } from "./dateValidation.js";
 
 export const isBlank = (value) => value == null || String(value).trim() === "";
 

@@ -2,96 +2,77 @@ using System.Text.Json.Serialization;
 
 namespace Recruitment.Server.DTOs
 {
-    
-    
-    
     public class SubmitApplicationDto
     {
-        public string Username { get; set; }
-        public string JobId { get; set; }
-        public string RequisitionNo { get; set; }
+        public string JobId { get; set; } = string.Empty;
+        public string RequisitionNo { get; set; } = string.Empty;
     }
+
+    /// <summary>Row from GetAdvertisedJobs (HRM-Employee Requisitions, Approved + Advertised).</summary>
     public class JobDto
     {
-        public string Purpose { get; set; } = string.Empty;
-        public string JobGrade { get; set; } = string.Empty;
-        public string DepartmentCode { get; set; } = string.Empty;
-        public string DepartmentName { get; set; } = string.Empty;
-        public string ReportingTo { get; set; } = string.Empty;
-        public string ReportingToName { get; set; } = string.Empty;
-        public string JobSpecialization { get; set; } = string.Empty;
-        public string TermsOfService { get; set; } = string.Empty;
-        public string RequisitionType { get; set; } = string.Empty;
-        public decimal? BasicSalary { get; set; }
-        public decimal? Allowances { get; set; }
-        public string DutyStation { get; set; } = string.Empty;
-        public string EmploymentTerms { get; set; } = string.Empty;
-        public bool AcademicJob { get; set; }
-        public bool ProfessionalTrainingRequired { get; set; }
-        public System.Text.Json.JsonElement RequiredDocuments { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
-        public System.Text.Json.JsonElement Questions { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
-        public System.Text.Json.JsonElement AllowanceDetails { get; set; } = System.Text.Json.JsonSerializer.SerializeToElement(Array.Empty<object>());
-
         [JsonPropertyName("documentNo")]
-        public string DocumentNo { get; set; }
+        public string DocumentNo { get; set; } = string.Empty;
 
         [JsonPropertyName("documentDate")]
-        public string DocumentDate { get; set; }
+        public string DocumentDate { get; set; } = string.Empty;
 
         [JsonPropertyName("jobId")]
-        public string JobId { get; set; }
+        public string JobId { get; set; } = string.Empty;
 
         [JsonPropertyName("jobTitle")]
-        public string JobTitle { get; set; }
+        public string JobTitle { get; set; } = string.Empty;
 
         [JsonPropertyName("vacancy")]
-        public int Vacancy { get; set; }
+        public decimal Vacancy { get; set; }
 
         [JsonPropertyName("startDate")]
-        public string StartDate { get; set; }
+        public string StartDate { get; set; } = string.Empty;
 
         [JsonPropertyName("endDate")]
-        public string EndDate { get; set; }
+        public string EndDate { get; set; } = string.Empty;
 
         [JsonPropertyName("status")]
-        public string Status { get; set; }
-    }
+        public string Status { get; set; } = string.Empty;
 
-    public class JobAdvertDto : JobDto
-    {
-        public string Requirements { get; set; } = string.Empty;
-        public string Responsibilities { get; set; } = string.Empty;
-        public string Competencies { get; set; } = string.Empty;
+        [JsonPropertyName("purpose")]
+        public string Purpose { get; set; } = string.Empty;
+
+        /// <summary>Documents applicants must attach (portal configuration).</summary>
+        [JsonPropertyName("requiredDocuments")]
+        public List<JobRequirementDto> RequiredDocuments { get; set; } = [];
     }
 
     public class JobDetailsDto
     {
-        public List<JobRequirementDto> Competencies { get; set; } = new();
         [JsonPropertyName("requirements")]
-        public List<JobRequirementDto> Requirements { get; set; } = new();
+        public List<JobRequirementDto> Requirements { get; set; } = [];
 
         [JsonPropertyName("responsibilities")]
-        public List<JobResponsibilityDto> Responsibilities { get; set; } = new();
+        public List<JobResponsibilityDto> Responsibilities { get; set; } = [];
+
+        [JsonPropertyName("competencies")]
+        public List<JobRequirementDto> Competencies { get; set; } = [];
 
         [JsonPropertyName("jobInfo")]
-        public JobDto JobInfo { get; set; }
+        public JobDto JobInfo { get; set; } = new();
     }
 
     public class JobRequirementDto
     {
         [JsonPropertyName("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 
     public class JobResponsibilityDto
     {
         [JsonPropertyName("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

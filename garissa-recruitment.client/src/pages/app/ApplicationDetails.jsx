@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IconArrowLeft, IconLoader2, IconCheck } from "@tabler/icons-react";
 import Stepper from "../../components/Stepper";
-import { GenderEnum, MaritalStatusEnum } from "../../constants/enums";
+import { GenderOptions, MaritalStatusOptions, optionValue } from "../../constants/enums";
 import { toast } from "react-toastify";
 import PersonalDetails from "./profile/steps/PersonalDetails";
 import { validatePersonalDetails as getPersonalDetailsErrors, salutationValue, salutationText } from "../../lib/applicationValidation";
+import { recruitmentRequest } from "../../lib/recruitmentApi";
 import AcademicQualifications from "./profile/steps/AcademicQualifications";
 import WorkExperience from "./profile/steps/WorkExperience";
 import ProfessionalTraining from "./profile/steps/ProfessionalTraining";
-// Relative / Next of Kin is intentionally excluded from the application flow.
-// import NextOfKin from "./profile/steps/NextOfKin";
 import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
 import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
@@ -28,6 +27,7 @@ const ApplicationDetails = () => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [application, setApplication] = useState({ jobTitle: "", candidateStatus: "", status: "" });
 
   const [profile, setProfile] = useState({
     emailAddress: "",
@@ -48,15 +48,8 @@ const ApplicationDetails = () => {
     country: "",
     altPhoneNumber: "",
     county: "",
-    subCounty: "",
-    wardCode: "",
     citizenship: "",
     kraPin: "",
-    ethnicity: "",
-    currentSalary: "",
-    expectedSalary: "",
-    noticePeriod: "",
-    // Add placeholders if needed for other sections
   });
 
   const STEPS = [
@@ -64,49 +57,11 @@ const ApplicationDetails = () => {
     "Academic Qualifications",
     "Work Experience",
     "Professional Training",
-    "Job Requirements",
+    "Requirements & Memberships",
     "Referees",
     "Attachments",
     "Review and Submit"
   ];
-
-  // Helper mappings (reused from ProfileUpdate logic)
-  const getMaritalStatusValue = (status) => {
-    if (status === undefined || status === null) return "";
-    const statusStr = status.toString();
-    
-    // If it's already a valid enum value (0-5), return it
-    if (Object.values(MaritalStatusEnum).some(val => val.toString() === statusStr)) {
-        return statusStr;
-    }
-
-    const map = { 
-      "Single": MaritalStatusEnum.Single, 
-      "Married": MaritalStatusEnum.Married, 
-      "Divorced": MaritalStatusEnum.Divorced, 
-      "Widow": MaritalStatusEnum.Widow, 
-      "Widower": MaritalStatusEnum.Widower,
-      "Widowed": MaritalStatusEnum.Widow, 
-      "Complicated": MaritalStatusEnum.Complicated 
-    };
-    return map[statusStr] !== undefined ? map[statusStr].toString() : "";
-  };
-  
-  const getGenderValue = (gender) => {
-      if (gender === undefined || gender === null) return "";
-      const genderStr = gender.toString();
-      
-      // If it's already a valid enum value (1-5), return it
-      if (Object.values(GenderEnum).some(val => val.toString() === genderStr)) {
-          return genderStr;
-      }
-
-      const lowerGender = genderStr.toLowerCase();
-      if(lowerGender === "female") return GenderEnum.Female.toString();
-      if(lowerGender === "male") return GenderEnum.Male.toString();
-      if(lowerGender === "nonbinary" || lowerGender === "non-binary") return GenderEnum.NonBinary.toString();
-      return "";
-  }
 
   const getInitialsValue = (initials) => {
       return salutationValue(initials);
@@ -134,7 +89,7 @@ const ApplicationDetails = () => {
              return;
         }
 
-        const response = await fetch(`/api/job/application-details?applicationNo=${applicationNo}`, {
+        const response = await fetch(`/api/job/application-details?applicationNo=${encodeURIComponent(applicationNo)}`, {
              headers: {
                 "Authorization": `Bearer ${user.accessToken}`
              }
@@ -143,6 +98,7 @@ const ApplicationDetails = () => {
 
         if (result.success) {
           const data = result.data || {};
+          setApplication({ jobTitle: data.JobTitle || "", candidateStatus: data.CandidateStatus || "", status: data.Status || "" });
           // Map application details to the profile/form structure
           // Note: Assuming Application Details contains the Personal info snapshot
           setProfile({
@@ -153,30 +109,23 @@ const ApplicationDetails = () => {
             idNumber: data.IDPassportNo || "",
             initials: getInitialsValue(data.Salutation), 
             phoneNumber: data.PhoneNo || "",
-            gender: getGenderValue(data.Gender),
-            maritalStatus: getMaritalStatusValue(data.MaritalStatus), 
+            gender: optionValue(GenderOptions, data.Gender),
+            maritalStatus: optionValue(MaritalStatusOptions, data.MaritalStatus),
             postalCode: data.PostalCode || "",
             postalAddress: data.Address || "",
             birthDate: formatNavDate(data.DateOfBirth),
-            disability: data.PWD ? "true" : "false",
-            disabilityStatus: data.DisabilityType || "",
-            pwdNumber: data.PWDNumber || "",
+            // GetJobApplicationDetails does not return the disability fields, so they start blank.
+            disability: "false",
+            disabilityStatus: "",
+            pwdNumber: "",
             country: data.Country || "",
             altPhoneNumber: data.AltPhoneNo || "",
             county: data.County || "",
-            subCounty: data.SubCounty || "",
-            wardCode: data.Ward || data.WardCode || "",
             citizenship: data.Citizenship || "",
             kraPin: data.KRApin || "",
-            ethnicity: data.Ethnicity || "",
-            currentSalary: data.CurrentSalary ?? "",
-            expectedSalary: data.ExpectedSalary ?? "",
-            noticePeriod: data.NoticePeriod || "",
           });
-          
-          if (data.Status === "Submitted" || data.Status === "Closed" || data.CandidateStatus === "Withdrawn") {
-            setIsSubmitted(true);
-          }
+
+          setIsSubmitted(data.Submitted === true);
         } else {
           toast.error(result.message || "Failed to load application details");
         }
@@ -239,29 +188,20 @@ const ApplicationDetails = () => {
         middleName: profile.middleName,
         lastName: profile.lastName,
         idPassportNo: profile.idNumber,
-        email: profile.emailAddress,
         phoneNo: String(profile.phoneNumber || ""),
         altPhoneNo: String(profile.altPhoneNumber || ""),
         dateOfBirth: profile.birthDate,
-        gender: parseInt(profile.gender) || 0,
-        maritalStatus: profile.maritalStatus === "" || profile.maritalStatus == null
-          ? MaritalStatusEnum.Single
-          : Number(profile.maritalStatus),
+        gender: Number(profile.gender) || 0,
+        maritalStatus: Number(profile.maritalStatus) || 0,
         country: profile.country,
         countyCode: profile.county,
-        subCountyCode: profile.subCounty,
-        wardCode: profile.wardCode,
         postalAddress: profile.postalAddress,
         postalCode: profile.postalCode,
         disability: profile.disability === "true",
         disabilityType: profile.disabilityStatus,
         pwdNumber: profile.pwdNumber,
         kraPin: profile.kraPin,
-        citizenship: profile.citizenship,
-        ethnicity: profile.ethnicity,
-        currentSalary: parseFloat(profile.currentSalary) || 0,
-        expectedSalary: parseFloat(profile.expectedSalary) || 0,
-        noticePeriod: profile.noticePeriod
+        citizenship: profile.citizenship
       };
 
       const response = await fetch("/api/job/update-personal-details", {
@@ -304,32 +244,17 @@ const ApplicationDetails = () => {
 
   const handleSubmit = async (e) => {
       if(e) e.preventDefault();
-      
+
       try {
         setSaving(true);
-        const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/submit-application?applicationNo=${applicationNo}`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${user.accessToken}`
-          }
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          toast.success("Application successfully submitted!");
-          setIsSubmitted(true);
-          // Clear saved step on completion
-          localStorage.removeItem(`app_step_${applicationNo}`);
-          setTimeout(() => {
-              navigate("/app/applications");
-          }, 3000);
-        } else {
-          toast.error(result.message || "Submission failed");
-        }
+        await recruitmentRequest(`submit-application?applicationNo=${encodeURIComponent(applicationNo)}`, { method: "POST" });
+        toast.success("Application successfully submitted!");
+        setIsSubmitted(true);
+        setApplication((prev) => ({ ...prev, candidateStatus: "Submitted" }));
+        localStorage.removeItem(`app_step_${applicationNo}`);
+        setTimeout(() => navigate("/app/applications"), 3000);
       } catch (error) {
-        console.error(error);
-        toast.error("An error occurred during submission. Please ensure all steps are complete.");
+        toast.error(error.message || "Submission failed. Please ensure all steps are complete.");
       } finally {
         setSaving(false);
       }
@@ -353,10 +278,16 @@ const ApplicationDetails = () => {
       </button>
 
       <div className="max-w-full mx-auto">
-
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <p className="text-sm text-gray-500">Application {applicationNo}</p>
+            <h2 className="text-xl font-semibold text-gray-800">{application.jobTitle || "Job application"}</h2>
+          </div>
+          <span className="rounded-full bg-blue-50 text-blue-800 px-3 py-1 text-sm font-medium">{application.candidateStatus || "Draft"}</span>
+        </div>
 
         {/* Stepper Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 ${isSubmitted ? 'hidden' : ''}`}>
            <Stepper 
              steps={STEPS} 
              activeStep={activeStep} 
@@ -367,7 +298,7 @@ const ApplicationDetails = () => {
            />
         </div>
 
-        {isSubmitted && <div className="bg-white rounded-xl shadow-sm p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted /></div>}
+        {isSubmitted && <div className="bg-white rounded-xl shadow-sm p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted status={application.candidateStatus} /></div>}
 
         <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-8 ${isSubmitted ? 'hidden' : ''}`}>
             {activeStep === 0 && (

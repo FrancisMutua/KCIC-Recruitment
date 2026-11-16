@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Recruitment.Server.DTOs;
 using Recruitment.Server.Interfaces;
+using Recruitment.Server.Utilities;
 
 namespace Recruitment.Server.Services
 {
@@ -17,11 +18,11 @@ namespace Recruitment.Server.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _odataBaseUrl;
-        private readonly IWebService _webService;
+        private readonly IRecruitmentService _recruitment;
 
-        public DropDownService(IConfiguration configuration, IWebService webService)
+        public DropDownService(IConfiguration configuration, IRecruitmentService recruitment)
         {
-            _webService = webService;
+            _recruitment = recruitment;
             var baseUrl = configuration["BusinessCentral:BaseUrl"]!;
             var username = configuration["BusinessCentral:Username"]!;
             var password = configuration["BusinessCentral:Password"]!;
@@ -152,151 +153,36 @@ namespace Recruitment.Server.Services
             return dropDownList;
         }
 
+        /// <summary>
+        /// Codeunit 50034 GetSetupDropDowns supports: County, Religion, Countries, AcademicQualifications.
+        /// "Citizenship" reuses the country list. Anything else returns an empty list.
+        /// </summary>
         public async Task<List<DropDownOption>> GetSoapDropDownLists(string dropdownType, Dictionary<string, object>? filters = null)
         {
-            var dropDownList = new List<DropDownOption>();
-            try
+            var bcType = dropdownType switch
             {
-                var soapClient = _webService.ObjNav();
-        
-                // Pass filters directly as JSON string, not wrapped
-                string filterStr = filters != null && filters.Count > 0 
-                    ? Newtonsoft.Json.JsonConvert.SerializeObject(filters) 
-                    : "";
-        
-                var response = await soapClient.GetSetupDropDownsAsync(dropdownType, filterStr);
-        
-                if (string.IsNullOrEmpty(response.return_value))
-                {
-                    return dropDownList;
-                }
-
-                var jsonArray = JArray.Parse(response.return_value);
-                if (jsonArray == null) return dropDownList;
-
-                foreach (var item in jsonArray)
-                {
-                    dropDownList.Add(new DropDownOption
-                    {
-                        Code = item["Code"]?.ToString(),
-                        Description = item["Description"]?.ToString(),
-                        Text = item["Description"]?.ToString() ?? item["Code"]?.ToString(),
-                        Value = item["Code"]?.ToString()
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the actual error for debugging
-                Console.WriteLine($"Error in GetSoapDropDownLists: {ex.Message}");
-                throw;
-            }
-            return dropDownList;
+                "Citizenship" => "Countries",
+                _ => dropdownType
+            };
+            if (bcType is not ("County" or "Religion" or "Countries" or "AcademicQualifications")) return [];
+            return ToOptions(await _recruitment.GetSetupDropDownsAsync(bcType, string.Empty));
         }
 
-        public async Task<List<DropDownOption>> GetSubCountiesList(string countyName = "")
-        {
-            var dropDownList = new List<DropDownOption>();
-            try
+        // GetSubCounties / GetWards are empty stubs in codeunit 50034.
+        public Task<List<DropDownOption>> GetSubCountiesList(string countyName = "") => Task.FromResult(new List<DropDownOption>());
+
+        public Task<List<DropDownOption>> GetWardsList(string subCountyName = "") => Task.FromResult(new List<DropDownOption>());
+
+        public async Task<List<DropDownOption>> GetDisabilityTypesList() =>
+            ToOptions(await _recruitment.GetDisabilityTypesAsync());
+
+        private static List<DropDownOption> ToOptions(string json) =>
+            BcJson.Array(json).Select(item => new DropDownOption
             {
-                var soapClient = _webService.ObjNav();
-                var response = await soapClient.GetSubCountiesAsync(countyName ?? "");
-                
-                if (string.IsNullOrEmpty(response.return_value))
-                {
-                    return dropDownList;
-                }
-
-                var jsonArray = JArray.Parse(response.return_value);
-                if (jsonArray == null) return dropDownList;
-
-                foreach (var item in jsonArray)
-                {
-                    dropDownList.Add(new DropDownOption
-                    {
-                        Code = item["Code"]?.ToString(),
-                        Description = item["Description"]?.ToString(),
-                        Text = item["Description"]?.ToString() ?? item["Code"]?.ToString(),
-                        Value = item["Code"]?.ToString()
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetSubCountiesList: {ex.Message}");
-                throw;
-            }
-            return dropDownList;
-        }
-
-        public async Task<List<DropDownOption>> GetWardsList(string subCountyName = "")
-        {
-            var dropDownList = new List<DropDownOption>();
-            try
-            {
-                var soapClient = _webService.ObjNav();
-                var response = await soapClient.GetWardsAsync(subCountyName ?? "");
-                
-                if (string.IsNullOrEmpty(response.return_value))
-                {
-                    return dropDownList;
-                }
-
-                var jsonArray = JArray.Parse(response.return_value);
-                if (jsonArray == null) return dropDownList;
-
-                foreach (var item in jsonArray)
-                {
-                    dropDownList.Add(new DropDownOption
-                    {
-                        Code = item["Code"]?.ToString(),
-                        Description = item["Description"]?.ToString(),
-                        Text = item["Description"]?.ToString() ?? item["Code"]?.ToString(),
-                        Value = item["Code"]?.ToString()
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetWardsList: {ex.Message}");
-                throw;
-            }
-            return dropDownList;
-        }
-
-        public async Task<List<DropDownOption>> GetDisabilityTypesList()
-        {
-            var dropDownList = new List<DropDownOption>();
-            try
-            {
-                var soapClient = _webService.ObjNav();
-                var response = await soapClient.GetDisabilityTypesAsync();
-                
-                if (string.IsNullOrEmpty(response.return_value))
-                {
-                    return dropDownList;
-                }
-
-                var jsonArray = JArray.Parse(response.return_value);
-                if (jsonArray == null) return dropDownList;
-
-                foreach (var item in jsonArray)
-                {
-                    dropDownList.Add(new DropDownOption
-                    {
-                        Code = item["Code"]?.ToString(),
-                        Description = item["Description"]?.ToString(),
-                        Text = item["Description"]?.ToString() ?? item["Code"]?.ToString(),
-                        Value = item["Code"]?.ToString()
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetDisabilityTypesList: {ex.Message}");
-                throw;
-            }
-            return dropDownList;
-        }
+                Code = BcJson.Text(item, "Code"),
+                Description = BcJson.Text(item, "Description"),
+                Text = string.IsNullOrWhiteSpace(BcJson.Text(item, "Description")) ? BcJson.Text(item, "Code") : BcJson.Text(item, "Description"),
+                Value = BcJson.Text(item, "Code")
+            }).ToList();
     }
 }
