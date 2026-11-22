@@ -29,10 +29,10 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name) =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 bg-white`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 bg-white`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshKin = async () => {
@@ -195,11 +195,11 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAddKin} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <IconPlus size={20} className="text-brand-green" /> Add Next of Kin
+          <IconPlus size={20} className="text-brand-green-600" /> Add Next of Kin
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">First Name <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="firstName" 
@@ -213,7 +213,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Middle Name <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="middleName" 
@@ -227,7 +227,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Last Name <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="lastName" 
@@ -241,7 +241,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-brand-brown-600">*</span></label>
             <input 
               type="number" 
               name="phoneNo" 
@@ -255,7 +255,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-brand-brown-600">*</span></label>
             <input 
               type="email" 
               name="email" 
@@ -269,7 +269,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Relationship <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Relationship <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="relationship" 
@@ -283,7 +283,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-brand-brown-600">*</span></label>
             <input
               type="text"
               name="institution"
@@ -356,7 +356,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <button 
                         onClick={() => handleDelete(item.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        className="text-brand-brown-600 hover:text-brand-brown-700 transition-colors p-1"
                         title="Delete"
                       >
                         <IconTrash size={18} />

@@ -26,10 +26,10 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name, extra = "bg-white") =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshTraining = async () => {
@@ -161,14 +161,14 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAdd} className="space-y-4" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <IconPlus size={20} className="text-brand-green" /> Add Professional Training / Qualification
+          <IconPlus size={20} className="text-brand-green-600" /> Add Professional Training / Qualification
         </h3>
         <p className="text-sm text-gray-500 -mt-2">Add professional qualifications and training relevant to the job. Professional memberships are recorded separately under Job Requirements.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="col-span-full md:col-span-2">
             <label className="block text-sm font-medium text-gray-700">
-              Qualification / Training Name <span className="text-red-500">*</span>
+              Qualification / Training Name <span className="text-brand-brown-600">*</span>
             </label>
             <input
               type="text"
@@ -185,7 +185,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Year Attained <span className="text-red-500">*</span>
+              Year Attained <span className="text-brand-brown-600">*</span>
             </label>
             <input
               type="number"
@@ -203,7 +203,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
           <div className="col-span-full md:col-span-1">
             <label className="block text-sm font-medium text-gray-700">
-              Institution <span className="text-red-500">*</span>
+              Institution <span className="text-brand-brown-600">*</span>
             </label>
             <input
               type="text"
@@ -222,7 +222,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
 
         </div>
 
-        <p className="mt-4 text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
+        <p className="mt-4 text-sm text-brand-brown-600">{PERMANENT_RECORD_NOTE}</p>
         <div className="mt-6 flex justify-end">
           <button
             type="submit"

@@ -19,30 +19,30 @@ body {
     @apply cursor-pointer even:bg-gray-100 hover:bg-gray-200/70;
   }
 
-  /* Primary button — gradient from brand green */
+  /* Primary button — logo green (darker shades keep white text at AA contrast) */
   .btn-primary {
-    background: linear-gradient(135deg, #008000 0%, #005200 100%);
+    background: linear-gradient(135deg, #297a52 0%, #205f3f 100%);
     color: #ffffff;
     transition: opacity 0.2s ease, box-shadow 0.2s ease;
   }
   .btn-primary:hover:not(:disabled) {
     opacity: 0.9;
-    box-shadow: 0 4px 12px rgba(0, 128, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(51, 153, 102, 0.4);
   }
   .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
-  /* Secondary button — solid brand crimson */
+  /* Secondary button — logo tagline brown */
   .btn-secondary {
-    background-color: #ae152d;
+    background-color: #6f573d;
     color: #ffffff;
     transition: opacity 0.2s ease, box-shadow 0.2s ease;
   }
   .btn-secondary:hover:not(:disabled) {
     opacity: 0.9;
-    box-shadow: 0 4px 12px rgba(174, 21, 45, 0.4);
+    box-shadow: 0 4px 12px rgba(111, 87, 61, 0.4);
   }
   .btn-secondary:disabled {
     opacity: 0.5;
@@ -51,7 +51,7 @@ body {
 
   /* Global Primary Gradient Background */
   .bg-gradient-primary {
-    background: linear-gradient(135deg, #008000 0%, #005200 100%);
+    background: linear-gradient(135deg, #297a52 0%, #205f3f 100%);
     background-attachment: fixed;
   }
 }
@@ -64,7 +64,7 @@ input {
 /* Custom Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
+  scrollbar-color: #b1d8c5 #eff7f3;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -73,15 +73,15 @@ input {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #eff7f3;
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #b1d8c5;
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #85c2a3;
 }

@@ -181,26 +181,26 @@ const AuthModals = () => {
       {showLoginModal && (
         <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[24rem] shadow-2xl border border-gray-200">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-red-500 transition-colors"
+            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
             Login
           </h2>
           <form className="flex flex-col gap-5 px-4 pb-4" onSubmit={handleLogin}>
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                   size={20}
                 />
                 <input
@@ -217,13 +217,13 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
               >
                 Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                   size={20}
                 />
                 <input
@@ -237,7 +237,7 @@ const AuthModals = () => {
                 />
                 <button
                   type="button"
-                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-brand-green transition-colors"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-brand-green-600 transition-colors"
                   onClick={() => setShowLoginPassword((current) => !current)}
                   aria-label={showLoginPassword ? "Hide password" : "Show password"}
                 >
@@ -269,14 +269,14 @@ const AuthModals = () => {
             <p>
               Do not have an account?{" "}
               <button
-                className="text-brand-green font-semibold hover:underline"
+                className="text-brand-green-600 font-semibold hover:underline"
                 onClick={openSignUp}
               >
                 Create an account
               </button>
             </p>
             <button
-              className="text-brand-green font-semibold hover:underline"
+              className="text-brand-green-600 font-semibold hover:underline"
               onClick={openForgotPassword}
             >
               Forgot Password?
@@ -289,13 +289,13 @@ const AuthModals = () => {
       {showForgotPasswordModal && (
         <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[24rem] shadow-2xl border border-gray-200">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-red-500 transition-colors"
+            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
             Forgot Password
           </h2>
           <form
@@ -305,13 +305,13 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                   size={20}
                 />
                 <input
@@ -328,13 +328,13 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
               >
                 New Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                   size={20}
                 />
                 <input
@@ -351,13 +351,13 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="confirm-password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
               >
                 Confirm Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                   size={20}
                 />
                 <input
@@ -390,7 +390,7 @@ const AuthModals = () => {
           </form>
           <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
             <button
-              className="text-brand-red font-semibold hover:underline"
+              className="text-brand-brown-600 font-semibold hover:underline"
               onClick={openLogin}
             >
               Back to login
@@ -403,13 +403,13 @@ const AuthModals = () => {
       {showCreateAccountModal && (
         <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[26rem] md:w-[50rem] shadow-2xl border border-gray-200">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-red-500 transition-colors"
+            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green">
+          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
             Create Account
           </h2>
           <form onSubmit={handleSubmitCreateAccount} className="px-4 pb-4">
@@ -417,13 +417,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="email-address"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Email Address
                 </label>
                 <div className="relative">
                   <IconMail
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -440,13 +440,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="first-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   First Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -463,13 +463,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="middle-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Middle Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -485,13 +485,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="last-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Last Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -508,13 +508,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="id-number"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Id Number
                 </label>
                 <div className="relative">
                   <IconId
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -531,13 +531,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -554,13 +554,13 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="confirm-password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green"
+                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
                 >
                   Confirm Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green"
+                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
                     size={20}
                   />
                   <input
@@ -594,7 +594,7 @@ const AuthModals = () => {
           </form>
           <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
             <button
-              className="text-brand-red font-semibold hover:underline"
+              className="text-brand-brown-600 font-semibold hover:underline"
               onClick={openLogin}
             >
               Back to login

@@ -113,7 +113,7 @@ const JobDetails = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <MoonLoader color="blue" />
+        <MoonLoader color="#339966" />
       </div>
     );
   }
@@ -121,12 +121,12 @@ const JobDetails = () => {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-64">
-        <div className="bg-red-400 text-white py-3 px-6 rounded-md mb-4">
+        <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md mb-4">
           {error}
         </div>
         <button
           onClick={() => navigate("/")}
-          className="text-brand-green hover:underline flex items-center gap-1"
+          className="text-brand-green-600 hover:underline flex items-center gap-1"
         >
           <IconArrowLeft size={16} /> Back to Jobs
         </button>
@@ -138,14 +138,14 @@ const JobDetails = () => {
     <div className="py-2 px-2 md:px-4 max-w-full mx-auto">
       <button
         onClick={() => navigate("/")}
-        className="mb-6 flex items-center gap-2 text-brand-green hover:text-brand-green font-medium transition-colors"
+        className="mb-6 flex items-center gap-2 text-brand-green-600 hover:text-brand-green-600 font-medium transition-colors"
       >
         <IconArrowLeft size={20} /> Back to Jobs
       </button>
 
       {jobDetails && (
         <div className="bg-white overflow-hidden">
-          <div className="bg-gradient-to-r from-brand-green to-brand-green-700 px-4 py-2 text-white">
+          <div className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 px-4 py-2 text-white">
             <div className="flex justify-between items-start md:items-center">
               <div>
                 <h2 className="text-lg md:text-2xl font-bold mb-2">

@@ -6,7 +6,7 @@ const RootNav = () => {
 
   return (
     <>
-      <nav className="flex justify-between items-center border-b-2 border-b-brand-red py-2 md:py-1 md:px-20 bg-white">
+      <nav className="flex justify-between items-center border-b-2 border-b-brand-lime py-2 md:py-1 md:px-20 bg-white">
         <img src={logo} alt="Garissa University logo" className="h-8 w-auto sm:h-14 md:h-16" />
         <div className="flex gap-5">
           <button

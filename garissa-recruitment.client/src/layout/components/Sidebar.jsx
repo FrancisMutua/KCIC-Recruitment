@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       `}>
         <div className="flex flex-col h-full bg-gradient-primary">
           {/* Logo Section */}
-          <div className="h-20 bg-white text-center px-6 border-b border-brand-red/30 flex justify-between items-center shrink-0">
+          <div className="h-20 bg-white text-center px-6 border-b border-brand-lime flex justify-between items-center shrink-0">
             <img src={logo} alt="Garissa University logo" className="h-auto w-full min-w-0" />
             <button className="lg:hidden text-white/70 hover:text-white" onClick={onClose}>
               <IconX size={24} />
@@ -82,11 +82,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                       className={`
                         w-full flex items-center gap-3 px-4 py-3.5 transition-all duration-300 relative
                         ${isActive 
-                          ? 'bg-slate-50 text-brand-green font-bold rounded-l-[1.5rem] -mr-[1px]' 
+                          ? 'bg-slate-50 text-brand-green-600 font-bold rounded-l-[1.5rem] -mr-[1px]' 
                           : 'text-white hover:bg-white/10 rounded-xl mr-3'}
                       `}
                     >
-                      <span className={`${isActive ? 'text-brand-green' : 'text-white'}`}>
+                      <span className={`${isActive ? 'text-brand-green-600' : 'text-white'}`}>
                         {item.icon}
                       </span>
                       <span className="tracking-wide text-sm">{item.name}</span>

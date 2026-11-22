@@ -11,7 +11,7 @@ const ProfileUpdate = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [fieldErrors, setFieldErrors] = useState({});
-  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
   const [profile, setProfile] = useState({
     emailAddress: "",
     firstName: "",
@@ -163,7 +163,7 @@ const ProfileUpdate = () => {
   if (fetching) {
     return (
       <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-brand-green" size={40} />
+        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
       </div>
     );
   }
@@ -242,7 +242,7 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="phoneNumber"
@@ -255,7 +255,7 @@ const ProfileUpdate = () => {
             </div>
             
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span className="text-brand-brown-600">*</span></label>
               <input
                 type="date"
                 name="birthDate"
@@ -269,7 +269,7 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gender <span className="text-brand-brown-600">*</span></label>
               <select
                 name="gender"
                 value={profile.gender}
@@ -318,7 +318,7 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Address <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Address <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="postalAddress"

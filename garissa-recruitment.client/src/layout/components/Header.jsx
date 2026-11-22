@@ -56,7 +56,7 @@ const Header = ({ onMenuClick }) => {
     const pathnames = location.pathname.split("/").filter((x) => x);
     return (
       <div className="flex items-center text-sm text-slate-500 font-medium overflow-hidden whitespace-nowrap">
-        <span className="hover:text-brand-green transition-colors cursor-default capitalize">Home</span>
+        <span className="hover:text-brand-green-600 transition-colors cursor-default capitalize">Home</span>
         {pathnames.map((value) => {
           // Skip 'app' in breadcrumbs to be cleaner
           if (value === "app") return null;
@@ -64,7 +64,7 @@ const Header = ({ onMenuClick }) => {
           return (
             <div key={value} className="flex items-center">
               <span className="mx-2 text-slate-300">/</span>
-              <span className="hover:text-brand-green transition-colors cursor-default capitalize">
+              <span className="hover:text-brand-green-600 transition-colors cursor-default capitalize">
                 {value.replace(/-/g, " ")}
               </span>
             </div>
@@ -93,9 +93,9 @@ const Header = ({ onMenuClick }) => {
 
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <button className="p-2 text-slate-400 hover:text-brand-green hover:bg-brand-green-50 rounded-full transition-all relative">
+        <button className="p-2 text-slate-400 hover:text-brand-green-600 hover:bg-brand-green-50 rounded-full transition-all relative">
           <IconBell size={22} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-camel rounded-full border-2 border-white"></span>
         </button>
 
         <div className="w-px h-6 bg-slate-200 mx-2 hidden sm:block"></div>
@@ -105,7 +105,7 @@ const Header = ({ onMenuClick }) => {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-3 p-1.5 pr-3 hover:bg-slate-50 rounded-full transition-all border border-transparent hover:border-slate-100"
           >
-            <div className="bg-gradient-to-br from-brand-green to-brand-green-700 p-0.5 rounded-full">
+            <div className="bg-gradient-to-br from-brand-green-600 to-brand-green-700 p-0.5 rounded-full">
               <IconUserCircle className="text-white bg-white/20 rounded-full" size={32} />
             </div>
             <div className="hidden md:block text-left">
@@ -133,9 +133,9 @@ const Header = ({ onMenuClick }) => {
               <div className="h-px bg-slate-100 my-1 mx-2"></div>
               <button 
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-brand-brown-600 hover:bg-brand-brown-50 rounded-lg flex items-center gap-2"
               >
-                <IconLogout size={18} className="text-red-400" /> Logout
+                <IconLogout size={18} className="text-brand-brown-400" /> Logout
               </button>
             </div>
           )}

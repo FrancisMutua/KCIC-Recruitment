@@ -8,7 +8,7 @@ const Footer = () => {
         </p>
         <div className="flex items-center gap-4">
           <p className="text-sm font-medium text-slate-400">
-            Powered By <span className="text-brand-red font-semibold italic">Appking @2026</span>
+            Powered By <span className="text-brand-brown-600 font-semibold italic">Appking @2026</span>
           </p>
         </div>
       </div>

@@ -98,7 +98,7 @@ const JobTable = ({ basePath = "/job-details" }) => {
                 Details
             </Button>
             <button 
-              className="p-1.5 text-brand-green hover:bg-brand-green rounded-md transition-colors border border-brand-green"
+              className="p-1.5 text-brand-green-600 hover:bg-brand-green-600 hover:text-white rounded-md transition-colors border border-brand-green"
               onClick={() => handleShare(job.jobId, job.documentNo)}
               title="Share Job"
             >
@@ -117,12 +117,12 @@ const JobTable = ({ basePath = "/job-details" }) => {
       </h3>
       {loading && (
         <div className="flex justify-center items-center mt-4 mb-4">
-          <MoonLoader color="blue" />
+          <MoonLoader color="#339966" />
         </div>
       )}
       {error && (
         <div className="flex justify-center items-center mt-4 mb-4">
-          <div className="bg-red-400 text-white py-3 px-6 rounded-md">
+          <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md">
             {error}
           </div>
         </div>

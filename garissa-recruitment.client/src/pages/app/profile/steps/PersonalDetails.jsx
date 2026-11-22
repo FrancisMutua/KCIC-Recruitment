@@ -24,10 +24,10 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
   };
 
   const inputClass = (name, extra = "") =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-green"} rounded-md shadow-sm p-2 ${extra}`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300 focus:ring-brand-green"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
 
   return (
     <div className="space-y-6">
@@ -40,7 +40,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* First Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
+           <label className="block text-sm font-medium text-gray-700">First Name <span className="text-brand-brown-600">*</span></label>
            <input type="text" name="firstName" value={profile.firstName} onChange={handleFieldChange} className={inputClass("firstName", "bg-gray-100")} readOnly />
            {renderError("firstName")}
         </div>
@@ -52,35 +52,35 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
         </div>
         {/* Last Name */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">Last Name <span className="text-red-500">*</span></label>
+           <label className="block text-sm font-medium text-gray-700">Last Name <span className="text-brand-brown-600">*</span></label>
            <input type="text" name="lastName" value={profile.lastName} onChange={handleFieldChange} className={inputClass("lastName", "bg-gray-100")} readOnly />
            {renderError("lastName")}
         </div>
         
         {/* ID Number */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">ID / Passport No <span className="text-red-500">*</span></label>
+           <label className="block text-sm font-medium text-gray-700">ID / Passport No <span className="text-brand-brown-600">*</span></label>
            <input type="text" name="idNumber" value={profile.idNumber} onChange={handleFieldChange} className={inputClass("idNumber", "bg-gray-100")} readOnly />
            {renderError("idNumber")}
         </div>
 
         {/* KRA Pin */}
         <div>
-           <label className="block text-sm font-medium text-gray-700">KRA Pin <span className="text-red-500">*</span></label>
+           <label className="block text-sm font-medium text-gray-700">KRA Pin <span className="text-brand-brown-600">*</span></label>
            <input type="text" name="kraPin" value={profile.kraPin} onChange={handleFieldChange} className={inputClass("kraPin")} required />
            {renderError("kraPin")}
         </div>
 
         {/* Email Address */}
         <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-brand-brown-600">*</span></label>
             <input type="email" name="emailAddress" value={profile.emailAddress} disabled className={inputClass("emailAddress", "bg-gray-100 cursor-not-allowed")} />
             {renderError("emailAddress")}
         </div>
 
         {/* The SOAP profile contract retains the legacy initials field name. */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Salutation <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Salutation <span className="text-brand-brown-600">*</span></label>
           <select name="initials" value={profile.initials} onChange={handleFieldChange} className={inputClass("initials", "bg-white")} required>
               <option value="">Select Salutation</option>
               <option value="0">Mr.</option>
@@ -94,7 +94,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* Phone Number */}
         <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-brand-brown-600">*</span></label>
             <input type="text" name="phoneNumber" value={profile.phoneNumber} onChange={handleFieldChange} className={inputClass("phoneNumber")} required />
             {renderError("phoneNumber")}
         </div>
@@ -108,14 +108,14 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* Date of Birth */}
         <div>
-             <label className="block text-sm font-medium text-gray-700">Date of Birth <span className="text-red-500">*</span></label>
+             <label className="block text-sm font-medium text-gray-700">Date of Birth <span className="text-brand-brown-600">*</span></label>
              <input type="date" name="birthDate" max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]} value={profile.birthDate || ''} onChange={handleFieldChange} className={inputClass("birthDate")} required />
              {renderError("birthDate")}
         </div>
 
         {/* Gender */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Gender <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Gender <span className="text-brand-brown-600">*</span></label>
           <select name="gender" value={profile.gender} onChange={handleFieldChange} className={inputClass("gender", "bg-white")} required>
               <option value="">Select Gender</option>
               {GenderOptions.map((opt) => (
@@ -127,7 +127,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* Marital Status */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Marital Status <span className="text-brand-brown-600">*</span></label>
           <select name="maritalStatus" value={profile.maritalStatus} onChange={handleFieldChange} className={inputClass("maritalStatus", "bg-white")} required>
               <option value="">Select Marital Status</option>
               {MaritalStatusOptions.map((opt) => (
@@ -183,14 +183,14 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
 
         {/* Postal Address */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Postal Address <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Postal Address <span className="text-brand-brown-600">*</span></label>
           <input type="text" name="postalAddress" value={profile.postalAddress} onChange={handleFieldChange} className={inputClass("postalAddress")} required />
           {renderError("postalAddress")}
         </div>
 
         {/* Postal Code */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Postal Code <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700">Postal Code <span className="text-brand-brown-600">*</span></label>
           <input type="text" name="postalCode" value={profile.postalCode} onChange={handleFieldChange} className={inputClass("postalCode")} required />
           {renderError("postalCode")}
         </div>
@@ -225,7 +225,7 @@ const PersonalDetails = ({ profile, handleChange, onNext, saving }) => {
                 />
                 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">PWD Number <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700">PWD Number <span className="text-brand-brown-600">*</span></label>
                     <input type="text" name="pwdNumber" value={profile.pwdNumber} onChange={handleFieldChange} className={inputClass("pwdNumber")} required />
                     {renderError("pwdNumber")}
                 </div>

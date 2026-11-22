@@ -69,7 +69,7 @@ const Settings = () => {
               <h4 className="font-semibold text-slate-800">Change Password</h4>
               <p className="text-sm text-slate-500 mt-1">Update your login credentials</p>
             </div>
-            <div className={`text-slate-300 group-hover:text-brand-green transition-transform duration-300 ${isChangePasswordOpen ? 'rotate-180' : ''}`}>
+            <div className={`text-slate-300 group-hover:text-brand-green-600 transition-transform duration-300 ${isChangePasswordOpen ? 'rotate-180' : ''}`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -94,7 +94,7 @@ const Settings = () => {
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
                   >
                     {showCurrentPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -132,7 +132,7 @@ const Settings = () => {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
                   >
                      {showNewPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">

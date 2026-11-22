@@ -22,9 +22,9 @@ const iconMap = {
 };
 
 const cardStyles = [
-  { lightColorClass: "bg-orange-100", chartColor: "text-orange-500" },
-  { lightColorClass: "bg-blue-100", chartColor: "text-blue-500" },
-  { lightColorClass: "bg-purple-100", chartColor: "text-purple-500" },
+  { lightColorClass: "bg-brand-green-50", chartColor: "text-brand-green-600" },
+  { lightColorClass: "bg-brand-lime-50", chartColor: "text-brand-forest" },
+  { lightColorClass: "bg-brand-gold-50", chartColor: "text-brand-brown-600" },
 
 ];
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <IconLoader2 className="animate-spin text-brand-green" size={40} />
+        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
       </div>
     );
   }

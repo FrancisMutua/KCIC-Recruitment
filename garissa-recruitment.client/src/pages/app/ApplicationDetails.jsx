@@ -263,7 +263,7 @@ const ApplicationDetails = () => {
   if (loading) {
     return (
       <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-brand-green" size={40} />
+        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
       </div>
     );
   }
@@ -272,7 +272,7 @@ const ApplicationDetails = () => {
     <div className="space-y-4">
       <button
         onClick={() => navigate("/app/applications")}
-        className="flex items-center gap-2 text-brand-green hover:text-brand-green font-medium transition-colors"
+        className="flex items-center gap-2 text-brand-green-600 hover:text-brand-green-600 font-medium transition-colors"
       >
         <IconArrowLeft size={20} /> Back to My Applications
       </button>
@@ -283,7 +283,7 @@ const ApplicationDetails = () => {
             <p className="text-sm text-gray-500">Application {applicationNo}</p>
             <h2 className="text-xl font-semibold text-gray-800">{application.jobTitle || "Job application"}</h2>
           </div>
-          <span className="rounded-full bg-blue-50 text-blue-800 px-3 py-1 text-sm font-medium">{application.candidateStatus || "Draft"}</span>
+          <span className="rounded-full bg-brand-green-50 text-brand-green-800 px-3 py-1 text-sm font-medium">{application.candidateStatus || "Draft"}</span>
         </div>
 
         {/* Stepper Header */}

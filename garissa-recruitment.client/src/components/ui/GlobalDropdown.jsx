@@ -189,13 +189,13 @@ const GlobalDropdown = ({
       <div className={className}>
         {label && (
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            {label} {required && <span className="text-red-500">*</span>}
+            {label} {required && <span className="text-brand-brown-600">*</span>}
           </label>
         )}
         <div className="relative">
           <select
             name={name}
-            className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white appearance-none`}
+            className={`w-full border ${error ? "border-brand-camel" : "border-gray-300"} rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white appearance-none`}
             value={multiple ? selectedOptions.map((o) => o.value) : selectedOption}
             onChange={handleSelectChange}
             disabled={disabled || isLoading}
@@ -213,7 +213,7 @@ const GlobalDropdown = ({
             <IconChevronDown size={18} className="text-gray-400" />
           </div>
         </div>
-        {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
+        {error && <div className="text-xs text-brand-brown-600 mt-1">{error}</div>}
       </div>
     );
   }
@@ -222,25 +222,25 @@ const GlobalDropdown = ({
     <div className={`relative ${className}`} ref={dropdownRef}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label} {required && <span className="text-red-500">*</span>}
+          {label} {required && <span className="text-brand-brown-600">*</span>}
         </label>
       )}
 
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer bg-white transition-all ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "hover:border-brand-green"} ${isOpen ? "ring-2 ring-brand-green border-brand-green shadow-sm" : ""}`}
+        className={`w-full border ${error ? "border-brand-camel" : "border-gray-300"} rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer bg-white transition-all ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "hover:border-brand-green"} ${isOpen ? "ring-2 ring-brand-green border-brand-green shadow-sm" : ""}`}
       >
         <div className="flex flex-wrap gap-1 items-center overflow-hidden">
           {multiple && selectedOptions.length > 0 ? (
             selectedOptions.map((opt) => (
               <span
                 key={opt.value}
-                className="bg-brand-green text-white px-2 py-0.5 rounded-md flex items-center text-xs border border-brand-green"
+                className="bg-brand-green-600 text-white px-2 py-0.5 rounded-md flex items-center text-xs border border-brand-green"
               >
                 {opt.text}
                 <button
                   type="button"
-                  className="ml-1 hover:text-red-500 transition-colors"
+                  className="ml-1 hover:text-brand-brown-600 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleOptionSelect(opt.value);
@@ -257,7 +257,7 @@ const GlobalDropdown = ({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {isLoading && <IconLoader2 size={16} className="animate-spin text-brand-green" />}
+          {isLoading && <IconLoader2 size={16} className="animate-spin text-brand-green-600" />}
           <IconChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </div>
       </div>
@@ -293,9 +293,9 @@ const GlobalDropdown = ({
                   onClick={() => handleOptionSelect(option.value)}
                   className={`px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center justify-between ${
                     multiple && selectedOptions.some((opt) => opt.value === option.value)
-                      ? "bg-brand-green-50 text-brand-green font-medium"
+                      ? "bg-brand-green-50 text-brand-green-600 font-medium"
                       : !multiple && option.value === selectedOption
-                      ? "bg-brand-green-50 text-brand-green font-medium"
+                      ? "bg-brand-green-50 text-brand-green-600 font-medium"
                       : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
@@ -314,7 +314,7 @@ const GlobalDropdown = ({
         </div>
       )}
 
-      {error && <div className="text-xs text-red-500 mt-1 pl-1">{error}</div>}
+      {error && <div className="text-xs text-brand-brown-600 mt-1 pl-1">{error}</div>}
       
       {!multiple && <input type="hidden" name={name} value={selectedOption} />}
     </div>

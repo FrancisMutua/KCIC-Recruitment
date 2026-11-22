@@ -10,7 +10,7 @@ const Stepper = ({ steps, activeStep, onStepClick, stepBgColor = "bg-slate-50" }
       ></div>
       
       <div 
-        className="absolute left-0 top-5 h-0.5 bg-green-500 transition-all duration-500"
+        className="absolute left-0 top-5 h-0.5 bg-brand-green transition-all duration-500"
         style={{ 
           left: '5%',
           width: `${activeStep === 0 ? 0 : (activeStep / (steps.length - 1)) * 90}%` 
@@ -29,8 +29,8 @@ const Stepper = ({ steps, activeStep, onStepClick, stepBgColor = "bg-slate-50" }
           >
             <div 
               className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                isCompleted ? "bg-green-300 border-green-300 text-white" :
-                isActive ? "bg-orange-200 border-orange-200 text-white scale-110" :
+                isCompleted ? "bg-brand-green-600 border-brand-green-600 text-white" :
+                isActive ? "bg-brand-lime border-brand-lime text-brand-forest scale-110" :
                 "bg-gray-100 border-gray-300 text-gray-400"
               } group-hover:scale-110`}
             >

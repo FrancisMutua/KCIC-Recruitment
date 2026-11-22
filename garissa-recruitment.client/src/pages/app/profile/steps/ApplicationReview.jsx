@@ -42,7 +42,7 @@ export default function ApplicationReview({ applicationNo, profile, submitted, s
     return () => { active = false; };
   }, [applicationNo, submitted]);
 
-  if (error) return <p role="alert" className="text-red-700">{error}</p>;
+  if (error) return <p role="alert" className="text-brand-brown-700">{error}</p>;
   if (!data) return <p>Loading application summary…</p>;
   const { context } = data;
   const readOnly = submitted || !context.CanEdit;
@@ -50,7 +50,7 @@ export default function ApplicationReview({ applicationNo, profile, submitted, s
   const missing = [...data.missing, ...(needsDeclaration ? ['Confirm that you meet the minimum requirements in the Requirements & Memberships step.'] : [])];
 
   return <div className="space-y-7">
-    <div className="flex flex-wrap justify-between gap-4"><h2 className="text-xl font-semibold">Application summary</h2><span className="rounded-full bg-blue-50 text-blue-800 px-3 py-1">{status || context.CandidateStatus}</span></div>
+    <div className="flex flex-wrap justify-between gap-4"><h2 className="text-xl font-semibold">Application summary</h2><span className="rounded-full bg-brand-green-50 text-brand-green-800 px-3 py-1">{status || context.CandidateStatus}</span></div>
     <ApplicationTracker status={status || context.CandidateStatus} />
     {readOnly && <p className="text-sm text-gray-600">This application has been submitted to Garissa University and can no longer be changed. Its status above updates as HR reviews it.</p>}
     <dl className="grid sm:grid-cols-2 gap-3">{[['Position', fixText(context.JobTitle)], ['Name', [profile.firstName, profile.middleName, profile.lastName].filter(Boolean).join(' ')], ['Email', profile.emailAddress], ['ID / Passport', profile.idNumber], ['Phone', profile.phoneNumber], ['Current county of residence', profile.county]].map(([label, value]) => <div key={label}><dt className="text-sm text-gray-500">{label}</dt><dd>{isBlank(value) ? '—' : value}</dd></div>)}</dl>
@@ -60,7 +60,7 @@ export default function ApplicationReview({ applicationNo, profile, submitted, s
     <Records title="Professional memberships" rows={context.Memberships} columns={[["Description", "Body"], ["MembershipNo", "Membership number"], ["Status", "Status"]]} />
     <Records title="Referees" rows={data.referees} columns={[["names", "Name"], ["institution", "Institution"], ["email", "Email"], ["phoneNo", "Phone"]]} />
     <Records title="Documents" rows={data.documents} columns={[["fileName", "Document"], ["documentType", "Type"]]} />
-    {!readOnly && missing.length > 0 && <div role="alert" className="border border-amber-300 bg-amber-50 p-4 rounded-lg"><p className="font-semibold">Complete these items before submitting:</p><ul className="list-disc pl-5">{missing.map((message) => <li key={message}>{message}</li>)}</ul></div>}
+    {!readOnly && missing.length > 0 && <div role="alert" className="border border-brand-gold bg-brand-gold-50 p-4 rounded-lg"><p className="font-semibold">Complete these items before submitting:</p><ul className="list-disc pl-5">{missing.map((message) => <li key={message}>{message}</li>)}</ul></div>}
     {!readOnly && <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded bg-gray-200">Previous</button><button type="button" onClick={onSubmit} disabled={loading || missing.length > 0} className="btn-primary px-5 py-2 rounded disabled:opacity-50">{loading ? 'Submitting…' : 'Submit application'}</button></div>}
   </div>;
 }

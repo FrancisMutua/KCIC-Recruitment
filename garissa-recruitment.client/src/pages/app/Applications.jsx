@@ -67,12 +67,12 @@ const Applications = () => {
       cell: ({ row }) => {
         const status = row.original.CandidateStatus || "Draft";
         const style = {
-          Draft: 'bg-yellow-100 text-yellow-800',
-          Submitted: 'bg-blue-100 text-blue-800',
-          'Under review': 'bg-indigo-100 text-indigo-800',
-          'Not successful': 'bg-red-100 text-red-800',
+          Draft: 'bg-brand-gold-50 text-brand-brown-700',
+          Submitted: 'bg-brand-green-50 text-brand-green-800',
+          'Under review': 'bg-brand-lime-100 text-brand-forest',
+          'Not successful': 'bg-brand-brown-100 text-brand-brown-800',
           Closed: 'bg-gray-100 text-gray-700',
-        }[status] || 'bg-blue-100 text-blue-800';
+        }[status] || 'bg-brand-green-50 text-brand-green-800';
         return (
             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${style}`}>
                 {status}
@@ -107,13 +107,13 @@ const Applications = () => {
 
         {loading && (
             <div className="flex justify-center items-center mt-4 mb-4">
-            <MoonLoader color="blue" />
+            <MoonLoader color="#339966" />
             </div>
         )}
 
         {error && (
             <div className="flex justify-center items-center mt-4 mb-4">
-            <div className="bg-red-400 text-white py-3 px-6 rounded-md">
+            <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md">
                 {error}
             </div>
             </div>

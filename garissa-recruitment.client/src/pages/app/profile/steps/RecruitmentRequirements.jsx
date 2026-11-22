@@ -41,7 +41,7 @@ function Memberships({ applicationNo, rows, onSaved, readOnly }) {
       <label className="text-sm font-medium text-gray-700">Membership number<input className={inputStyle} name="MembershipNo" maxLength={50} value={form.MembershipNo} onChange={change} /></label>
       <label className="text-sm font-medium text-gray-700">Member since<input className={inputStyle} type="date" name="MembershipDate" value={form.MembershipDate} onChange={change} /></label>
       <label className="text-sm font-medium text-gray-700">Status<select className={inputStyle} name="Status" value={form.Status} onChange={change}><option value={1}>Active</option><option value={2}>Inactive</option></select></label>
-      <p className="sm:col-span-2 text-sm text-amber-700">{PERMANENT_RECORD_NOTE}</p>
+      <p className="sm:col-span-2 text-sm text-brand-brown-600">{PERMANENT_RECORD_NOTE}</p>
       <div className="sm:col-span-2"><button type="button" onClick={save} disabled={busy} className="btn-primary px-4 py-2 rounded-md">{busy ? 'Saving…' : 'Add membership'}</button></div>
     </div>}
   </section>;
@@ -63,7 +63,7 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
     onNext();
   };
 
-  if (error) return <p role="alert" className="text-red-700">{error}</p>;
+  if (error) return <p role="alert" className="text-brand-brown-700">{error}</p>;
   if (!context) return <p>Loading job requirements…</p>;
   const requirements = context.MinimumRequirements || [];
   return <div className="space-y-6">
@@ -74,7 +74,7 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
       </ol>
       <label className="flex items-start gap-3">
         <input type="checkbox" className="mt-1" checked={declared} disabled={!context.CanEdit} onChange={(e) => toggleDeclaration(e.target.checked)} />
-        <span>I confirm that I meet the minimum requirements listed above and that the information in this application is true. <span className="text-red-500">*</span></span>
+        <span>I confirm that I meet the minimum requirements listed above and that the information in this application is true. <span className="text-brand-brown-600">*</span></span>
       </label>
     </> : <p className="text-gray-600">No minimum requirements are listed for this position.</p>}
     <Memberships applicationNo={applicationNo} rows={context.Memberships || []} onSaved={load} readOnly={!context.CanEdit} />

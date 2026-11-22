@@ -55,7 +55,7 @@ const ActivateAccount = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         {status === "loading" && (
           <div className="flex flex-col items-center">
-            <IconLoader2 className="animate-spin text-brand-green mb-4" size={48} />
+            <IconLoader2 className="animate-spin text-brand-green-600 mb-4" size={48} />
             <h2 className="text-xl font-semibold mb-2">Activating Account</h2>
             <p className="text-gray-600">{message}</p>
           </div>
@@ -63,10 +63,10 @@ const ActivateAccount = () => {
 
         {status === "success" && (
           <div className="flex flex-col items-center">
-            <div className="bg-green-100 p-3 rounded-full mb-4">
-              <IconCheck className="text-green-500" size={48} />
+            <div className="bg-brand-green-50 p-3 rounded-full mb-4">
+              <IconCheck className="text-brand-green-600" size={48} />
             </div>
-            <h2 className="text-xl font-semibold mb-2 text-green-700">Success!</h2>
+            <h2 className="text-xl font-semibold mb-2 text-brand-green-700">Success!</h2>
             <p className="text-gray-600 mb-4">{message}</p>
             <button
               onClick={() => navigate("/")}
@@ -79,10 +79,10 @@ const ActivateAccount = () => {
 
         {status === "error" && (
           <div className="flex flex-col items-center">
-            <div className="bg-red-100 p-3 rounded-full mb-4">
-              <IconX className="text-red-500" size={48} />
+            <div className="bg-brand-brown-100 p-3 rounded-full mb-4">
+              <IconX className="text-brand-brown-600" size={48} />
             </div>
-            <h2 className="text-xl font-semibold mb-2 text-red-700">Activation Failed</h2>
+            <h2 className="text-xl font-semibold mb-2 text-brand-brown-700">Activation Failed</h2>
             <p className="text-gray-600 mb-4">{message}</p>
             <button
               onClick={() => navigate("/")}

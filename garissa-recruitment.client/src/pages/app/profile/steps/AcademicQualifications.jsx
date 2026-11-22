@@ -37,10 +37,10 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name, extra = "bg-white") =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-red-500 focus:ring-red-500" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p id={`qualification-${name}-error`} role="alert" className="mt-1 text-xs text-red-500">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p id={`qualification-${name}-error`} role="alert" className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshQualifications = async () => {
@@ -202,7 +202,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       {/* Form Section */}
       <form onSubmit={handleAddQualification} className="" noValidate>
         <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-          <IconPlus size={20} className="text-brand-green" /> Add Academic Qualification
+          <IconPlus size={20} className="text-brand-green-600" /> Add Academic Qualification
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <GlobalDropdown
@@ -217,7 +217,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="institution" 
@@ -231,19 +231,19 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-brand-brown-600">*</span></label>
             <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} aria-invalid={!!fieldErrors.startDate} aria-describedby={fieldErrors.startDate ? "qualification-startDate-error" : undefined} className={inputClass("startDate")} required />
             {renderError("startDate")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">End Date <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">End Date <span className="text-brand-brown-600">*</span></label>
             <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} aria-invalid={!!fieldErrors.endDate} aria-describedby={fieldErrors.endDate ? "qualification-endDate-error" : undefined} className={inputClass("endDate")} required />
             {renderError("endDate")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Grade <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Grade <span className="text-brand-brown-600">*</span></label>
             <input type="text" name="grade" value={formData.grade} onChange={handleChange} maxLength={30} className={inputClass("grade")} required />
             {renderError("grade")}
           </div>
@@ -255,7 +255,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Course Description <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Course Description <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="courseDescription" 
@@ -331,7 +331,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <button 
                         onClick={() => handleDelete(q.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        className="text-brand-brown-600 hover:text-brand-brown-700 transition-colors p-1"
                         title="Delete"
                       >
                         <IconTrash size={18} />
