@@ -24,7 +24,7 @@ namespace Recruitment.Server.Services
                 var port = int.Parse(_configuration["Email:Port"] ?? "587");
                 var username = _configuration["Email:Username"] ?? "";
                 var password = _configuration["Email:Password"] ?? "";
-                var fromAddress = _configuration["Email:FromAddress"] ?? "noreply@kca.ac.ke";
+                var fromAddress = _configuration["Email:FromAddress"] ?? "noreply@gau.ac.ke";
                 var fromName = _configuration["Email:FromName"] ?? "Garissa University Recruitment";
                 var enableSsl = bool.Parse(_configuration["Email:EnableSsl"] ?? "true");
 

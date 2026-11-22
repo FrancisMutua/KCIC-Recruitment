@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -11,8 +11,8 @@ namespace Recruitment.Server.Services
     public class AuthService(IConfiguration config) : IAuthService
     {
         private readonly string _key = config["Jwt:Key"] ?? "a-very-long-secret-key-from-the-app";
-        private readonly string _issuer = config["Jwt:Issuer"] ?? "KCA University";
-        private readonly string _audience = config["Jwt:Audience"] ?? "KCA University Recruitment Users";
+        private readonly string _issuer = config["Jwt:Issuer"] ?? "Garissa University";
+        private readonly string _audience = config["Jwt:Audience"] ?? "Garissa University Recruitment Users";
         private readonly string _expires = config["Jwt:Expires"] ?? "1";
         public string GenerateAccessToken(User user)
         {
