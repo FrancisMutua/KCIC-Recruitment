@@ -4,6 +4,7 @@ import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
+import { formatDate } from "../../../../lib/bcDate";
 import { apiFetch, readJson } from "../../../../lib/http";
 
 const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
@@ -38,10 +39,10 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name, extra = "bg-white") =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+    `field-input ${fieldErrors[name] ? "field-input-error" : ""} ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p id={`qualification-${name}-error`} role="alert" className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p id={`qualification-${name}-error`} role="alert" className="field-error">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshQualifications = async () => {
@@ -201,8 +202,8 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <form onSubmit={handleAddQualification} className="" noValidate>
-        <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+      <form onSubmit={handleAddQualification} noValidate>
+        <h3 className="section-title mb-4 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-green-600" /> Add Academic Qualification
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -218,7 +219,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Institution <span className="text-brand-brown-600">*</span></label>
+            <label className="field-label">Institution <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="institution" 
@@ -232,31 +233,31 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-brand-brown-600">*</span></label>
+            <label className="field-label">Start Date <span className="text-brand-brown-600">*</span></label>
             <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} aria-invalid={!!fieldErrors.startDate} aria-describedby={fieldErrors.startDate ? "qualification-startDate-error" : undefined} className={inputClass("startDate")} required />
             {renderError("startDate")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">End Date <span className="text-brand-brown-600">*</span></label>
+            <label className="field-label">End Date <span className="text-brand-brown-600">*</span></label>
             <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} aria-invalid={!!fieldErrors.endDate} aria-describedby={fieldErrors.endDate ? "qualification-endDate-error" : undefined} className={inputClass("endDate")} required />
             {renderError("endDate")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Grade <span className="text-brand-brown-600">*</span></label>
+            <label className="field-label">Grade <span className="text-brand-brown-600">*</span></label>
             <input type="text" name="grade" value={formData.grade} onChange={handleChange} maxLength={30} className={inputClass("grade")} required />
             {renderError("grade")}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Area of Study</label>
+            <label className="field-label">Area of Study</label>
             <input type="text" name="areaOfStudy" value={formData.areaOfStudy} onChange={handleChange} maxLength={20} className={inputClass("areaOfStudy")} />
           </div>
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Course Description <span className="text-brand-brown-600">*</span></label>
+            <label className="field-label">Course Description <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="courseDescription" 
@@ -268,7 +269,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
               required
             />
             {renderError("courseDescription")}
-            <p className="text-xs text-gray-400 mt-1">{formData.courseDescription?.length || 0}/200</p>
+            <p className="text-xs text-slate-400 mt-1">{formData.courseDescription?.length || 0}/200</p>
           </div>
         </div>
 
@@ -276,7 +277,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2 "
+            className="btn btn-primary"
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Qualification"}
@@ -285,35 +286,35 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       </form>
 
       {/* List Section */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-700">My Academic Qualifications</h3>
+      <div className="card overflow-hidden">
+        <div className="card-header">
+          <h3 className="section-title">My Academic Qualifications</h3>
         </div>
         
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="table-modern">
+            <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Level</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Course</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Institution</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="text-left min-w-[150px]">Level</th>
+                <th className="text-left min-w-[200px]">Course</th>
+                <th className="text-left min-w-[200px]">Institution</th>
+                <th className="text-left">Dates</th>
+                <th className="text-left">Grade</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {fetching ? (
                 <tr>
                    <td colSpan="6" className="px-6 py-10 text-center">
-                      <div className="flex justify-center items-center gap-2 text-gray-500">
+                      <div className="flex justify-center items-center gap-2 text-slate-500">
                          <IconLoader2 className="animate-spin" /> Fetching qualifications...
                       </div>
                    </td>
                 </tr>
               ) : qualifications.filter(q => q.description || q.institution).length === 0 ? (
                 <tr>
-                   <td colSpan="6" className="px-6 py-10 text-center text-gray-500 italic">
+                   <td colSpan="6" className="px-6 py-10 text-center text-sm text-slate-500">
                       No qualifications added yet.
                    </td>
                 </tr>
@@ -321,14 +322,14 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
                 qualifications
                   .filter(q => q.description || q.institution)
                   .map((q) => (
-                  <tr key={q.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.code}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.description}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.institution}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {q.startDate} - {q.endDate}
+                  <tr key={q.id}>
+                    <td>{q.code}</td>
+                    <td>{q.description}</td>
+                    <td>{q.institution}</td>
+                    <td>
+                      {formatDate(q.startDate)} – {formatDate(q.endDate)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{q.grade}</td>
+                    <td>{q.grade}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <button 
                         onClick={() => handleDelete(q.id)}
@@ -347,10 +348,10 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between pt-6">
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-between">
         <button
           onClick={onBack}
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
+          className="btn btn-outline"
         >
           Previous
         </button>
@@ -358,9 +359,9 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           onClick={() => {
             onNext();
           }}
-          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
+          className="btn btn-primary"
         >
-          Next Step
+          Continue
         </button>
       </div>
     </div>

@@ -6,23 +6,19 @@ import RootBrand from "../pages/RootBrand";
 import RootAdvertisedJobs from "../pages/RootAdvertisedJobs";
 import { changeDocumentTitle } from "../scripts/script";
 
-
 const RootLayout = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
-  // Only clear user session if we are actually on the home page, not just passing through or rendering RootLayout
   useEffect(() => {
-    if (isHomePage) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("userProfile");
-    }
+    if (isHomePage) changeDocumentTitle("Careers");
   }, [isHomePage]);
 
-  changeDocumentTitle("Home");
   return (
-      <div className="flex flex-col min-h-screen bg-gray-100">
-        <RootNav />
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 btn btn-primary">Skip to content</a>
+      <RootNav />
+      <main id="main" className="flex-1">
         {isHomePage && (
           <>
             <RootBrand />
@@ -30,8 +26,9 @@ const RootLayout = () => {
           </>
         )}
         <Outlet />
-        <RootFooter />
-      </div>
+      </main>
+      <RootFooter />
+    </div>
   );
 };
 

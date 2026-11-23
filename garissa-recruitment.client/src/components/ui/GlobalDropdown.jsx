@@ -189,14 +189,14 @@ const GlobalDropdown = ({
     return (
       <div className={className}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {label} {required && <span className="text-brand-brown-600">*</span>}
+          <label className="field-label">
+            {label}{required && <span className="required-mark" aria-hidden="true">*</span>}
           </label>
         )}
         <div className="relative">
           <select
             name={name}
-            className={`w-full border ${error ? "border-brand-camel" : "border-gray-300"} rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white appearance-none`}
+            className={`field-input appearance-none pr-10 ${error ? "field-input-error" : ""}`}
             value={multiple ? selectedOptions.map((o) => o.value) : selectedOption}
             onChange={handleSelectChange}
             disabled={disabled || isLoading}
@@ -211,10 +211,10 @@ const GlobalDropdown = ({
             ))}
           </select>
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <IconChevronDown size={18} className="text-gray-400" />
+            <IconChevronDown size={18} className="text-slate-400" />
           </div>
         </div>
-        {error && <div className="text-xs text-brand-brown-600 mt-1">{error}</div>}
+        {error && <div className="field-error">{error}</div>}
       </div>
     );
   }
@@ -222,14 +222,14 @@ const GlobalDropdown = ({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label} {required && <span className="text-brand-brown-600">*</span>}
+        <label className="field-label">
+          {label}{required && <span className="required-mark" aria-hidden="true">*</span>}
         </label>
       )}
 
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full border ${error ? "border-brand-camel" : "border-gray-300"} rounded-lg px-4 py-2 flex items-center justify-between cursor-pointer bg-white transition-all ${disabled ? "bg-gray-100 opacity-60 cursor-not-allowed" : "hover:border-brand-green"} ${isOpen ? "ring-2 ring-brand-green border-brand-green shadow-sm" : ""}`}
+        className={`field-input flex items-center justify-between cursor-pointer ${error ? "field-input-error" : ""} ${disabled ? "bg-slate-100 opacity-60 cursor-not-allowed" : "hover:border-brand-green"} ${isOpen ? "ring-2 ring-brand-green border-brand-green shadow-sm" : ""}`}
       >
         <div className="flex flex-wrap gap-1 items-center overflow-hidden">
           {multiple && selectedOptions.length > 0 ? (
@@ -252,24 +252,24 @@ const GlobalDropdown = ({
               </span>
             ))
           ) : (
-            <span className={`truncate ${!selectedOptionObj ? "text-gray-400" : "text-gray-700"}`}>
+            <span className={`truncate ${!selectedOptionObj ? "text-slate-400" : "text-slate-700"}`}>
               {selectedOptionObj ? selectedOptionObj.text : placeholder}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           {isLoading && <IconLoader2 size={16} className="animate-spin text-brand-green-600" />}
-          <IconChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <IconChevronDown size={18} className={`text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </div>
       </div>
 
       {isOpen && !disabled && (
-        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 origin-top">
-          <div className="p-2 border-b border-gray-50 flex items-center gap-2">
-            <IconSearch size={16} className="text-gray-400 ml-2" />
+        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in duration-200 origin-top">
+          <div className="p-2 border-b border-slate-50 flex items-center gap-2">
+            <IconSearch size={16} className="text-slate-400 ml-2" />
             <input
               type="text"
-              className="w-full px-2 py-1.5 text-sm focus:outline-none border-none placeholder-gray-400"
+              className="w-full px-2 py-1.5 text-sm focus:outline-none border-none placeholder-slate-400"
               placeholder="Search options..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -279,9 +279,9 @@ const GlobalDropdown = ({
             {searchTerm && (
                 <button 
                     onClick={(e) => { e.stopPropagation(); setSearchTerm(""); }} 
-                    className="p-1 hover:bg-gray-100 rounded-full"
+                    className="p-1 hover:bg-slate-100 rounded-full"
                 >
-                    <IconX size={14} className="text-gray-400" />
+                    <IconX size={14} className="text-slate-400" />
                 </button>
             )}
           </div>
@@ -297,7 +297,7 @@ const GlobalDropdown = ({
                       ? "bg-brand-green-50 text-brand-green-600 font-medium"
                       : !multiple && option.value === selectedOption
                       ? "bg-brand-green-50 text-brand-green-600 font-medium"
-                      : "text-gray-700 hover:bg-gray-50"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   <span>{option.text}</span>
@@ -307,7 +307,7 @@ const GlobalDropdown = ({
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center text-sm text-gray-400 italic">
+              <div className="p-4 text-center text-sm text-slate-400 italic">
                 {isLoading ? "Fetching data..." : "No matching options found"}
               </div>
             )}

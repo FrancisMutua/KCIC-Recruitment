@@ -1,15 +1,11 @@
 import JobTable from "../components/JobTable";
 
-const RootAdvertisedJobs = () => {
-  return (
-    <div className="py-8 px-6 md:px-20 bg-slate-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-         <JobTable />
-      </div>
+const RootAdvertisedJobs = () => (
+  <section id="open-positions" className="scroll-mt-20 py-10 sm:py-14">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <JobTable />
     </div>
-  );
-};
+  </section>
+);
 
 export default RootAdvertisedJobs;
-
-

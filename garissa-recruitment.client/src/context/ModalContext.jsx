@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 const ModalContext = createContext();
 
@@ -8,47 +8,41 @@ export const ModalProvider = ({ children }) => {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
 
-  const openLogin = () => {
+  const openLogin = useCallback(() => {
     setShowModal(true);
     setShowLoginModal(true);
     setShowForgotPasswordModal(false);
     setShowCreateAccountModal(false);
-  };
+  }, []);
 
-  const openSignUp = () => {
+  const openSignUp = useCallback(() => {
     setShowModal(true);
     setShowLoginModal(false);
     setShowForgotPasswordModal(false);
     setShowCreateAccountModal(true);
-  };
+  }, []);
 
-  const openForgotPassword = () => {
+  const openForgotPassword = useCallback(() => {
     setShowModal(true); // Should be true to show background
     setShowLoginModal(false);
     setShowForgotPasswordModal(true);
     setShowCreateAccountModal(false);
-  };
+  }, []);
 
-  const closeModals = () => {
+  const closeModals = useCallback(() => {
     setShowModal(false);
     setShowLoginModal(false);
     setShowForgotPasswordModal(false);
     setShowCreateAccountModal(false);
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    showModal, showLoginModal, showForgotPasswordModal, showCreateAccountModal,
+    openLogin, openSignUp, openForgotPassword, closeModals,
+  }), [showModal, showLoginModal, showForgotPasswordModal, showCreateAccountModal, openLogin, openSignUp, openForgotPassword, closeModals]);
 
   return (
-    <ModalContext.Provider
-      value={{
-        showModal,
-        showLoginModal,
-        showForgotPasswordModal,
-        showCreateAccountModal,
-        openLogin,
-        openSignUp,
-        openForgotPassword,
-        closeModals,
-      }}
-    >
+    <ModalContext.Provider value={value}>
       {children}
     </ModalContext.Provider>
   );

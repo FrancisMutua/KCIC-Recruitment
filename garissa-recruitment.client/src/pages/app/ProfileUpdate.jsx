@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { PageHeader, Spinner } from "../../components/ui/kit";
 import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../components/ui/GlobalDropdown";
 import { validatePersonalDetails, personalRequiredFields } from "../../lib/applicationValidation";
 import { GenderOptions, ProfileMaritalStatusOptions, optionValue } from "../../constants/enums";
+import { toIsoDate } from "../../lib/bcDate";
 import { apiFetch, readJson } from "../../lib/http";
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [fieldErrors, setFieldErrors] = useState({});
-  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
+  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="field-error">{fieldErrors[name]}</p> : null;
   const [profile, setProfile] = useState({
     emailAddress: "",
     firstName: "",
@@ -29,29 +32,7 @@ const ProfileUpdate = () => {
 
 
 
-  // Helper to format NAV date (MM/DD/YY) to Input Date (YYYY-MM-DD)
-  const formatNavDate = (dateStr) => {
-      if (!dateStr) return "";
-      
-      // If already has T (ISO), just take first part
-      if (dateStr.includes('T')) return dateStr.split('T')[0];
-
-      // Handle MM/DD/YY
-      // Example: 01/27/26 -> 2026-01-27
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-          const m = parts[0];
-          const d = parts[1];
-          let y = parts[2];
-          
-          if (y.length === 2) {
-              // Assume 20xx
-              y = "20" + y; 
-          }
-          return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-      }
-      return dateStr;
-  };
+  const formatNavDate = (dateStr) => toIsoDate(dateStr);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -147,10 +128,10 @@ const ProfileUpdate = () => {
       const result = await readJson(response);
       if (result.success) {
         toast.success(result.message);
-        // Update local storage profile
-        const updatedProfile = { ...profile };
-        localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
-        navigate("/app");
+        // New applications copy these details, so the dashboard no longer needs to prompt for them.
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        localStorage.setItem("user", JSON.stringify({ ...stored, isProfileUpdated: true }));
+        navigate(location.state?.next || "/app");
       } else {
         throw new Error(result.message || result.Message);
       }
@@ -161,108 +142,101 @@ const ProfileUpdate = () => {
     }
   };
 
-  if (fetching) {
-    return (
-      <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
-      </div>
-    );
-  }
+  if (fetching) return <Spinner label="Loading your profile…" />;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-2 px-2">
-      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100">
-
-
-        <form onSubmit={handleSubmit} className="p-8" noValidate>
+    <div className="space-y-6">
+      <PageHeader title="Update your profile" subtitle="Fields marked * are required. These details are copied onto every new application you start." />
+      <div className="card">
+        <form onSubmit={handleSubmit} className="card-body" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Personal Details */}
-            <div className="col-span-full border-b pb-2 mb-2">
-                <h3 className="text-lg font-semibold text-gray-700">Personal Details</h3>
+            <div className="col-span-full border-b border-slate-100 pb-2">
+                <h3 className="section-title">Personal Details</h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="field-label">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 value={profile.firstName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="field-input"
                 readOnly 
                 title="Cannot be modified"
               />
             </div>
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+              <label className="field-label">Middle Name</label>
               <input
                 type="text"
                 name="middleName"
                 value={profile.middleName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="field-input"
                 readOnly
                  title="Cannot be modified"
               />
             </div>
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="field-label">Last Name</label>
               <input
                 type="text"
                 name="lastName"
                 value={profile.lastName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="field-input"
                  readOnly
                   title="Cannot be modified"
               />
             </div>
             
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+              <label className="field-label">ID Number</label>
               <input
                 type="text"
                 name="idNumber"
                 value={profile.idNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="field-input"
                 readOnly
               />
             </div>
 
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <label className="field-label">Email Address</label>
               <input
                 type="email"
                 name="emailAddress"
                 value={profile.emailAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="field-input"
                 readOnly
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number <span className="text-brand-brown-600">*</span></label>
+              <label className="field-label">Phone Number <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="phoneNumber"
                 value={profile.phoneNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="field-input"
                 required
               />
               {renderError("phoneNumber")}
             </div>
             
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span className="text-brand-brown-600">*</span></label>
+              <label className="field-label">Date of Birth <span className="text-brand-brown-600">*</span></label>
               <input
                 type="date"
                 name="birthDate"
                 value={profile.birthDate || ''}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="field-input"
                 required
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
               />
@@ -270,12 +244,12 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender <span className="text-brand-brown-600">*</span></label>
+              <label className="field-label">Gender <span className="text-brand-brown-600">*</span></label>
               <select
                 name="gender"
                 value={profile.gender}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
+                className="field-input"
                 required
               >
                   <option value="">Select Gender</option>
@@ -285,12 +259,12 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+              <label className="field-label">Marital Status</label>
               <select
                 name="maritalStatus"
                 value={profile.maritalStatus}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
+                className="field-input"
               >
                   {ProfileMaritalStatusOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
@@ -314,18 +288,18 @@ const ProfileUpdate = () => {
             </div>
 
             {/* Address & Contact */}
-             <div className="col-span-full border-b pb-2 mb-2 mt-4">
-                <h3 className="text-lg font-semibold text-gray-700">Contact & Location</h3>
+             <div className="col-span-full border-b border-slate-100 pb-2 mt-4">
+                <h3 className="section-title">Contact & Location</h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Address <span className="text-brand-brown-600">*</span></label>
+              <label className="field-label">Postal Address <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="postalAddress"
                 value={profile.postalAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="field-input"
                 required
               />
               {renderError("postalAddress")}
@@ -333,14 +307,11 @@ const ProfileUpdate = () => {
 
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <button
-              type="submit"
-              className="btn-primary px-8 py-3 rounded-lg shadow-md hover:opacity-90 transition-colors font-semibold flex items-center gap-2"
-              disabled={loading}
-            >
-              {loading ? <IconLoader2 className="animate-spin" size={20} /> : <IconDeviceFloppy size={20} />}
-              Save & Continue
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
+            <button type="button" className="btn btn-outline" onClick={() => navigate(-1)}>Cancel</button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? <IconLoader2 className="animate-spin" size={18} /> : <IconDeviceFloppy size={18} />}
+              {loading ? "Saving…" : "Save profile"}
             </button>
           </div>
         </form>

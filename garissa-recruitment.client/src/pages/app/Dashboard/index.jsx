@@ -1,102 +1,133 @@
-import { 
-  IconUsers, 
-  IconMessageCircle, 
-  IconBriefcase,
-  IconLoader2,
-  IconSend,
-  IconChartBar,
-  IconCalendar,
-  IconFileText,
-  IconCircleCheck
-} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { IconBriefcase, IconFileText, IconSend, IconPencil, IconArrowRight, IconUserCheck, IconSearch } from "@tabler/icons-react";
 import StatCard from "./components/StatCard";
 import JobTable from "../../../components/JobTable";
 import { apiFetch, readJson, resultError } from "../../../lib/http";
-import { toast } from "react-toastify";
+import { recruitmentRequest } from "../../../lib/recruitmentApi";
+import { displayName, getUser } from "../../../lib/session";
+import { fixText } from "../../../lib/jobAdvert";
+import { formatDate } from "../../../lib/bcDate";
+import { Alert, Card, StatusBadge } from "../../../components/ui/kit";
 
-const iconMap = {
-  TotalOpenings: IconBriefcase,
-  TotalOpenPositions: IconChartBar,
-  TotalApplications: IconUsers,
-  SubmittedApplications: IconSend,
-  SuccessfulApplications: IconCircleCheck,
-};
+function greeting() {
+  const hour = new Date().getHours();
+  return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+}
 
-const cardStyles = [
-  { lightColorClass: "bg-brand-green-50", chartColor: "text-brand-green-600" },
-  { lightColorClass: "bg-brand-lime-50", chartColor: "text-brand-forest" },
-  { lightColorClass: "bg-brand-gold-50", chartColor: "text-brand-brown-600" },
-
-];
-
-const Dashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const userData = JSON.parse(localStorage.getItem("user") || "{}");
-        const token = userData.accessToken;
-
-        const response = await apiFetch("/api/dashboard/statistics", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-
-        const data = await readJson(response);
-        if (!response.ok || data.success === false) throw new Error(resultError(data, response));
-        setStats(data.data);
-      } catch (error) {
-        console.error("Dashboard error:", error);
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  if (loading) {
+function NextStep({ applications, profileComplete }) {
+  const draft = applications.find((app) => !app.Submitted);
+  if (!profileComplete) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
+      <div className="card flex flex-col gap-4 border-brand-gold bg-brand-gold-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex gap-3">
+          <IconUserCheck size={24} className="mt-0.5 shrink-0 text-brand-brown-600" />
+          <div>
+            <p className="font-semibold text-slate-900">Complete your profile first</p>
+            <p className="text-sm text-slate-600">Your phone, date of birth, gender and address are copied onto every application you start.</p>
+          </div>
+        </div>
+        <Link to="/app/profile-update" className="btn btn-primary shrink-0">Complete profile <IconArrowRight size={16} /></Link>
       </div>
     );
   }
+  if (draft) {
+    return (
+      <div className="card flex flex-col gap-4 border-brand-green-200 bg-brand-green-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex gap-3">
+          <IconPencil size={24} className="mt-0.5 shrink-0 text-brand-green-600" />
+          <div>
+            <p className="font-semibold text-slate-900">Finish your application for {fixText(draft.JobTitle) || draft.JobId}</p>
+            <p className="text-sm text-slate-600">It hasn't been sent to Garissa University yet. Submit it before the advert closes.</p>
+          </div>
+        </div>
+        <Link to={`/app/application-details/${draft.DocumentNo}`} className="btn btn-primary shrink-0">Continue application <IconArrowRight size={16} /></Link>
+      </div>
+    );
+  }
+  return (
+    <div className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex gap-3">
+        <IconSearch size={24} className="mt-0.5 shrink-0 text-brand-green-600" />
+        <div>
+          <p className="font-semibold text-slate-900">Looking for your next role?</p>
+          <p className="text-sm text-slate-600">Browse the positions currently open at Garissa University.</p>
+        </div>
+      </div>
+      <Link to="/app/jobs" className="btn btn-outline shrink-0">Browse open positions</Link>
+    </div>
+  );
+}
 
-  const statItems = [
-    { id: "TotalOpenings", title: "Total Openings", value: stats?.totalOpenings || 0, icon: "TotalOpenings" },
-    { id: "TotalApplications", title: "Total Applications", value: stats?.totalApplications || 0, icon: "TotalApplications" },
-    { id: "SubmittedApplications", title: "Submitted", value: stats?.submittedApplications || 0, icon: "SubmittedApplications" },
-  ];
+const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const user = getUser();
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const [statsResponse, apps] = await Promise.all([
+          apiFetch("/api/dashboard/statistics", { headers: { Authorization: `Bearer ${user?.accessToken}` } }),
+          recruitmentRequest("applications"),
+        ]);
+        const data = await readJson(statsResponse);
+        if (!statsResponse.ok || data.success === false) throw new Error(resultError(data, statsResponse));
+        if (!active) return;
+        setStats(data.data);
+        setApplications(apps || []);
+      } catch (err) {
+        if (active) setError(err.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [user?.accessToken]);
+
+  const name = displayName().split(" ")[0];
+  const drafts = applications.filter((app) => !app.Submitted).length;
 
   return (
-    <div className="space-y-12 py-4">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {statItems.map((stat, index) => {
-          const style = cardStyles[index % cardStyles.length];
-          return (
-            <StatCard 
-              key={stat.id}
-              title={stat.title}
-              value={stat.value.toString()}
-              icon={iconMap[stat.icon]}
-              lightColorClass={style.lightColorClass}
-              chartColor={style.chartColor}
-            />
-          );
-        })}
+    <div className="space-y-8">
+      <div>
+        <h1 className="page-title">{greeting()}{name ? `, ${name}` : ""}</h1>
+        <p className="page-subtitle">Here's where your job applications stand.</p>
       </div>
 
-      {/* Recent Openings Table */}
-      <div className="mt-8">
-        <JobTable basePath="/app/job-details" />
+      {error && <Alert tone="error" title="Some of your information couldn't be loaded">{error}</Alert>}
+
+      {!loading && !error && <NextStep applications={applications} profileComplete={user?.isProfileUpdated !== false} />}
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard loading={loading} title="Open positions" value={stats?.totalOpenings} icon={IconBriefcase} tone="green" />
+        <StatCard loading={loading} title="My applications" value={stats?.totalApplications} icon={IconFileText} tone="lime" />
+        <StatCard loading={loading} title="Submitted" value={stats?.submittedApplications} icon={IconSend} tone="green" />
+        <StatCard loading={loading} title="Drafts to finish" value={loading ? undefined : drafts} icon={IconPencil} tone="gold" />
       </div>
+
+      {applications.length > 0 && (
+        <Card title="Recent applications" bodyClassName="" actions={<Link to="/app/applications" className="text-sm font-semibold text-brand-green-700 hover:underline">View all</Link>}>
+          <ul className="divide-y divide-slate-100">
+            {applications.slice(0, 4).map((app) => (
+              <li key={app.DocumentNo}>
+                <Link to={`/app/application-details/${app.DocumentNo}`} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50 sm:px-6">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-slate-900">{fixText(app.JobTitle) || app.JobId}</p>
+                    <p className="text-xs text-slate-500">{app.DocumentNo} · Started {formatDate(app.DocumentDate)}</p>
+                  </div>
+                  <StatusBadge status={app.CandidateStatus} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      <JobTable basePath="/app/job-details" compact />
     </div>
   );
 };

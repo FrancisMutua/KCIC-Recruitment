@@ -1,53 +1,59 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { IconEye, IconEyeOff, IconLoader2, IconLock, IconMail } from "@tabler/icons-react";
 import { apiFetch, readJson } from "../../lib/http";
+import { getProfile } from "../../lib/session";
+import { Card, Field, PageHeader } from "../../components/ui/kit";
+
+function PasswordInput({ id, name, value, onChange, autoComplete, describedBy }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <div className="relative">
+      <input id={id} name={name} type={shown ? "text" : "password"} value={value} onChange={onChange} autoComplete={autoComplete}
+        aria-describedby={describedBy} required className="field-input pr-11" />
+      <button type="button" onClick={() => setShown((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-slate-400 hover:text-brand-green-700"
+        aria-label={shown ? "Hide password" : "Show password"}>
+        {shown ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+      </button>
+    </div>
+  );
+}
+
+const EMPTY = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 const Settings = () => {
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    newPassword: ""
-  });
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [passwords, setPasswords] = useState(EMPTY);
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const email = getProfile()?.EmailAddress;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPasswords(prev => ({ ...prev, [name]: value }));
+    setPasswords((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    if (!passwords.currentPassword || !passwords.newPassword) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
-    if (passwords.newPassword.length < 6) {
-        toast.error("New password must be at least 6 characters.");
-        return;
-    }
+    const next = {};
+    if (!passwords.currentPassword) next.currentPassword = "Enter your current password.";
+    if (passwords.newPassword.length < 6) next.newPassword = "Use at least 6 characters.";
+    if (passwords.confirmPassword !== passwords.newPassword) next.confirmPassword = "The new passwords don't match.";
+    setErrors(next);
+    if (Object.keys(next).length) return;
 
     setLoading(true);
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await apiFetch("/api/auth/changepassword", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-        body: JSON.stringify(passwords),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.accessToken}` },
+        body: JSON.stringify({ currentPassword: passwords.currentPassword, newPassword: passwords.newPassword }),
       });
       const result = await readJson(response);
-
-      if (result.success) {
-        toast.success(result.message);
-        setPasswords({ currentPassword: "", newPassword: "" });
-        setIsChangePasswordOpen(false);
-      } else {
-        toast.error(result.message);
-      }
+      if (!result.success) throw new Error(result.message);
+      toast.success(result.message);
+      setPasswords(EMPTY);
     } catch (error) {
       toast.error(error.message || "An error occurred while changing password.");
     } finally {
@@ -57,126 +63,35 @@ const Settings = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-slate-800">Account Settings</h2>
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 divide-y divide-slate-100">
-        
-        {/* Change Password Section */}
-        <div className="group transition-colors">
-          <div 
-            className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50"
-            onClick={() => setIsChangePasswordOpen(!isChangePasswordOpen)}
-          >
-            <div>
-              <h4 className="font-semibold text-slate-800">Change Password</h4>
-              <p className="text-sm text-slate-500 mt-1">Update your login credentials</p>
+      <PageHeader title="Account settings" subtitle="Manage how you sign in to the recruitment portal." />
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card title="Sign-in email" className="lg:col-span-1">
+          <p className="flex items-center gap-2 text-sm text-slate-700"><IconMail size={18} className="shrink-0 text-brand-green" /><span className="break-all">{email || "—"}</span></p>
+          <p className="mt-3 text-xs text-slate-500">This is also where we send activation links and notifications. Contact HR to change it.</p>
+        </Card>
+
+        <Card title="Change password" className="lg:col-span-2" actions={<IconLock size={18} className="text-slate-400" />}>
+          <form onSubmit={handleChangePassword} className="space-y-4" noValidate>
+            <Field id="current-password" label="Current password" required error={errors.currentPassword}>
+              <PasswordInput id="current-password" name="currentPassword" value={passwords.currentPassword} onChange={handleChange} autoComplete="current-password" describedBy={errors.currentPassword ? "current-password-error" : undefined} />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field id="new-password" label="New password" required error={errors.newPassword} hint="At least 6 characters.">
+                <PasswordInput id="new-password" name="newPassword" value={passwords.newPassword} onChange={handleChange} autoComplete="new-password" describedBy={errors.newPassword ? "new-password-error" : "new-password-hint"} />
+              </Field>
+              <Field id="confirm-password" label="Confirm new password" required error={errors.confirmPassword}>
+                <PasswordInput id="confirm-password" name="confirmPassword" value={passwords.confirmPassword} onChange={handleChange} autoComplete="new-password" describedBy={errors.confirmPassword ? "confirm-password-error" : undefined} />
+              </Field>
             </div>
-            <div className={`text-slate-300 group-hover:text-brand-green-600 transition-transform duration-300 ${isChangePasswordOpen ? 'rotate-180' : ''}`}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
+            <div className="flex justify-end border-t border-slate-100 pt-4">
+              <button type="submit" disabled={loading} className="btn btn-primary">
+                {loading && <IconLoader2 size={18} className="animate-spin" />}
+                {loading ? "Updating…" : "Update password"}
+              </button>
             </div>
-          </div>
-
-          {/* Collapsible Form */}
-          <div className={`overflow-hidden transition-all duration-300 ${isChangePasswordOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <form onSubmit={handleChangePassword} className="p-6 pt-0 space-y-4">
-               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                <div className="relative">
-                  <input
-                    type={showCurrentPassword ? "text" : "password"}
-                    name="currentPassword"
-                    value={passwords.currentPassword}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
-                    placeholder="Enter current password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
-                  >
-                    {showCurrentPassword ? (
-                       <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                         <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
-                         <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 3.145 -3.597 5.253 -4.398" />
-                         <path d="M9.893 21h0" />
-                         <path d="M19.117 19.123l-16.234 -16.248" />
-                         <path d="M22 12c-1.5 2 -3.493 3.51 -5.319 4.316" />
-                         <path d="M17.8 7.39c1.99 .77 3.57 2.15 4.2 4.61" />
-                       </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                         <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                         <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                <div className="relative">
-                  <input
-                    type={showNewPassword ? "text" : "password"}
-                    name="newPassword"
-                    value={passwords.newPassword}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
-                    placeholder="Enter new password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
-                  >
-                     {showNewPassword ? (
-                       <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                         <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
-                         <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 3.145 -3.597 5.253 -4.398" />
-                         <path d="M9.893 21h0" />
-                         <path d="M19.117 19.123l-16.234 -16.248" />
-                         <path d="M22 12c-1.5 2 -3.493 3.51 -5.319 4.316" />
-                         <path d="M17.8 7.39c1.99 .77 3.57 2.15 4.2 4.61" />
-                       </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                         <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                         <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 flex items-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Saving...
-                    </>
-                  ) : "Update Password"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
+          </form>
+        </Card>
       </div>
     </div>
   );

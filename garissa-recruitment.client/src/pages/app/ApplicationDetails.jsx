@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { IconArrowLeft, IconLoader2, IconCheck } from "@tabler/icons-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { Spinner, StatusBadge } from "../../components/ui/kit";
 import Stepper from "../../components/Stepper";
 import { GenderOptions, MaritalStatusOptions, optionValue } from "../../constants/enums";
 import { toast } from "react-toastify";
@@ -14,6 +15,7 @@ import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
 import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
 import Attachments from "./profile/steps/Attachments";
+import { toIsoDate } from "../../lib/bcDate";
 import { apiFetch, readJson } from "../../lib/http";
 
 const ApplicationDetails = () => {
@@ -25,6 +27,10 @@ const ApplicationDetails = () => {
   const [activeStep, setActiveStep] = useState(() => {
     const saved = localStorage.getItem(`app_step_${applicationNo}`);
     return saved ? parseInt(saved, 10) : 0;
+  });
+  const [furthestStep, setFurthestStep] = useState(() => {
+    const saved = Number(localStorage.getItem(`app_furthest_${applicationNo}`));
+    return Number.isFinite(saved) ? saved : 0;
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -64,22 +70,22 @@ const ApplicationDetails = () => {
     "Review and Submit"
   ];
 
+  const STEP_HELP = [
+    "Check the details copied from your profile and fill in anything missing.",
+    "Add every academic qualification relevant to this position, highest first.",
+    "List your employment history. Each employer can be added once.",
+    "Add professional qualifications or certifications (optional unless the advert requires them).",
+    "Review the advert's minimum requirements and add any professional memberships.",
+    "Add people who can vouch for your work. They may be contacted.",
+    "Upload each required document as a PDF (up to 5 MB).",
+    "Check everything below, then submit your application to Garissa University.",
+  ];
+
   const getInitialsValue = (initials) => {
       return salutationValue(initials);
   };
 
-  const formatNavDate = (dateStr) => {
-      if (!dateStr) return "";
-      if (dateStr.includes('T')) return dateStr.split('T')[0];
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-          const m = parts[0], d = parts[1];
-          let y = parts[2];
-          if (y.length === 2) y = "20" + y; 
-          return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-      }
-      return dateStr;
-  };
+  const formatNavDate = (dateStr) => toIsoDate(dateStr);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -147,8 +153,20 @@ const ApplicationDetails = () => {
   useEffect(() => {
     if (applicationNo) {
       localStorage.setItem(`app_step_${applicationNo}`, activeStep);
+      setFurthestStep((prev) => {
+        const next = Math.max(prev, activeStep);
+        localStorage.setItem(`app_furthest_${applicationNo}`, next);
+        return next;
+      });
     }
   }, [activeStep, applicationNo]);
+
+  // The page scrolls inside <main id="app-main">, not the window.
+  const scrollToTop = () => document.getElementById("app-main")?.scrollTo({ top: 0, behavior: "smooth" });
+
+  const goToStep = (index) => {
+    if (index <= furthestStep || index <= activeStep) { setActiveStep(index); scrollToTop(); }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -235,12 +253,12 @@ const ApplicationDetails = () => {
 
   const handleNext = () => {
     setActiveStep((prev) => Math.min(prev + 1, STEPS.length - 1));
-    window.scrollTo(0, 0);
+    scrollToTop();
   };
 
   const handleBack = () => {
     setActiveStep((prev) => Math.max(prev - 1, 0));
-    window.scrollTo(0, 0);
+    scrollToTop();
   };
 
   const handleSubmit = async (e) => {
@@ -253,6 +271,7 @@ const ApplicationDetails = () => {
         setIsSubmitted(true);
         setApplication((prev) => ({ ...prev, candidateStatus: "Submitted" }));
         localStorage.removeItem(`app_step_${applicationNo}`);
+        localStorage.removeItem(`app_furthest_${applicationNo}`);
         setTimeout(() => navigate("/app/applications"), 3000);
       } catch (error) {
         toast.error(error.message || "Submission failed. Please ensure all steps are complete.");
@@ -261,102 +280,51 @@ const ApplicationDetails = () => {
       }
   };
 
-  if (loading) {
-    return (
-      <div className="flex h-screen justify-center items-center">
-        <IconLoader2 className="animate-spin text-brand-green-600" size={40} />
-      </div>
-    );
-  }
+  if (loading) return <Spinner label="Loading your application…" />;
+
+  const stepProps = { applicationNo, onBack: handleBack, onNext: handleNext };
 
   return (
-    <div className="space-y-4">
-      <button
-        onClick={() => navigate("/app/applications")}
-        className="flex items-center gap-2 text-brand-green-600 hover:text-brand-green-600 font-medium transition-colors"
-      >
-        <IconArrowLeft size={20} /> Back to My Applications
-      </button>
+    <div className="space-y-6">
+      <Link to="/app/applications" className="btn btn-ghost -ml-3"><IconArrowLeft size={18} /> My applications</Link>
 
-      <div className="max-w-full mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 flex flex-wrap justify-between items-center gap-3">
-          <div>
-            <p className="text-sm text-gray-500">Application {applicationNo}</p>
-            <h2 className="text-xl font-semibold text-gray-800">{application.jobTitle || "Job application"}</h2>
+      <header className="card overflow-hidden">
+        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wider text-brand-green-600">Application {applicationNo}</p>
+            <h1 className="mt-1 text-xl font-bold sm:text-2xl">{application.jobTitle || "Job application"}</h1>
+            {!isSubmitted && <p className="mt-1 text-sm text-slate-500">Your progress is saved as you go. Submit when every step is complete.</p>}
           </div>
-          <span className="rounded-full bg-brand-green-50 text-brand-green-800 px-3 py-1 text-sm font-medium">{application.candidateStatus || "Draft"}</span>
+          <StatusBadge status={application.candidateStatus} />
         </div>
+        {!isSubmitted && (
+          <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+            <Stepper steps={STEPS} activeStep={activeStep} furthestStep={furthestStep} onStepClick={(index) => goToStep(index)} />
+          </div>
+        )}
+      </header>
 
-        {/* Stepper Header */}
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 ${isSubmitted ? 'hidden' : ''}`}>
-           <Stepper 
-             steps={STEPS} 
-             activeStep={activeStep} 
-             onStepClick={!isSubmitted ? (index) => {
-               if (index <= activeStep) setActiveStep(index);
-             } : undefined} 
-             stepBgColor="bg-white"
-           />
+      {isSubmitted ? (
+        <div className="card card-body">
+          <ApplicationReview applicationNo={applicationNo} profile={profile} submitted status={application.candidateStatus} />
         </div>
-
-        {isSubmitted && <div className="bg-white rounded-xl shadow-sm p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted status={application.candidateStatus} /></div>}
-
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-8 ${isSubmitted ? 'hidden' : ''}`}>
-            {activeStep === 0 && (
-                <PersonalDetails 
-                    profile={profile} 
-                    handleChange={handleChange} 
-                    onNext={handleUpdatePersonalDetails} 
-                    saving={saving}
-                />
-            )}
-            {activeStep === 1 && (
-                <AcademicQualifications 
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext} 
-                />
-            )}
-            {activeStep === 2 && (
-                <WorkExperience 
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext} 
-                />
-            )}
-            {activeStep === 3 && (
-                <ProfessionalTraining 
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext} 
-                />
-            )}
-            {activeStep === 4 && (
-                <RecruitmentRequirements
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext} 
-                />
-            )}
-            {activeStep === 5 && (
-                <Referees 
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext} 
-                />
-            )}
-            {activeStep === 6 && (
-                <Attachments 
-                    applicationNo={applicationNo}
-                    onBack={handleBack} 
-                    onNext={handleNext}
-                    loading={saving}
-                />
-            )}
-            {activeStep === 7 && <ApplicationReview applicationNo={applicationNo} profile={profile} onBack={handleBack} onSubmit={handleSubmit} loading={saving} />}
-
-        </div>
-      </div>
+      ) : (
+        <section className="card card-body" aria-labelledby="step-heading">
+          <div className="mb-6 border-b border-slate-100 pb-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Step {activeStep + 1} of {STEPS.length}</p>
+            <h2 id="step-heading" className="mt-1 text-lg font-semibold sm:text-xl">{STEPS[activeStep]}</h2>
+            {STEP_HELP[activeStep] && <p className="mt-1 text-sm text-slate-500">{STEP_HELP[activeStep]}</p>}
+          </div>
+          {activeStep === 0 && <PersonalDetails profile={profile} handleChange={handleChange} onNext={handleUpdatePersonalDetails} saving={saving} />}
+          {activeStep === 1 && <AcademicQualifications {...stepProps} />}
+          {activeStep === 2 && <WorkExperience {...stepProps} />}
+          {activeStep === 3 && <ProfessionalTraining {...stepProps} />}
+          {activeStep === 4 && <RecruitmentRequirements {...stepProps} />}
+          {activeStep === 5 && <Referees {...stepProps} />}
+          {activeStep === 6 && <Attachments {...stepProps} loading={saving} />}
+          {activeStep === 7 && <ApplicationReview applicationNo={applicationNo} profile={profile} onBack={handleBack} onSubmit={handleSubmit} loading={saving} />}
+        </section>
+      )}
     </div>
   );
 };

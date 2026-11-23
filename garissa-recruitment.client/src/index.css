@@ -2,86 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "IBM Plex Sans", sans-serif;
+/* ── Base ─────────────────────────────────────────────────────────────────────
+   Colours come only from the Garissa University logo (see tailwind.config.js). */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+  h1, h2, h3, h4 { @apply text-slate-900 tracking-tight; }
+  :focus-visible { @apply outline-none ring-2 ring-brand-green ring-offset-2; }
+  ::selection { @apply bg-brand-green-100 text-brand-green-900; }
 }
 
 @layer components {
-  .table-header {
-    @apply border border-gray-200 p-4 uppercase text-sm text-left font-semibold text-gray-900;
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold
+           transition-all duration-150 select-none disabled:cursor-not-allowed disabled:opacity-50;
   }
-
-  .table-body {
-    @apply border border-gray-300 p-4 text-gray-500;
-  }
-
-  .table-row-custom {
-    @apply cursor-pointer even:bg-gray-100 hover:bg-gray-200/70;
-  }
-
-  /* Primary button — logo green (darker shades keep white text at AA contrast) */
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-6 py-3 text-base; }
   .btn-primary {
+    @apply text-white shadow-sm;
     background: linear-gradient(135deg, #297a52 0%, #205f3f 100%);
-    color: #ffffff;
-    transition: opacity 0.2s ease, box-shadow 0.2s ease;
   }
-  .btn-primary:hover:not(:disabled) {
-    opacity: 0.9;
-    box-shadow: 0 4px 12px rgba(51, 153, 102, 0.4);
-  }
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn-primary:hover:not(:disabled) { box-shadow: 0 6px 16px rgba(51, 153, 102, 0.35); transform: translateY(-1px); }
+  .btn-secondary { @apply bg-brand-brown-600 text-white shadow-sm hover:bg-brand-brown-700; }
+  .btn-outline { @apply border border-slate-300 bg-white text-slate-700 hover:border-brand-green hover:text-brand-green-700 hover:bg-brand-green-50; }
+  .btn-ghost { @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900; }
+  .btn-danger { @apply border border-brand-brown-200 bg-white text-brand-brown-700 hover:bg-brand-brown-50; }
 
-  /* Secondary button — logo tagline brown */
-  .btn-secondary {
-    background-color: #6f573d;
-    color: #ffffff;
-    transition: opacity 0.2s ease, box-shadow 0.2s ease;
-  }
-  .btn-secondary:hover:not(:disabled) {
-    opacity: 0.9;
-    box-shadow: 0 4px 12px rgba(111, 87, 61, 0.4);
-  }
-  .btn-secondary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  /* Surfaces */
+  .card { @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm; }
+  .card-body { @apply p-5 sm:p-6; }
+  .card-header { @apply flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6; }
+  .card-title { @apply text-base font-semibold text-slate-900; }
 
-  /* Global Primary Gradient Background */
-  .bg-gradient-primary {
-    background: linear-gradient(135deg, #297a52 0%, #205f3f 100%);
-    background-attachment: fixed;
+  /* Page headings */
+  .page-title { @apply text-2xl font-bold text-slate-900 sm:text-3xl; }
+  .page-subtitle { @apply mt-1 text-sm text-slate-500 sm:text-base; }
+  .section-title { @apply text-lg font-semibold text-slate-900; }
+
+  /* Form fields */
+  .field-label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
+  .field-input {
+    @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900
+           placeholder:text-slate-400 shadow-sm transition
+           focus:border-brand-green focus:outline-none focus:ring-4 focus:ring-brand-green/15
+           disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500
+           [&[readonly]]:bg-slate-50 [&[readonly]]:text-slate-600;
+  }
+  .field-input-error { @apply border-brand-camel focus:border-brand-camel focus:ring-brand-camel/20; }
+  .field-error { @apply mt-1.5 text-xs font-medium text-brand-brown-600; }
+  .field-hint { @apply mt-1.5 text-xs text-slate-500; }
+  .required-mark { @apply ml-0.5 text-brand-brown-600; }
+
+  /* Badges */
+  .badge { @apply inline-flex w-fit shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset; }
+  .badge-green { @apply bg-brand-green-50 text-brand-green-800 ring-brand-green-200; }
+  .badge-lime { @apply bg-brand-lime-50 text-brand-forest ring-brand-lime; }
+  .badge-gold { @apply bg-brand-gold-50 text-brand-brown-700 ring-brand-gold; }
+  .badge-brown { @apply bg-brand-brown-50 text-brand-brown-800 ring-brand-brown-200; }
+  .badge-gray { @apply bg-slate-100 text-slate-700 ring-slate-200; }
+
+  /* Alerts */
+  .alert { @apply flex gap-3 rounded-xl border p-4 text-sm; }
+  .alert-info { @apply border-brand-green-200 bg-brand-green-50 text-brand-green-900; }
+  .alert-warn { @apply border-brand-gold bg-brand-gold-50 text-brand-brown-800; }
+  .alert-error { @apply border-brand-brown-200 bg-brand-brown-50 text-brand-brown-800; }
+
+  /* Tables */
+  .table-modern { @apply min-w-full text-sm; }
+  .table-modern thead th { @apply bg-slate-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .table-modern tbody td { @apply border-t border-slate-100 px-4 py-3 align-top text-slate-700; }
+  .table-modern tbody tr { @apply transition-colors hover:bg-slate-50/70; }
+
+  /* Legacy helpers still used by some markup */
+  .table-header { @apply border-b border-slate-200 bg-slate-50 p-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .table-body { @apply border-b border-slate-100 p-4 text-slate-700; }
+  .table-row-custom { @apply cursor-pointer hover:bg-slate-50; }
+
+  .bg-gradient-primary { background: linear-gradient(135deg, #297a52 0%, #205f3f 100%); }
+  .bg-hero {
+    background:
+      radial-gradient(1200px 400px at 85% -10%, rgba(200, 224, 58, 0.25), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(235, 232, 153, 0.18), transparent 60%),
+      linear-gradient(135deg, #205f3f 0%, #17452e 100%);
   }
 }
 
+/* Custom scrollbar */
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: #b1d8c5 #eff7f3; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #eff7f3; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #b1d8c5; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #85c2a3; }
 
-input {
-  border-radius: 0.375rem !important;
-}
-
-/* Custom Scrollbar */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #b1d8c5 #eff7f3;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #eff7f3;
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #b1d8c5;
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #85c2a3;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }

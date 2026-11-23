@@ -4,9 +4,18 @@
  * and Node throws "fetch failed" with the reason hidden in error.cause. Rethrow with the
  * URL and every available cause so the exact problem is shown.
  */
+export const SESSION_EXPIRED_EVENT = "garissa:session-expired";
+
 export async function apiFetch(input, init) {
   try {
-    return await fetch(input, init);
+    const response = await fetch(input, init);
+    // A signed request rejected with 401 means the session token has expired.
+    const headers = init?.headers;
+    const authorised = headers && (headers.Authorization || headers.authorization || (typeof headers.get === "function" && headers.get("Authorization")));
+    if (response.status === 401 && authorised && typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    }
+    return response;
   } catch (error) {
     if (error?.name === "AbortError") throw error;
     const url = typeof input === "string" ? new URL(input, window.location.origin).href : input?.url;
