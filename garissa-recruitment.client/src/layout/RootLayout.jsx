@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import RootNav from "../pages/RootNav";
 import RootFooter from "../pages/RootFooter";
-import RootBrand from "../pages/RootBrand";
 import RootAdvertisedJobs from "../pages/RootAdvertisedJobs";
 import { changeDocumentTitle } from "../scripts/script";
 
@@ -25,7 +24,6 @@ const RootLayout = () => {
         <RootNav />
         {isHomePage && (
           <>
-            <RootBrand />
             <RootAdvertisedJobs />
           </>
         )}
