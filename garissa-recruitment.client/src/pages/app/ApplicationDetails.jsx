@@ -284,16 +284,16 @@ const ApplicationDetails = () => {
       </button>
 
       <div className="max-w-full mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 flex flex-wrap justify-between items-center gap-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 mb-6 flex flex-wrap justify-between items-center gap-3">
           <div>
-            <p className="text-sm text-gray-500">Application {applicationNo}</p>
-            <h2 className="text-xl font-semibold text-gray-800">{application.jobTitle || "Job application"}</h2>
+            <p className="text-sm text-slate-500">Application {applicationNo}</p>
+            <h2 className="text-xl font-semibold text-slate-800">{application.jobTitle || "Job application"}</h2>
           </div>
           <span className="rounded-full bg-brand-green-50 text-brand-green-800 px-3 py-1 text-sm font-medium">{application.candidateStatus || "Draft"}</span>
         </div>
 
         {/* Stepper Header */}
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 ${isSubmitted ? 'hidden' : ''}`}>
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 mb-6 ${isSubmitted ? 'hidden' : ''}`}>
            <Stepper 
              steps={STEPS} 
              activeStep={activeStep} 
@@ -304,9 +304,9 @@ const ApplicationDetails = () => {
            />
         </div>
 
-        {isSubmitted && <div className="bg-white rounded-xl shadow-sm p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted status={application.candidateStatus} /></div>}
+        {isSubmitted && <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6"><ApplicationReview applicationNo={applicationNo} profile={profile} submitted status={application.candidateStatus} /></div>}
 
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-8 ${isSubmitted ? 'hidden' : ''}`}>
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8 ${isSubmitted ? 'hidden' : ''}`}>
             {activeStep === 0 && (
                 <PersonalDetails 
                     profile={profile} 

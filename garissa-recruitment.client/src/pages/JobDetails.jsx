@@ -122,12 +122,12 @@ const JobDetails = () => {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-64">
-        <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md mb-4">
+        <div role="alert" className="mb-4 max-w-xl rounded-2xl border border-brand-brown-200 bg-brand-brown-50 px-5 py-4 text-sm text-brand-brown-800">
           {error}
         </div>
         <button
           onClick={() => navigate("/")}
-          className="text-brand-green-600 hover:underline flex items-center gap-1"
+          className="flex items-center gap-1 font-semibold text-brand-green-700 hover:underline"
         >
           <IconArrowLeft size={16} /> Back to Jobs
         </button>
@@ -136,23 +136,23 @@ const JobDetails = () => {
   }
 
   return (
-    <div className="py-2 px-2 md:px-4 max-w-full mx-auto">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 md:py-8">
       <button
         onClick={() => navigate("/")}
-        className="mb-6 flex items-center gap-2 text-brand-green-600 hover:text-brand-green-600 font-medium transition-colors"
+        className="mb-6 flex items-center gap-2 rounded-lg px-2 py-1 -ml-2 font-semibold text-brand-green-700 transition-colors hover:bg-brand-green-50"
       >
         <IconArrowLeft size={20} /> Back to Jobs
       </button>
 
       {jobDetails && (
-        <div className="bg-white overflow-hidden">
-          <div className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 px-4 py-2 text-white">
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="bg-hero px-6 py-7 text-white md:px-8">
             <div className="flex justify-between items-start md:items-center">
               <div>
-                <h2 className="text-lg md:text-2xl font-bold mb-2">
+                <h2 className="mb-2 text-xl font-bold text-white md:text-3xl">
                   {fixText(jobDetails.jobInfo.jobTitle) || "Job Requirements & Responsibilities"}
                 </h2>
-                <p className="opacity-90">Job ID: {jobId}</p>
+                <p className="text-sm text-white/75">Job ID: {jobId}</p>
               </div>
               <button 
                 onClick={handleShare}
@@ -165,11 +165,11 @@ const JobDetails = () => {
             </div>
           </div>
 
-          <div className="p-8 space-y-8">
+          <div className="space-y-8 p-6 md:p-8">
             <JobAdvertContent details={jobDetails} />
           </div>
           
-           <div className="bg-gray-50 px-8 py-6 border-t border-gray-200 flex justify-end">
+           <div className="flex justify-end border-t border-slate-100 bg-slate-50 px-6 py-5 md:px-8">
               <button 
                 onClick={handleApply}
                 disabled={submitting}

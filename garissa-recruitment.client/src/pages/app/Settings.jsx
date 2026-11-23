@@ -81,21 +81,21 @@ const Settings = () => {
           <div className={`overflow-hidden transition-all duration-300 ${isChangePasswordOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
             <form onSubmit={handleChangePassword} className="p-6 pt-0 space-y-4">
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
                 <div className="relative">
                   <input
                     type={showCurrentPassword ? "text" : "password"}
                     name="currentPassword"
                     value={passwords.currentPassword}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                    className="w-full border border-slate-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
                     placeholder="Enter current password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-brand-green-600"
                   >
                     {showCurrentPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -119,21 +119,21 @@ const Settings = () => {
               </div>
 
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
                 <div className="relative">
                   <input
                     type={showNewPassword ? "text" : "password"}
                     name="newPassword"
                     value={passwords.newPassword}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                    className="w-full border border-slate-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-brand-green focus:outline-none"
                     placeholder="Enter new password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-green-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-brand-green-600"
                   >
                      {showNewPassword ? (
                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-eye-off" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">

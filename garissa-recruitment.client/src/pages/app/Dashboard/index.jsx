@@ -75,9 +75,9 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-12 py-4">
+    <div className="space-y-10 py-2">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {statItems.map((stat, index) => {
           const style = cardStyles[index % cardStyles.length];
           return (
@@ -94,7 +94,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Openings Table */}
-      <div className="mt-8">
+      <div>
         <JobTable basePath="/app/job-details" />
       </div>
     </div>

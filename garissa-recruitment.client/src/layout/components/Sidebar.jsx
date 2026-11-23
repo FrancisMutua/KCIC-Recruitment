@@ -41,11 +41,11 @@ const Sidebar = ({ isOpen, onClose }) => {
         w-64 lg:static lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="flex flex-col h-full bg-gradient-primary">
+        <div className="flex flex-col h-full bg-hero">
           {/* Logo Section */}
-          <div className="h-20 bg-white text-center px-6 border-b border-brand-lime flex justify-between items-center shrink-0">
-            <img src={logo} alt="Garissa University logo" className="h-auto w-full min-w-0" />
-            <button className="lg:hidden text-white/70 hover:text-white" onClick={onClose}>
+          <div className="h-20 bg-white text-center px-5 border-b-2 border-brand-lime flex justify-between items-center shrink-0">
+            <img src={logo} alt="Garissa University logo" className="h-11 w-auto max-w-full min-w-0 object-contain" />
+            <button className="lg:hidden rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" onClick={onClose} aria-label="Close menu">
               <IconX size={24} />
             </button>
           </div>

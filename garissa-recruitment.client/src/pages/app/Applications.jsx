@@ -72,7 +72,7 @@ const Applications = () => {
           Submitted: 'bg-brand-green-50 text-brand-green-800',
           'Under review': 'bg-brand-lime-100 text-brand-forest',
           'Not successful': 'bg-brand-brown-100 text-brand-brown-800',
-          Closed: 'bg-gray-100 text-gray-700',
+          Closed: 'bg-slate-100 text-slate-700',
         }[status] || 'bg-brand-green-50 text-brand-green-800';
         return (
             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${style}`}>
@@ -114,14 +114,14 @@ const Applications = () => {
 
         {error && (
             <div className="flex justify-center items-center mt-4 mb-4">
-            <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md">
+            <div role="alert" className="rounded-2xl border border-brand-brown-200 bg-brand-brown-50 px-5 py-4 text-sm text-brand-brown-800">
                 {error}
             </div>
             </div>
         )}
 
         {!loading && !error && applications.length > 0 && (
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-slate-600 mb-4">
                 Draft applications have not been sent to Garissa University yet. Open them with Continue and submit them before the advert closes.
             </p>
         )}

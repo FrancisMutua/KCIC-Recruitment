@@ -180,34 +180,34 @@ const AuthModals = () => {
 
       {/* Login functionality */}
       {showLoginModal && (
-        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[24rem] shadow-2xl border border-gray-200">
+        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[92vh] max-w-[calc(100vw-2rem)] overflow-y-auto bg-white px-4 pb-4 pt-6 rounded-2xl w-[24rem] shadow-2xl ring-1 ring-slate-900/5">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
+            className="cursor-pointer absolute right-4 top-4 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
+          <h2 className="mb-4 mt-4 text-center text-2xl font-bold text-slate-900">
             Login
           </h2>
           <form className="flex flex-col gap-5 px-4 pb-4" onSubmit={handleLogin}>
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                   size={20}
                 />
                 <input
                   type="text"
                   id="email-address"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                  className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                   placeholder="Email Address"
                   required
                   value={emailAddress}
@@ -218,19 +218,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
                 Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                   size={20}
                 />
                 <input
                   type={showLoginPassword ? "text" : "password"}
                   id="password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                  className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm"
                   placeholder="Password"
                   required
                   value={password}
@@ -238,7 +238,7 @@ const AuthModals = () => {
                 />
                 <button
                   type="button"
-                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-brand-green-600 transition-colors"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 hover:text-brand-green-600 transition-colors"
                   onClick={() => setShowLoginPassword((current) => !current)}
                   aria-label={showLoginPassword ? "Hide password" : "Show password"}
                 >
@@ -253,7 +253,7 @@ const AuthModals = () => {
             <div>
               <button
                 type="submit"
-                className="w-full btn-primary py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="w-full btn-primary rounded-lg py-3 text-sm"
                 disabled={loading}
               >
                 {loading ? (
@@ -266,7 +266,7 @@ const AuthModals = () => {
               </button>
             </div>
           </form>
-          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
+          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-slate-600">
             <p>
               Do not have an account?{" "}
               <button
@@ -288,15 +288,15 @@ const AuthModals = () => {
 
       {/* Forgot password functionality */}
       {showForgotPasswordModal && (
-        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[24rem] shadow-2xl border border-gray-200">
+        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[92vh] max-w-[calc(100vw-2rem)] overflow-y-auto bg-white px-4 pb-4 pt-6 rounded-2xl w-[24rem] shadow-2xl ring-1 ring-slate-900/5">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
+            className="cursor-pointer absolute right-4 top-4 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
+          <h2 className="mb-4 mt-4 text-center text-2xl font-bold text-slate-900">
             Forgot Password
           </h2>
           <form
@@ -306,19 +306,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="email-address"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
                 Email Address
               </label>
               <div className="relative">
                 <IconMail
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                   size={20}
                 />
                 <input
                   type="text"
                   id="email-address"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                  className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                   placeholder="Email Address"
                   required
                   value={emailAddress}
@@ -329,19 +329,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
                 New Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                   size={20}
                 />
                 <input
                   type="password"
                   id="password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                  className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                   placeholder="Password"
                   required
                   value={password}
@@ -352,19 +352,19 @@ const AuthModals = () => {
             <div>
               <label
                 htmlFor="confirm-password"
-                className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
                 Confirm Password
               </label>
               <div className="relative">
                 <IconLock
-                  className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                   size={20}
                 />
                 <input
                   type="password"
                   id="confirm-password"
-                  className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                  className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                   placeholder="Confirm Password"
                   required
                   value={confirmPassword}
@@ -375,7 +375,7 @@ const AuthModals = () => {
             <div>
               <button
                 type="submit"
-                className="w-full btn-primary py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="w-full btn-primary rounded-lg py-3 text-sm"
                 disabled={loading}
               >
                 {loading ? (
@@ -389,7 +389,7 @@ const AuthModals = () => {
               </button>
             </div>
           </form>
-          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
+          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-slate-600">
             <button
               className="text-brand-brown-600 font-semibold hover:underline"
               onClick={openLogin}
@@ -402,15 +402,15 @@ const AuthModals = () => {
 
       {/* Create account modal */}
       {showCreateAccountModal && (
-        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-2xl bg-white p-3 rounded-md w-[26rem] md:w-[50rem] shadow-2xl border border-gray-200">
+        <div className="z-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[92vh] max-w-[calc(100vw-2rem)] overflow-y-auto bg-white px-4 pb-4 pt-6 rounded-2xl w-[26rem] md:w-[50rem] shadow-2xl ring-1 ring-slate-900/5">
           <IconX
-            className="cursor-pointer fixed right-3 text-gray-500 hover:text-brand-brown-600 transition-colors"
+            className="cursor-pointer absolute right-4 top-4 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             onClick={closeModals}
           />
           <figure className="flex justify-center items-center">
             <img src={logo} alt="Garissa University logo" className="h-12 w-auto" />
           </figure>
-          <h2 className="text-center font-semibold mt-2 mb-2 text-2xl text-brand-green-600">
+          <h2 className="mb-4 mt-4 text-center text-2xl font-bold text-slate-900">
             Create Account
           </h2>
           <form onSubmit={handleSubmitCreateAccount} className="px-4 pb-4">
@@ -418,19 +418,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="email-address"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Email Address
                 </label>
                 <div className="relative">
                   <IconMail
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="text"
                     id="email-address"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Email Address"
                     required
                     value={emailAddress}
@@ -441,19 +441,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="first-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   First Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="text"
                     id="first-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="First Name"
                     required
                     value={firstName}
@@ -464,19 +464,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="middle-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Middle Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="text"
                     id="middle-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Middle Name"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
@@ -486,19 +486,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="last-name"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Last Name
                 </label>
                 <div className="relative">
                   <IconUser
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="text"
                     id="last-name"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Last Name"
                     required
                     value={lastName}
@@ -509,19 +509,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="id-number"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Id Number
                 </label>
                 <div className="relative">
                   <IconId
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="text"
                     id="id-number"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Id Number"
                     required
                     value={idNumber}
@@ -532,19 +532,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="password"
                     id="password"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Password"
                     required
                     value={password}
@@ -555,19 +555,19 @@ const AuthModals = () => {
               <div>
                 <label
                   htmlFor="confirm-password"
-                  className="uppercase text-xs font-bold tracking-wider block mb-1 text-brand-green-600"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
                 >
                   Confirm Password
                 </label>
                 <div className="relative">
                   <IconLock
-                    className="absolute top-1/2 left-2 -translate-y-1/2 text-brand-green-600"
+                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
                     size={20}
                   />
                   <input
                     type="password"
                     id="confirm-password"
-                    className="bg-gray-50 w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all"
+                    className="w-full border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm"
                     placeholder="Confirm Password"
                     required
                     value={confirmPassword}
@@ -579,7 +579,7 @@ const AuthModals = () => {
             <div className="mt-5">
               <button
                 type="submit"
-                className="btn-primary py-2.5 rounded-lg w-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-semibold"
+                className="w-full btn-primary rounded-lg py-3 text-sm"
                 disabled={loading}
               >
                 {loading ? (
@@ -593,7 +593,7 @@ const AuthModals = () => {
               </button>
             </div>
           </form>
-          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-gray-600">
+          <div className="flex flex-col gap-2 items-center mt-2 text-sm text-slate-600">
             <button
               className="text-brand-brown-600 font-semibold hover:underline"
               onClick={openLogin}

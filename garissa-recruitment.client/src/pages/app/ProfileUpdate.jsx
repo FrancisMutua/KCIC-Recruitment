@@ -171,99 +171,99 @@ const ProfileUpdate = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-2 px-2">
-      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100">
+    <div className="min-h-screen bg-slate-50 py-2 px-2">
+      <div className="max-w-full mx-auto bg-white rounded-2xl shadow-sm border border-slate-200/80">
 
 
         <form onSubmit={handleSubmit} className="p-8" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Personal Details */}
             <div className="col-span-full border-b pb-2 mb-2">
-                <h3 className="text-lg font-semibold text-gray-700">Personal Details</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Personal Details</h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 value={profile.firstName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
                 readOnly 
                 title="Cannot be modified"
               />
             </div>
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Middle Name</label>
               <input
                 type="text"
                 name="middleName"
                 value={profile.middleName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
                 readOnly
                  title="Cannot be modified"
               />
             </div>
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
               <input
                 type="text"
                 name="lastName"
                 value={profile.lastName}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
                  readOnly
                   title="Cannot be modified"
               />
             </div>
             
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">ID Number</label>
               <input
                 type="text"
                 name="idNumber"
                 value={profile.idNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
                 readOnly
               />
             </div>
 
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
               <input
                 type="email"
                 name="emailAddress"
                 value={profile.emailAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-gray-100"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
                 readOnly
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number <span className="text-brand-brown-600">*</span></label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="phoneNumber"
                 value={profile.phoneNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
                 required
               />
               {renderError("phoneNumber")}
             </div>
             
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span className="text-brand-brown-600">*</span></label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth <span className="text-brand-brown-600">*</span></label>
               <input
                 type="date"
                 name="birthDate"
                 value={profile.birthDate || ''}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
                 required
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
               />
@@ -271,12 +271,12 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender <span className="text-brand-brown-600">*</span></label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Gender <span className="text-brand-brown-600">*</span></label>
               <select
                 name="gender"
                 value={profile.gender}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
                 required
               >
                   <option value="">Select Gender</option>
@@ -286,12 +286,12 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Marital Status</label>
               <select
                 name="maritalStatus"
                 value={profile.maritalStatus}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
               >
                   {ProfileMaritalStatusOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
@@ -316,17 +316,17 @@ const ProfileUpdate = () => {
 
             {/* Address & Contact */}
              <div className="col-span-full border-b pb-2 mb-2 mt-4">
-                <h3 className="text-lg font-semibold text-gray-700">Contact & Location</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Contact & Location</h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Address <span className="text-brand-brown-600">*</span></label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Postal Address <span className="text-brand-brown-600">*</span></label>
               <input
                 type="text"
                 name="postalAddress"
                 value={profile.postalAddress}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
                 required
               />
               {renderError("postalAddress")}

@@ -58,7 +58,7 @@ const ActivateAccount = () => {
           <div className="flex flex-col items-center">
             <IconLoader2 className="animate-spin text-brand-green-600 mb-4" size={48} />
             <h2 className="text-xl font-semibold mb-2">Activating Account</h2>
-            <p className="text-gray-600">{message}</p>
+            <p className="text-slate-600">{message}</p>
           </div>
         )}
 
@@ -68,10 +68,10 @@ const ActivateAccount = () => {
               <IconCheck className="text-brand-green-600" size={48} />
             </div>
             <h2 className="text-xl font-semibold mb-2 text-brand-green-700">Success!</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
+            <p className="text-slate-600 mb-4">{message}</p>
             <button
               onClick={() => navigate("/")}
-              className="btn-primary px-6 py-2 rounded hover:opacity-90 transition-colors"
+              className="btn-primary px-6 py-2 rounded-lg hover:opacity-90 transition-colors"
             >
               Go to Login
             </button>
@@ -84,10 +84,10 @@ const ActivateAccount = () => {
               <IconX className="text-brand-brown-600" size={48} />
             </div>
             <h2 className="text-xl font-semibold mb-2 text-brand-brown-700">Activation Failed</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
+            <p className="text-slate-600 mb-4">{message}</p>
             <button
               onClick={() => navigate("/")}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors"
+              className="bg-slate-500 text-white px-6 py-2 rounded hover:bg-slate-600 transition-colors"
             >
               Go Home
             </button>

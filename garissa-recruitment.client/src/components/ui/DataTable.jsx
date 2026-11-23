@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { IconSearch } from "@tabler/icons-react";
 import { Button } from "./button.jsx";
 import { Input } from "./input.jsx";
 import {
@@ -42,29 +43,33 @@ export function DataTable({ columns, data }) {
   });
 
   return (
-    <div className="space-y-4 border rounded-lg p-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Search..."
-          value={globalFilter ?? ""}
-          onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm"
-        />
-        <div className="text-sm text-muted-foreground hidden md:block">
-            Total Records: {data.length}
+    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-sm">
+          <IconSearch size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input
+            placeholder="Search..."
+            aria-label="Search"
+            value={globalFilter ?? ""}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="hidden text-sm text-slate-500 md:block">
+          Total records: <span className="font-semibold text-slate-800">{data.length}</span>
         </div>
       </div>
-      <div className="rounded-md border">
+      <div>
         <Table>
-          <TableHeader className="bg-black">
+          <TableHeader className="bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="hover:bg-black border-black"
+                className="border-slate-200 hover:bg-slate-50"
               >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-white">
+                    <TableHead key={header.id} className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-slate-500">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -83,9 +88,10 @@ export function DataTable({ columns, data }) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="border-slate-100 hover:bg-brand-green-50/40"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="whitespace-nowrap text-slate-700">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -98,17 +104,17 @@ export function DataTable({ columns, data }) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-slate-500"
                 >
-                  No results.
+                  No records to show.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-slate-500">
           Showing{" "}
           {table.getState().pagination.pageIndex *
             table.getState().pagination.pageSize +
@@ -130,7 +136,7 @@ export function DataTable({ columns, data }) {
           >
             Previous
           </Button>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-slate-600">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </div>

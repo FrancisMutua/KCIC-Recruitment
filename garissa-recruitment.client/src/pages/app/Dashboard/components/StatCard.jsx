@@ -1,32 +1,20 @@
-import { 
-  IconDots
-} from "@tabler/icons-react";
-
 // eslint-disable-next-line no-unused-vars
 const StatCard = ({ title, value, icon: Icon, lightColorClass, chartColor }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-md shadow-slate-200/50 border border-slate-50 flex flex-col relative overflow-hidden group transition-all duration-300">
-    {/* Top-Left Accent Shape */}
-    <div className={`absolute top-0 left-6 w-10 h-4 ${lightColorClass} rounded-b-lg opacity-60`}></div>
+  <div className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+    {/* Accent bar in the logo colours */}
+    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-green via-brand-lime to-brand-gold opacity-80" aria-hidden="true" />
 
-    {/* Header: Icon + Title + Menu */}
-    <div className="flex justify-between items-center mb-6 relative z-10">
-      <div className="flex items-center gap-3">
-        <div className={`p-1.5 rounded-lg ${lightColorClass}`}>
-          <Icon size={20} className={`${chartColor}`} />
-        </div>
-        <h4 className="font-medium text-slate-500 text-sm">{title}</h4>
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="text-sm font-medium text-slate-500">{title}</p>
+        <p className="mt-3 text-4xl font-bold tracking-tight text-slate-900">{value}</p>
       </div>
-      <button className="text-slate-300 hover:text-slate-500 transition-colors p-1 border border-slate-50 rounded-full">
-        <IconDots size={16} />
-      </button>
+      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${lightColorClass}`}>
+        <Icon size={24} className={chartColor} />
+      </div>
     </div>
 
-    {/* Main Stats: Value */}
-    <div className="flex items-center gap-3 mb-1">
-      <span className="text-4xl font-extrabold text-slate-900 tracking-tight">{value}</span>
-    </div>
-    
-    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Overall status</p>
+    <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Overall status</p>
   </div>
 );
 

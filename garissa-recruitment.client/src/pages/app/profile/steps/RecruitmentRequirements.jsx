@@ -4,7 +4,7 @@ import { applicationContext, hasDeclared, post, setDeclared, PERMANENT_RECORD_NO
 import { fixText } from '../../../../lib/jobAdvert';
 import { isBlank } from '../../../../lib/applicationValidation';
 
-const inputStyle = 'mt-1 w-full border border-gray-300 rounded-md p-2 text-gray-800 bg-white';
+const inputStyle = 'mt-1 w-full border border-slate-300 rounded-lg px-3 py-2.5 text-slate-800 bg-white';
 const emptyMembership = { BodyName: '', MembershipNo: '', MembershipDate: '', Status: 1 };
 
 function Memberships({ applicationNo, rows, onSaved, readOnly }) {
@@ -30,19 +30,19 @@ function Memberships({ applicationNo, rows, onSaved, readOnly }) {
     } catch (error) { toast.error(error.message); } finally { setBusy(false); }
   };
   return <section className="space-y-3 border-t pt-6">
-    <h3 className="text-lg font-semibold text-gray-800">Professional memberships</h3>
-    <p className="text-sm text-gray-600">Add any professional bodies you belong to (optional).</p>
+    <h3 className="text-lg font-semibold text-slate-800">Professional memberships</h3>
+    <p className="text-sm text-slate-600">Add any professional bodies you belong to (optional).</p>
     {rows.length > 0 ? <ul className="space-y-2">{rows.map((row) => <li key={row.Id} className="border rounded-lg p-3">
       <strong>{row.Description}</strong>
-      <p className="text-sm text-gray-600">{[row.MembershipNo && `No. ${row.MembershipNo}`, row.MembershipDate && `Since ${row.MembershipDate}`, row.Status].filter(Boolean).join(' · ')}</p>
-    </li>)}</ul> : <p className="text-sm text-gray-500 italic">No memberships added.</p>}
+      <p className="text-sm text-slate-600">{[row.MembershipNo && `No. ${row.MembershipNo}`, row.MembershipDate && `Since ${row.MembershipDate}`, row.Status].filter(Boolean).join(' · ')}</p>
+    </li>)}</ul> : <p className="text-sm text-slate-500 italic">No memberships added.</p>}
     {!readOnly && <div className="grid sm:grid-cols-2 gap-3">
-      <label className="text-sm font-medium text-gray-700">Professional body<input className={inputStyle} name="BodyName" maxLength={60} value={form.BodyName} onChange={change} placeholder="e.g. ICPAK" /></label>
-      <label className="text-sm font-medium text-gray-700">Membership number<input className={inputStyle} name="MembershipNo" maxLength={50} value={form.MembershipNo} onChange={change} /></label>
-      <label className="text-sm font-medium text-gray-700">Member since<input className={inputStyle} type="date" name="MembershipDate" value={form.MembershipDate} onChange={change} /></label>
-      <label className="text-sm font-medium text-gray-700">Status<select className={inputStyle} name="Status" value={form.Status} onChange={change}><option value={1}>Active</option><option value={2}>Inactive</option></select></label>
+      <label className="text-sm font-medium text-slate-700">Professional body<input className={inputStyle} name="BodyName" maxLength={60} value={form.BodyName} onChange={change} placeholder="e.g. ICPAK" /></label>
+      <label className="text-sm font-medium text-slate-700">Membership number<input className={inputStyle} name="MembershipNo" maxLength={50} value={form.MembershipNo} onChange={change} /></label>
+      <label className="text-sm font-medium text-slate-700">Member since<input className={inputStyle} type="date" name="MembershipDate" value={form.MembershipDate} onChange={change} /></label>
+      <label className="text-sm font-medium text-slate-700">Status<select className={inputStyle} name="Status" value={form.Status} onChange={change}><option value={1}>Active</option><option value={2}>Inactive</option></select></label>
       <p className="sm:col-span-2 text-sm text-brand-brown-600">{PERMANENT_RECORD_NOTE}</p>
-      <div className="sm:col-span-2"><button type="button" onClick={save} disabled={busy} className="btn-primary px-4 py-2 rounded-md">{busy ? 'Saving…' : 'Add membership'}</button></div>
+      <div className="sm:col-span-2"><button type="button" onClick={save} disabled={busy} className="btn-primary px-4 py-2 rounded-lg">{busy ? 'Saving…' : 'Add membership'}</button></div>
     </div>}
   </section>;
 }
@@ -69,15 +69,15 @@ export default function RecruitmentRequirements({ applicationNo, onBack, onNext 
   return <div className="space-y-6">
     <h3 className="text-xl font-semibold">Minimum requirements for {fixText(context.JobTitle) || 'this position'}</h3>
     {requirements.length > 0 ? <>
-      <ol className="list-decimal pl-8 space-y-2 bg-gray-50 rounded-lg p-6 text-gray-700">
+      <ol className="list-decimal pl-8 space-y-2 bg-slate-50 rounded-lg p-6 text-slate-700">
         {requirements.map((row, index) => <li key={`${row.Code}-${index}`}>{fixText(row.Description || row.Code)}</li>)}
       </ol>
       <label className="flex items-start gap-3">
         <input type="checkbox" className="mt-1" checked={declared} disabled={!context.CanEdit} onChange={(e) => toggleDeclaration(e.target.checked)} />
         <span>I confirm that I meet the minimum requirements listed above and that the information in this application is true. <span className="text-brand-brown-600">*</span></span>
       </label>
-    </> : <p className="text-gray-600">No minimum requirements are listed for this position.</p>}
+    </> : <p className="text-slate-600">No minimum requirements are listed for this position.</p>}
     <Memberships applicationNo={applicationNo} rows={context.Memberships || []} onSaved={load} readOnly={!context.CanEdit} />
-    <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded bg-gray-200">Previous</button><button type="button" onClick={next} className="btn-primary px-5 py-2 rounded">Save and continue</button></div>
+    <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded-lg border border-slate-300 bg-white font-semibold text-slate-700 hover:bg-slate-50">Previous</button><button type="button" onClick={next} className="btn-primary px-5 py-2 rounded-lg">Save and continue</button></div>
   </div>;
 }

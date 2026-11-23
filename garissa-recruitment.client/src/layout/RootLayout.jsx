@@ -21,7 +21,7 @@ const RootLayout = () => {
 
   changeDocumentTitle("Home");
   return (
-      <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex flex-col min-h-screen bg-slate-50">
         <RootNav />
         {isHomePage && (
           <>

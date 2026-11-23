@@ -27,7 +27,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name, extra = "bg-white") =>
-    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-slate-300"} rounded-lg shadow-sm px-3 py-2.5 ${extra}`;
 
   const renderError = (name) =>
     fieldErrors[name] ? <p className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
@@ -161,14 +161,14 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     <div className="space-y-8">
       {/* Form Section */}
       <form onSubmit={handleAdd} className="space-y-4" noValidate>
-        <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-green-600" /> Add Professional Training / Qualification
         </h3>
-        <p className="text-sm text-gray-500 -mt-2">Add professional qualifications and training relevant to the job. Professional memberships are recorded separately under Job Requirements.</p>
+        <p className="text-sm text-slate-500 -mt-2">Add professional qualifications and training relevant to the job. Professional memberships are recorded separately under Job Requirements.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="col-span-full md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               Qualification / Training Name <span className="text-brand-brown-600">*</span>
             </label>
             <input
@@ -185,7 +185,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               Year Attained <span className="text-brand-brown-600">*</span>
             </label>
             <input
@@ -203,7 +203,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div className="col-span-full md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               Institution <span className="text-brand-brown-600">*</span>
             </label>
             <input
@@ -228,7 +228,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2"
+            className="btn-primary px-6 py-2 rounded-lg hover:opacity-90 transition-colors flex items-center gap-2"
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Training"}
@@ -237,42 +237,42 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       </form>
 
       {/* List Section */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-700">Professional Training & Qualifications</h3>
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 bg-white">
+          <h3 className="text-lg font-semibold text-slate-900">Professional Training & Qualifications</h3>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50/80">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qualification / Training</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Qualification / Training</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Institution</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Year</th>
 
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {fetching ? (
                 <tr>
                   <td colSpan="3" className="px-6 py-10 text-center">
-                    <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <div className="flex justify-center items-center gap-2 text-slate-500">
                       <IconLoader2 className="animate-spin" /> Fetching records...
                     </div>
                   </td>
                 </tr>
               ) : trainingList.length === 0 ? (
                 <tr>
-                  <td colSpan="3" className="px-6 py-10 text-center text-gray-500 italic">
+                  <td colSpan="3" className="px-6 py-10 text-center text-slate-500 italic">
                     No professional training records added yet.
                   </td>
                 </tr>
               ) : (
                 trainingList.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.description}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{item.institution}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.year}</td>
+                  <tr key={item.id} className="hover:bg-brand-green-50/40 transition-colors">
+                    <td className="px-6 py-4 text-sm font-medium text-slate-900">{item.description}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{item.institution}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500">{item.year}</td>
 
                   </tr>
                 ))
@@ -286,13 +286,13 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       <div className="flex justify-between pt-6">
         <button
           onClick={onBack}
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
+          className="border border-slate-300 bg-white text-slate-700 font-semibold px-6 py-2 rounded-lg hover:border-brand-green hover:bg-brand-green-50 hover:text-brand-green-700 transition-colors"
         >
           Previous
         </button>
         <button
           onClick={onNext}
-          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
+          className="btn-primary px-6 py-2 rounded-lg hover:opacity-90 transition-colors"
         >
           Next Step
         </button>

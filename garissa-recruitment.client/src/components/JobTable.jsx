@@ -70,7 +70,7 @@ const JobTable = ({ basePath = "/job-details" }) => {
     {
       header: "Job Title",
       accessorKey: "jobTitle",
-      cell: ({ row }) => fixText(row.original.jobTitle) || "-",
+      cell: ({ row }) => <span className="font-semibold text-slate-900">{fixText(row.original.jobTitle) || "-"}</span>,
     },
     {
       header: "Vacancy",
@@ -93,13 +93,13 @@ const JobTable = ({ basePath = "/job-details" }) => {
           <div className="flex items-center gap-2">
             <Button 
                 size="sm"
-                className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
+                className="btn-primary h-8 rounded-lg px-3 text-xs"
                 onClick={() => navigate(`${basePath}/${encodeURIComponent(job.jobId)}?requisitionNo=${encodeURIComponent(job.documentNo)}`)}
             >
                 Details
             </Button>
             <button 
-              className="p-1.5 text-brand-green-600 hover:bg-brand-green-600 hover:text-white rounded-md transition-colors border border-brand-green"
+              className="rounded-lg border border-slate-300 p-1.5 text-brand-green-700 transition-colors hover:border-brand-green hover:bg-brand-green-50"
               onClick={() => handleShare(job.jobId, job.documentNo)}
               title="Share Job"
             >
@@ -113,19 +113,26 @@ const JobTable = ({ basePath = "/job-details" }) => {
 
   return (
     <div>
-      <h3 className="uppercase font-semibold tracking-wide text-sm md:text-2xl mb-4">
-        Advertised Jobs
-      </h3>
+      <div className="mb-5 flex items-end justify-between gap-3">
+        <div>
+          <h3 className="text-xl font-bold text-slate-900 md:text-2xl">Advertised Jobs</h3>
+          <p className="mt-1 text-sm text-slate-500">Positions currently open for applications at Garissa University.</p>
+        </div>
+        {!loading && !error && (
+          <span className="hidden shrink-0 rounded-full bg-brand-green-50 px-3 py-1 text-xs font-semibold text-brand-green-800 ring-1 ring-inset ring-brand-green-200 sm:inline-flex">
+            {advertisedJobs.length} open
+          </span>
+        )}
+      </div>
       {loading && (
-        <div className="flex justify-center items-center mt-4 mb-4">
-          <MoonLoader color="#339966" />
+        <div className="flex items-center justify-center rounded-2xl border border-slate-200/80 bg-white py-12 shadow-sm">
+          <MoonLoader color="#339966" size={36} />
         </div>
       )}
       {error && (
-        <div className="flex justify-center items-center mt-4 mb-4">
-          <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md">
-            {error}
-          </div>
+        <div role="alert" className="rounded-2xl border border-brand-brown-200 bg-brand-brown-50 px-5 py-4 text-sm text-brand-brown-800">
+          <p className="font-semibold">Advertised jobs could not be loaded</p>
+          <p className="mt-1 break-words">{error}</p>
         </div>
       )}
       {!loading && !error && (
