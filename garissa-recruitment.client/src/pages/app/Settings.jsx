@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const Settings = () => {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -31,7 +31,7 @@ const Settings = () => {
     setLoading(true);
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch("/api/auth/changepassword", {
+      const response = await apiFetch("/api/auth/changepassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

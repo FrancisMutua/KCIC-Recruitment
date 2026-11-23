@@ -14,7 +14,7 @@ import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
 import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
 import Attachments from "./profile/steps/Attachments";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const ApplicationDetails = () => {
   const { applicationNo } = useParams();
@@ -90,7 +90,7 @@ const ApplicationDetails = () => {
              return;
         }
 
-        const response = await fetch(`/api/job/application-details?applicationNo=${encodeURIComponent(applicationNo)}`, {
+        const response = await apiFetch(`/api/job/application-details?applicationNo=${encodeURIComponent(applicationNo)}`, {
              headers: {
                 "Authorization": `Bearer ${user.accessToken}`
              }
@@ -205,7 +205,7 @@ const ApplicationDetails = () => {
         citizenship: profile.citizenship
       };
 
-      const response = await fetch("/api/job/update-personal-details", {
+      const response = await apiFetch("/api/job/update-personal-details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

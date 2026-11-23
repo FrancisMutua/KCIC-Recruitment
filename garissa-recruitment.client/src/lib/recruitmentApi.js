@@ -1,8 +1,8 @@
-import { readJson, resultError } from './http.js';
+import { apiFetch, readJson, resultError } from './http.js';
 
 export async function recruitmentRequest(path, options = {}) {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const response = await fetch(`/api/job/${path}`, {
+  const response = await apiFetch(`/api/job/${path}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.accessToken || ''}`, ...options.headers },
   });

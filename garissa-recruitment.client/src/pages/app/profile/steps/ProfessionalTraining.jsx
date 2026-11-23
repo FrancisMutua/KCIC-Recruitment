@@ -3,7 +3,7 @@ import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
 import { IconPlus, IconLoader2 } from "@tabler/icons-react";
 import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
-import { readJson } from "../../../../lib/http";
+import { apiFetch, readJson } from "../../../../lib/http";
 
 const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   const [trainingList, setTrainingList] = useState([]);
@@ -37,7 +37,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
+      const response = await apiFetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await readJson(response);
@@ -61,7 +61,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
+        const response = await apiFetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await readJson(response);
@@ -127,7 +127,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         year: yearNum
       };
 
-      const response = await fetch("/api/job/add-professional-training", {
+      const response = await apiFetch("/api/job/add-professional-training", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

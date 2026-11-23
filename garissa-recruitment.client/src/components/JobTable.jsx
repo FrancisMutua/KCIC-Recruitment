@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { DataTable } from "./ui/DataTable";
 import { Button } from "./ui/button";
 import { fixText } from "../lib/jobAdvert";
-import { readJson } from "../lib/http";
+import { apiFetch, readJson } from "../lib/http";
 
 const JobTable = ({ basePath = "/job-details" }) => {
   const [advertisedJobs, setAdvertisedJobs] = useState([]);
@@ -22,7 +22,7 @@ const JobTable = ({ basePath = "/job-details" }) => {
     const getAdvertisedJobs = async function () {
       try {
         setLoading(true);
-        const response = await fetch("/api/job/advertisedjobs", { signal });
+        const response = await apiFetch("/api/job/advertisedjobs", { signal });
         const result = await readJson(response);
         if (result.success === false) throw new Error(result.message);
         setAdvertisedJobs(result.data ?? []);

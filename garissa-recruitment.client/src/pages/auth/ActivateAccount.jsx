@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconCheck, IconX, IconLoader2 } from "@tabler/icons-react";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const ActivateAccount = () => {
   const [status, setStatus] = useState("loading");
@@ -22,7 +22,7 @@ const ActivateAccount = () => {
       }
 
       try {
-        const response = await fetch("/api/auth/activate", {
+        const response = await apiFetch("/api/auth/activate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

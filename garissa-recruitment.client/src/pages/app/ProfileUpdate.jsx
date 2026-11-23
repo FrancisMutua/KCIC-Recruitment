@@ -5,7 +5,7 @@ import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../components/ui/GlobalDropdown";
 import { validatePersonalDetails, personalRequiredFields } from "../../lib/applicationValidation";
 import { GenderOptions, ProfileMaritalStatusOptions, optionValue } from "../../constants/enums";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ const ProfileUpdate = () => {
           return;
         }
 
-        const response = await fetch("/api/auth/profile", {
+        const response = await apiFetch("/api/auth/profile", {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
           },
@@ -136,7 +136,7 @@ const ProfileUpdate = () => {
             country: profile.country
         };
 
-      const response = await fetch("/api/auth/updateprofile", {
+      const response = await apiFetch("/api/auth/updateprofile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

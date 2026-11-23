@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import logo from "../assets/images/logo.png";
 import { useModal } from "../context/ModalContext";
-import { readJson } from "../lib/http";
+import { apiFetch, readJson } from "../lib/http";
 
 const AuthModals = () => {
   const {
@@ -59,7 +59,7 @@ const AuthModals = () => {
         idNumber,
         password,
       };
-      const response = await fetch("/api/auth/createaccount", {
+      const response = await apiFetch("/api/auth/createaccount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -89,7 +89,7 @@ const AuthModals = () => {
 
       const user = { username: emailAddress, password };
 
-      const response = await fetch("/api/auth/login", {
+      const response = await apiFetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -103,7 +103,7 @@ const AuthModals = () => {
       const isProfileUpdated = token.isProfileUpdated;
 
       // Fetch user profile details
-      const profileResponse = await fetch("/api/auth/profile", {
+      const profileResponse = await apiFetch("/api/auth/profile", {
         headers: {
           Authorization: `Bearer ${token.accessToken}`,
         },
@@ -146,7 +146,7 @@ const AuthModals = () => {
 
       const user = { username: emailAddress, password };
 
-      const response = await fetch("/api/auth/resetpassword", {
+      const response = await apiFetch("/api/auth/resetpassword", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),

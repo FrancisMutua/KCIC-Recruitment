@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { IconChevronDown, IconSearch, IconX, IconLoader2 } from "@tabler/icons-react";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const GlobalDropdown = ({
   page,
@@ -40,7 +40,7 @@ const GlobalDropdown = ({
         setIsLoading(true);
         // setIsError(false);
 
-        const response = await fetch("/api/dropdown/get-drop-down-list", {
+        const response = await apiFetch("/api/dropdown/get-drop-down-list", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

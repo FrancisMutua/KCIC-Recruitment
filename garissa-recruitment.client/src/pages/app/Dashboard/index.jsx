@@ -12,7 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import StatCard from "./components/StatCard";
 import JobTable from "../../../components/JobTable";
-import { readJson } from "../../../lib/http";
+import { apiFetch, readJson, resultError } from "../../../lib/http";
+import { toast } from "react-toastify";
 
 const iconMap = {
   TotalOpenings: IconBriefcase,
@@ -39,18 +40,18 @@ const Dashboard = () => {
         const userData = JSON.parse(localStorage.getItem("user") || "{}");
         const token = userData.accessToken;
 
-        const response = await fetch("/api/dashboard/statistics", {
+        const response = await apiFetch("/api/dashboard/statistics", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
 
-        if (!response.ok) throw new Error("Failed to fetch statistics");
-
         const data = await readJson(response);
+        if (!response.ok || data.success === false) throw new Error(resultError(data, response));
         setStats(data.data);
       } catch (error) {
         console.error("Dashboard error:", error);
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }

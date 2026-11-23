@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
-import { readJson } from "../../../../lib/http";
+import { apiFetch, readJson } from "../../../../lib/http";
 
 const NextOfKin = ({ applicationNo, onBack, onNext }) => {
   const [kinList, setKinList] = useState([]);
@@ -40,7 +40,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+      const response = await apiFetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await readJson(response);
@@ -65,7 +65,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
+        const response = await apiFetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await readJson(response);
@@ -133,7 +133,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
         institution: formData.institution
       };
 
-      const response = await fetch("/api/job/add-relationship", {
+      const response = await apiFetch("/api/job/add-relationship", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +172,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-relationship?id=${id}&applicationNo=${applicationNo}`, {
+      const response = await apiFetch(`/api/job/delete-relationship?id=${id}&applicationNo=${applicationNo}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${user.accessToken}`

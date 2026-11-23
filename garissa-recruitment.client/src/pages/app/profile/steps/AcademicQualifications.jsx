@@ -4,7 +4,7 @@ import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
-import { readJson } from "../../../../lib/http";
+import { apiFetch, readJson } from "../../../../lib/http";
 
 const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   const [qualifications, setQualifications] = useState([]);
@@ -48,7 +48,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
     try {
       setFetching(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
+      const response = await apiFetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
       const result = await readJson(response);
@@ -72,7 +72,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       try {
         setFetching(true);
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
+        const response = await apiFetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
         const result = await readJson(response);
@@ -140,7 +140,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         areaOfStudy: formData.areaOfStudy || ""
       };
 
-      const response = await fetch("/api/job/add-academic-qualification", {
+      const response = await apiFetch("/api/job/add-academic-qualification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await fetch(`/api/job/delete-academic-qualification?applicationNo=${encodeURIComponent(applicationNo)}&id=${encodeURIComponent(id)}`, {
+      const response = await apiFetch(`/api/job/delete-academic-qualification?applicationNo=${encodeURIComponent(applicationNo)}&id=${encodeURIComponent(id)}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${user.accessToken}`

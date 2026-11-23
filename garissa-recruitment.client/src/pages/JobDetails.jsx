@@ -7,7 +7,7 @@ import { IconArrowLeft, IconShare } from "@tabler/icons-react";
 import { useModal } from "../context/ModalContext";
 import JobAdvertContent from "../components/JobAdvertContent";
 import { fixText } from "../lib/jobAdvert";
-import { readJson } from "../lib/http";
+import { apiFetch, readJson } from "../lib/http";
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -26,7 +26,7 @@ const JobDetails = () => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/job/jobrequirements?jobId=${encodeURIComponent(jobId)}&requisitionNo=${encodeURIComponent(requisitionNo)}`, {
+        const response = await apiFetch(`/api/job/jobrequirements?jobId=${encodeURIComponent(jobId)}&requisitionNo=${encodeURIComponent(requisitionNo)}`, {
           signal,
         });
         const result = await readJson(response);
@@ -84,7 +84,7 @@ const JobDetails = () => {
             requisitionNo: jobDetails.jobInfo.documentNo
         };
         
-        const response = await fetch("/api/job/submit", {
+        const response = await apiFetch("/api/job/submit", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

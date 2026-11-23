@@ -60,6 +60,16 @@ export default defineConfig({
       "/api": {
         target,
         secure: false,
+        // When the .NET API can't be reached, send the real cause (ECONNREFUSED, TLS, timeout…)
+        // to the page as JSON instead of Vite's empty 500.
+        configure: (proxy) => {
+          proxy.on("error", (err, req, res) => {
+            if (!res || res.headersSent || res.writableEnded || typeof res.writeHead !== "function") return;
+            const cause = [err.code, err.message].filter(Boolean).join(" ");
+            res.writeHead(502, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, message: `Portal API not reachable at ${target}${req.url}: ${cause}`, data: null }));
+          });
+        },
       },
     },
     port: parseInt(env.DEV_SERVER_PORT || "44357"),

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { IconPlus, IconLoader2, IconDeviceFloppy } from "@tabler/icons-react";
 import { applicationContext, PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { getRefereeSubmissionStatus } from "../../../../lib/refereeValidation";
-import { readJson } from "../../../../lib/http";
+import { apiFetch, readJson } from "../../../../lib/http";
 
 const Referees = ({ applicationNo, onBack, onNext }) => {
   const [refereesList, setRefereesList] = useState([]);
@@ -44,7 +44,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       setMinimumReferees(undefined);
       const user = JSON.parse(localStorage.getItem("user"));
       const [response, context] = await Promise.all([
-        fetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
+        apiFetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         }),
         applicationContext(applicationNo)
@@ -74,7 +74,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         setMinimumReferees(undefined);
         const user = JSON.parse(localStorage.getItem("user"));
         const [response, context] = await Promise.all([
-          fetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
+          apiFetch(`/api/job/referees?applicationNo=${encodeURIComponent(applicationNo)}`, {
             headers: { "Authorization": `Bearer ${user.accessToken}` }
           }),
           applicationContext(applicationNo)
@@ -152,7 +152,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         institution: formData.institution
       };
 
-      const response = await fetch("/api/job/add-referee", {
+      const response = await apiFetch("/api/job/add-referee", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -5,7 +5,7 @@ import { MoonLoader } from "react-spinners";
 import { DataTable } from "../../components/ui/DataTable";
 import { Button } from "../../components/ui/button";
 import { fixText } from "../../lib/jobAdvert";
-import { readJson } from "../../lib/http";
+import { apiFetch, readJson } from "../../lib/http";
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Applications = () => {
             return;
         }
 
-        const response = await fetch("/api/job/applications", {
+        const response = await apiFetch("/api/job/applications", {
             headers: {
                 "Authorization": `Bearer ${user.accessToken}`
             }
