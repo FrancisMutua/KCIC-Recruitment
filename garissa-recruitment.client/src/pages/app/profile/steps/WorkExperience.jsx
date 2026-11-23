@@ -4,7 +4,6 @@ import { IconPlus, IconLoader2 } from "@tabler/icons-react";
 import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
-import { formatDate } from "../../../../lib/bcDate";
 import { apiFetch, readJson } from "../../../../lib/http";
 
 const WorkExperience = ({ applicationNo, onBack, onNext }) => {
@@ -38,10 +37,10 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
   };
 
   const inputClass = (name, extra = "bg-white") =>
-    `field-input ${fieldErrors[name] ? "field-input-error" : ""} ${extra}`;
+    `mt-1 block w-full border ${fieldErrors[name] ? "border-brand-camel focus:ring-brand-camel" : "border-gray-300"} rounded-md shadow-sm p-2 ${extra}`;
 
   const renderError = (name) =>
-    fieldErrors[name] ? <p id={`experience-${name}-error`} role="alert" className="field-error">{fieldErrors[name]}</p> : null;
+    fieldErrors[name] ? <p id={`experience-${name}-error`} role="alert" className="mt-1 text-xs text-brand-brown-600">{fieldErrors[name]}</p> : null;
 
   // Separate plain function used to refresh after add/delete
   const refreshExperiences = async () => {
@@ -175,12 +174,12 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
     <div className="space-y-8">
       {/* Form Section */}
       <form onSubmit={handleAddExperience} className="space-y-4" noValidate>
-        <h3 className="section-title mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <IconPlus size={20} className="text-brand-green-600" /> Add Work Experience
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           <div>
-            <label className="field-label">Position <span className="text-brand-brown-600">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Position <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="position" 
@@ -194,7 +193,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="field-label">Institution / Company <span className="text-brand-brown-600">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Institution / Company <span className="text-brand-brown-600">*</span></label>
             <input 
               type="text" 
               name="institution" 
@@ -208,7 +207,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
           </div>
 
           <div>
-            <label className="field-label">Start Date <span className="text-brand-brown-600">*</span></label>
+            <label className="block text-sm font-medium text-gray-700">Start Date <span className="text-brand-brown-600">*</span></label>
             <input 
               type="date" 
               name="startDate" 
@@ -224,7 +223,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
 
           {!formData.isCurrent && (
             <div>
-              <label className="field-label">End Date <span className="text-brand-brown-600">*</span></label>
+              <label className="block text-sm font-medium text-gray-700">End Date <span className="text-brand-brown-600">*</span></label>
               <input 
                 type="date" 
                 name="endDate" 
@@ -246,20 +245,20 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 name="isCurrent"
                 checked={formData.isCurrent}
                 onChange={handleChange}
-                className="w-4 h-4 text-brand-green-600 border-slate-300 rounded"
+                className="w-4 h-4 text-brand-green-600 border-gray-300 rounded"
               />
-              <span className="field-label">Currently Working Here</span>
+              <span className="text-sm font-medium text-gray-700">Currently Working Here</span>
             </label>
           </div>
 
         </div>
 
-        <p className="alert alert-warn mt-4">{PERMANENT_RECORD_NOTE}</p>
+        <p className="mt-4 text-sm text-brand-brown-600">{PERMANENT_RECORD_NOTE}</p>
         <div className="mt-6 flex justify-end">
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary"
+            className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors flex items-center gap-2 "
           >
             {loading ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} />}
             {loading ? "Adding..." : "Add Experience"}
@@ -268,32 +267,32 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       </form>
 
       {/* List Section */}
-      <div className="card overflow-hidden">
-        <div className="card-header">
-          <h3 className="section-title">Work Experience History</h3>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-700">Work Experience History</h3>
         </div>
         
         <div className="overflow-x-auto">
-          <table className="table-modern">
-            <thead>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="text-left min-w-[200px]">Position</th>
-                <th className="text-left min-w-[200px]">Institution / Company</th>
-                <th className="text-left">Dates</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Position</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Institution / Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {fetching ? (
                 <tr>
                    <td colSpan="3" className="px-6 py-10 text-center">
-                      <div className="flex justify-center items-center gap-2 text-slate-500">
+                      <div className="flex justify-center items-center gap-2 text-gray-500">
                          <IconLoader2 className="animate-spin" /> Fetching experiences...
                       </div>
                    </td>
                 </tr>
               ) : experiences.filter(e => e.position || e.institution).length === 0 ? (
                 <tr>
-                   <td colSpan="3" className="px-6 py-10 text-center text-sm text-slate-500">
+                   <td colSpan="3" className="px-6 py-10 text-center text-gray-500 italic">
                       No work experience added yet.
                    </td>
                 </tr>
@@ -301,11 +300,11 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
                 experiences
                   .filter(e => e.position || e.institution)
                   .map((e) => (
-                  <tr key={`${e.institution}-${e.position}`}>
-                    <td className="font-medium text-slate-900">{e.position}</td>
-                    <td>{e.institution}</td>
-                    <td>
-                      {formatDate(e.startDate)} – {e.isCurrentPosition || !e.endDate ? "Present" : formatDate(e.endDate)}
+                  <tr key={`${e.institution}-${e.position}`} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{e.position}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{e.institution}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {e.startDate} - {e.isCurrentPosition || !e.endDate ? "Present" : e.endDate}
                     </td>
                   </tr>
                 ))
@@ -316,18 +315,18 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-between">
+      <div className="flex justify-between pt-6">
         <button
           onClick={onBack}
-          className="btn btn-outline"
+          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
         >
           Previous
         </button>
         <button
           onClick={onNext}
-          className="btn btn-primary"
+          className="btn-primary px-6 py-2 rounded-md hover:opacity-90 transition-colors"
         >
-          Continue
+          Next Step
         </button>
       </div>
     </div>

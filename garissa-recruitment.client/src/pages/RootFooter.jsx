@@ -1,15 +1,23 @@
-const RootFooter = () => (
-  <footer className="border-t border-slate-200 bg-white">
-    <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-slate-500 sm:flex-row sm:px-6 lg:px-8">
-      <p>© {new Date().getFullYear()} Garissa University. All rights reserved.</p>
+import { Link } from "react-router-dom";
+
+const RootFooter = () => {
+  return (
+    <div className="mt-auto bg-gradient-primary text-white flex justify-center items-center flex-col py-5">
+      <p>
+        Copyright Garissa University &copy; {new Date().getFullYear()}. All rights reserved.
+      </p>
       <p>
         Powered by{" "}
-        <a href="https://www.appkings.co.ke" target="_blank" rel="noreferrer" className="font-medium text-brand-green-700 hover:underline">
+        <Link
+          to="https://www.appkings.co.ke"
+          target="_blank"
+          className="text-white/60 underline hover:no-underline"
+        >
           Appkings Solutions Limited
-        </a>
+        </Link>
       </p>
     </div>
-  </footer>
-);
+  );
+};
 
 export default RootFooter;

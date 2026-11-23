@@ -1,97 +1,135 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { IconArrowRight, IconFileOff, IconRefresh } from "@tabler/icons-react";
-import { recruitmentRequest } from "../../lib/recruitmentApi";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { MoonLoader } from "react-spinners";
+import { DataTable } from "../../components/ui/DataTable";
+import { Button } from "../../components/ui/button";
 import { fixText } from "../../lib/jobAdvert";
-import { formatDate } from "../../lib/bcDate";
-import { Alert, EmptyState, PageHeader, Spinner, StatusBadge } from "../../components/ui/kit";
-import { ApplicationTracker } from "./profile/steps/ApplicationReview";
-
-const FILTERS = [
-  ["all", "All"],
-  ["draft", "Drafts"],
-  ["submitted", "Submitted"],
-];
+import { apiFetch, readJson } from "../../lib/http";
 
 const Applications = () => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [reload, setReload] = useState(0);
 
   useEffect(() => {
-    let active = true;
-    recruitmentRequest("applications")
-      .then((data) => { if (active) { setApplications(data || []); setError(""); } })
-      .catch((err) => active && setError(err.message))
-      .finally(() => active && setLoading(false));
-    return () => { active = false; };
-  }, [reload]);
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.accessToken) {
+            navigate("/");
+            return;
+        }
 
-  const visible = useMemo(() => applications.filter((app) =>
-    filter === "all" ? true : filter === "draft" ? !app.Submitted : app.Submitted), [applications, filter]);
+        const response = await apiFetch("/api/job/applications", {
+            headers: {
+                "Authorization": `Bearer ${user.accessToken}`
+            }
+        });
+        const result = await readJson(response);
 
-  const counts = { all: applications.length, draft: applications.filter((a) => !a.Submitted).length, submitted: applications.filter((a) => a.Submitted).length };
+        if (result.success) {
+            setApplications(result.data);
+        } else {
+             if(result.message) toast.error(result.message);
+             setError(result.message || "Failed to fetch applications");
+        }
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        setError(error.message || "Failed to load applications.");
+        toast.error(error.message || "Failed to load applications.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, [navigate]);
+
+  const columns = useMemo(() => [
+    {
+      header: "Application No",
+      accessorKey: "DocumentNo",
+    },
+    {
+      header: "Job Title",
+      accessorKey: "JobTitle",
+      cell: ({ row }) => fixText(row.original.JobTitle) || "-",
+    },
+    {
+      header: "Date Applied",
+      accessorKey: "DocumentDate",
+    },
+    {
+      header: "Status",
+      accessorKey: "Status",
+      cell: ({ row }) => {
+        const status = row.original.CandidateStatus || "Draft";
+        const style = {
+          Draft: 'bg-brand-gold-50 text-brand-brown-700',
+          Submitted: 'bg-brand-green-50 text-brand-green-800',
+          'Under review': 'bg-brand-lime-100 text-brand-forest',
+          'Not successful': 'bg-brand-brown-100 text-brand-brown-800',
+          Closed: 'bg-gray-100 text-gray-700',
+        }[status] || 'bg-brand-green-50 text-brand-green-800';
+        return (
+            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${style}`}>
+                {status}
+            </span>
+        );
+      }
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const app = row.original;
+        return (
+            <Button 
+                size="sm"
+                className="btn-primary h-8 px-3 rounded text-xs hover:opacity-90 transition-colors"
+                onClick={() => navigate(`/app/application-details/${app.DocumentNo}`)}
+            >
+                {app.Submitted ? "Track" : "Continue"}
+            </Button>
+        );
+      },
+    },
+  ], [navigate]);
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="My applications" subtitle="Drafts are only visible to you until you submit them."
-        actions={<Link to="/app/jobs" className="btn btn-primary">Find another position</Link>} />
+    <div className="py-4 px-2 md:px-6 bg-slate-50 min-h-screen">
+      <div className="max-w-full mx-auto">
+        <h3 className="uppercase font-semibold tracking-wide text-sm md:text-2xl mb-6">
+            My Applications
+        </h3>
 
-      {applications.length > 0 && (
-        <div role="tablist" aria-label="Filter applications" className="inline-flex rounded-xl border border-slate-200 bg-white p-1">
-          {FILTERS.map(([key, label]) => (
-            <button key={key} role="tab" aria-selected={filter === key} type="button" onClick={() => setFilter(key)}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === key ? "bg-brand-green-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"}`}>
-              {label} <span className={filter === key ? "text-white/80" : "text-slate-400"}>({counts[key]})</span>
-            </button>
-          ))}
-        </div>
-      )}
+        {loading && (
+            <div className="flex justify-center items-center mt-4 mb-4">
+            <MoonLoader color="#339966" />
+            </div>
+        )}
 
-      {loading && <Spinner label="Loading your applications…" />}
+        {error && (
+            <div className="flex justify-center items-center mt-4 mb-4">
+            <div className="bg-brand-brown-600 text-white py-3 px-6 rounded-md">
+                {error}
+            </div>
+            </div>
+        )}
 
-      {!loading && error && (
-        <Alert tone="error" title="Your applications couldn't be loaded">
-          <p>{error}</p>
-          <button type="button" className="btn btn-outline btn-sm mt-3" onClick={() => { setLoading(true); setReload((n) => n + 1); }}><IconRefresh size={16} /> Try again</button>
-        </Alert>
-      )}
+        {!loading && !error && applications.length > 0 && (
+            <p className="text-sm text-gray-600 mb-4">
+                Draft applications have not been sent to Garissa University yet. Open them with Continue and submit them before the advert closes.
+            </p>
+        )}
 
-      {!loading && !error && visible.length === 0 && (
-        <div className="card">
-          <EmptyState icon={IconFileOff}
-            title={applications.length ? "Nothing in this view" : "You haven't applied for anything yet"}
-            description={applications.length ? "Try a different filter." : "Find a position that suits you and start your application — you can save and finish it later."}
-            action={!applications.length && <Link to="/app/jobs" className="btn btn-primary">Browse open positions</Link>} />
-        </div>
-      )}
-
-      {!loading && !error && visible.length > 0 && (
-        <ul className="space-y-4">
-          {visible.map((app) => (
-            <li key={app.DocumentNo} className="card card-body">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge status={app.CandidateStatus} />
-                    <span className="text-xs text-slate-500">Application {app.DocumentNo}</span>
-                  </div>
-                  <h2 className="mt-2 text-lg font-semibold text-slate-900">{fixText(app.JobTitle) || app.JobId}</h2>
-                  <p className="text-sm text-slate-500">Ref. {app.ReferenceNo} · Started {formatDate(app.DocumentDate)}</p>
-                </div>
-                <Link to={`/app/application-details/${app.DocumentNo}`} className={`btn shrink-0 ${app.Submitted ? "btn-outline" : "btn-primary"}`}>
-                  {app.Submitted ? "View application" : "Continue application"} <IconArrowRight size={16} />
-                </Link>
-              </div>
-              <div className="mt-5 border-t border-slate-100 pt-4">
-                <ApplicationTracker status={app.CandidateStatus} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+        {!loading && !error && (
+            <DataTable columns={columns} data={applications} />
+        )}
+      </div>
     </div>
   );
 };

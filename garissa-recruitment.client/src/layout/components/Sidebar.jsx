@@ -1,60 +1,112 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { IconLayoutDashboard, IconBriefcase, IconUser, IconSettings, IconLogout, IconX, IconSearch } from "@tabler/icons-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { 
+  IconLayoutDashboard, 
+  IconBriefcase, 
+  IconUser, 
+  IconSettings, 
+  IconLogout,
+  IconX
+} from "@tabler/icons-react";
 import logo from "../../assets/images/logo.png";
-import { signOut } from "../../lib/session";
-
-const MENU = [
-  { name: "Dashboard", path: "/app", icon: IconLayoutDashboard, end: true },
-  { name: "Open positions", path: "/app/jobs", icon: IconSearch, match: ["/app/job-details"] },
-  { name: "My applications", path: "/app/applications", icon: IconBriefcase, match: ["/app/application-details"] },
-  { name: "My profile", path: "/app/profile", icon: IconUser, match: ["/app/profile-update"] },
-  { name: "Account settings", path: "/app/settings", icon: IconSettings },
-];
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const logout = () => { signOut(); navigate("/"); };
+  const menuItems = [
+    { name: "Dashboard", path: "/app", icon: <IconLayoutDashboard size={20} /> },
+    { name: "My Applications", path: "/app/applications", icon: <IconBriefcase size={20} /> },
+    { name: "Profile", path: "/app/profile", icon: <IconUser size={20} /> },
+    { name: "Settings", path: "/app/settings", icon: <IconSettings size={20} /> },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <>
-      {isOpen && <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden" onClick={onClose} aria-hidden="true" />}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:w-64 lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-        aria-label="Applicant navigation"
-      >
-        <div className="h-1 bg-gradient-to-r from-brand-green via-brand-lime to-brand-gold" aria-hidden="true" />
-        <div className="flex h-20 items-center justify-between gap-2 border-b border-slate-100 px-5">
-          <img src={logo} alt="Garissa University" className="h-10 w-auto" />
-          <button type="button" className="btn btn-ghost p-2 lg:hidden" onClick={onClose} aria-label="Close menu"><IconX size={20} /></button>
-        </div>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"
+          onClick={onClose}
+        />
+      )}
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {MENU.map(({ name, path, icon, end, match = [] }) => {
-            const Icon = icon;
-            const alsoActive = match.some((prefix) => location.pathname.startsWith(prefix));
-            return (
-              <NavLink key={path} to={path} end={end} onClick={onClose}
-                className={({ isActive }) => `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive || alsoActive ? "bg-brand-green-50 text-brand-green-800" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
-                {({ isActive }) => (
-                  <>
-                    <span className={`h-5 w-1 rounded-full ${isActive || alsoActive ? "bg-brand-green" : "bg-transparent"}`} aria-hidden="true" />
-                    <Icon size={20} className={isActive || alsoActive ? "text-brand-green-600" : "text-slate-400 group-hover:text-slate-600"} />
-                    {name}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
+      {/* Sidebar Container */}
+      <aside className={`
+        fixed top-0 left-0 h-full bg-white z-50 transition-all duration-300
+        w-64 lg:static lg:translate-x-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="flex flex-col h-full bg-gradient-primary">
+          {/* Logo Section */}
+          <div className="h-20 bg-white text-center px-6 border-b border-brand-lime flex justify-between items-center shrink-0">
+            <img src={logo} alt="Garissa University logo" className="h-auto w-full min-w-0" />
+            <button className="lg:hidden text-white/70 hover:text-white" onClick={onClose}>
+              <IconX size={24} />
+            </button>
+          </div>
 
-        <div className="border-t border-slate-100 p-3">
-          <button type="button" onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-brand-brown-50 hover:text-brand-brown-700">
-            <span className="w-1" aria-hidden="true" />
-            <IconLogout size={20} className="text-slate-400" /> Sign out
-          </button>
+          {/* Navigation Section */}
+          <nav className="flex-1 overflow-y-auto pt-4 space-y-1 relative overflow-x-hidden border-b-0!important">
+            {menuItems.map((item) => {
+              const isActive = 
+                  location.pathname === item.path || 
+                  (item.path === '/app/profile' && location.pathname === '/app/profile-update') ||
+                  (item.path === '/app/applications' && (location.pathname.startsWith('/app/application-details') || location.pathname.startsWith('/app/job-details')));
+              return (
+                <div key={item.name} className="relative">
+                  {/* The curved active state logic */}
+                  {isActive && (
+                    <>
+                      {/* Top Inverted Curve */}
+                      <div className="absolute -top-5 right-0 w-5 h-5 bg-[radial-gradient(circle_at_0_0,transparent_19.5px,#f8fafc_20px)] lg:block hidden z-10"></div>
+                      
+                      {/* Gap filler to ensure seamless merge with main background */}
+                      <div className="absolute top-0 right-0 bottom-0 w-[2px] bg-slate-50 z-20 -mr-[1px] lg:block hidden"></div>
+
+                      {/* Bottom Inverted Curve */}
+                      <div className="absolute -bottom-5 right-0 w-5 h-5 bg-[radial-gradient(circle_at_0_100%,transparent_19.5px,#f8fafc_20px)] lg:block hidden z-10"></div>
+                    </>
+                  )}
+                  
+                  <div className="pl-3 relative z-30">
+                    <button
+                      onClick={() => {
+                        navigate(item.path);
+                        onClose();
+                      }}
+                      className={`
+                        w-full flex items-center gap-3 px-4 py-3.5 transition-all duration-300 relative
+                        ${isActive 
+                          ? 'bg-slate-50 text-brand-green-600 font-bold rounded-l-[1.5rem] -mr-[1px]' 
+                          : 'text-white hover:bg-white/10 rounded-xl mr-3'}
+                      `}
+                    >
+                      <span className={`${isActive ? 'text-brand-green-600' : 'text-white'}`}>
+                        {item.icon}
+                      </span>
+                      <span className="tracking-wide text-sm">{item.name}</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* User/Logout Section */}
+          <div className="p-6 border-t border-white/10">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition-colors font-medium"
+            >
+              <IconLogout size={20} />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
     </>

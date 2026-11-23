@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconCheck, IconX, IconLoader2 } from "@tabler/icons-react";
 import { apiFetch, readJson } from "../../lib/http";
-import { useModal } from "../../context/ModalContext";
 
 const ActivateAccount = () => {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("Activating your account...");
   const location = useLocation();
   const navigate = useNavigate();
-  const { openLogin } = useModal();
 
   useEffect(() => {
     const activate = async () => {
@@ -37,6 +35,9 @@ const ActivateAccount = () => {
         if (data.success) {
           setStatus("success");
           setMessage(data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
         } else {
           setStatus("error");
           setMessage(data.message || "Activation failed.");
@@ -51,34 +52,46 @@ const ActivateAccount = () => {
   }, [location, navigate]);
 
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-md items-center px-4 py-12">
-      <div className="card card-body w-full text-center" role="status" aria-live="polite">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         {status === "loading" && (
-          <>
-            <IconLoader2 className="mx-auto animate-spin text-brand-green" size={44} />
-            <h1 className="mt-4 text-xl font-bold">Activating your account</h1>
-            <p className="mt-2 text-sm text-slate-500">{message}</p>
-          </>
+          <div className="flex flex-col items-center">
+            <IconLoader2 className="animate-spin text-brand-green-600 mb-4" size={48} />
+            <h2 className="text-xl font-semibold mb-2">Activating Account</h2>
+            <p className="text-gray-600">{message}</p>
+          </div>
         )}
+
         {status === "success" && (
-          <>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-green-50 text-brand-green-600"><IconCheck size={30} /></div>
-            <h1 className="mt-4 text-xl font-bold">Your account is active</h1>
-            <p className="mt-2 text-sm text-slate-500">{message}</p>
-            <button type="button" onClick={() => { navigate("/"); openLogin(); }} className="btn btn-primary mt-6 w-full">Sign in now</button>
-          </>
-        )}
-        {status === "error" && (
-          <>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-brown-50 text-brand-brown-600"><IconX size={30} /></div>
-            <h1 className="mt-4 text-xl font-bold">We couldn't activate your account</h1>
-            <p className="mt-2 break-words text-sm text-slate-600">{message}</p>
-            <p className="mt-3 text-xs text-slate-500">Activation links expire after 24 hours. Signing in with your password sends you a fresh link.</p>
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              <button type="button" onClick={() => { navigate("/"); openLogin(); }} className="btn btn-primary">Sign in</button>
-              <button type="button" onClick={() => navigate("/")} className="btn btn-outline">Go to home page</button>
+          <div className="flex flex-col items-center">
+            <div className="bg-brand-green-50 p-3 rounded-full mb-4">
+              <IconCheck className="text-brand-green-600" size={48} />
             </div>
-          </>
+            <h2 className="text-xl font-semibold mb-2 text-brand-green-700">Success!</h2>
+            <p className="text-gray-600 mb-4">{message}</p>
+            <button
+              onClick={() => navigate("/")}
+              className="btn-primary px-6 py-2 rounded hover:opacity-90 transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
+        )}
+
+        {status === "error" && (
+          <div className="flex flex-col items-center">
+            <div className="bg-brand-brown-100 p-3 rounded-full mb-4">
+              <IconX className="text-brand-brown-600" size={48} />
+            </div>
+            <h2 className="text-xl font-semibold mb-2 text-brand-brown-700">Activation Failed</h2>
+            <p className="text-gray-600 mb-4">{message}</p>
+            <button
+              onClick={() => navigate("/")}
+              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors"
+            >
+              Go Home
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -14,7 +14,6 @@ import Profile from "./pages/app/Profile";
 import Settings from "./pages/app/Settings";
 import ProfileUpdate from "./pages/app/ProfileUpdate";
 import ApplicationDetails from "./pages/app/ApplicationDetails";
-import Jobs from "./pages/app/Jobs";
 
 
 
@@ -30,7 +29,6 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/app" element={<AppLayout />}>
         <Route index element={<Dashboard />} />
-        <Route path="jobs" element={<Jobs />} />
         <Route path="applications" element={<Applications />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
