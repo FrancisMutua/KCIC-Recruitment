@@ -4,6 +4,7 @@ import { IconPlus, IconLoader2 } from "@tabler/icons-react";
 import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
+import { readJson } from "../../../../lib/http";
 
 const WorkExperience = ({ applicationNo, onBack, onNext }) => {
   const [experiences, setExperiences] = useState([]);
@@ -49,7 +50,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       const response = await fetch(`/api/job/work-experience?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         setExperiences(result.data || []);
       } else {
@@ -57,7 +58,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching work experience");
+      toast.error(error.message || "Error fetching work experience");
     } finally {
       setFetching(false);
     }
@@ -73,7 +74,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
         const response = await fetch(`/api/job/work-experience?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
-        const result = await response.json();
+        const result = await readJson(response);
         if (cancelled) return;
         if (result.success) {
           setExperiences(result.data || []);
@@ -83,7 +84,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       } catch (error) {
         if (cancelled) return;
         console.error(error);
-        toast.error("Error fetching work experience");
+        toast.error(error.message || "Error fetching work experience");
       } finally {
         if (!cancelled) setFetching(false);
       }
@@ -145,7 +146,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Work experience added successfully");
         setFormData({
@@ -163,7 +164,7 @@ const WorkExperience = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding work experience");
+      toast.error(error.message || "Error adding work experience");
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { IconChevronDown, IconSearch, IconX, IconLoader2 } from "@tabler/icons-react";
+import { readJson } from "../../lib/http";
 
 const GlobalDropdown = ({
   page,
@@ -57,7 +58,7 @@ const GlobalDropdown = ({
 
         if (!mounted) return;
 
-        const result = await response.json();
+        const result = await readJson(response);
         const data = result.data ?? [];
         setOptions(Array.isArray(data) ? data : []);
       } catch (err) {

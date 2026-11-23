@@ -31,7 +31,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error loading dashboard statistics");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Could not load your dashboard. Please try again." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
     }

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { IconPlus, IconLoader2, IconDeviceFloppy } from "@tabler/icons-react";
 import { applicationContext, PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
 import { getRefereeSubmissionStatus } from "../../../../lib/refereeValidation";
+import { readJson } from "../../../../lib/http";
 
 const Referees = ({ applicationNo, onBack, onNext }) => {
   const [refereesList, setRefereesList] = useState([]);
@@ -48,7 +49,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         }),
         applicationContext(applicationNo)
       ]);
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         setMinimumReferees(context.MinimumReferees);
         const filtered = result.data || [];
@@ -58,7 +59,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching referees");
+      toast.error(error.message || "Error fetching referees");
     } finally {
       setFetching(false);
     }
@@ -78,7 +79,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
           }),
           applicationContext(applicationNo)
         ]);
-        const result = await response.json();
+        const result = await readJson(response);
         if (cancelled) return;
         if (result.success) {
           setMinimumReferees(context.MinimumReferees);
@@ -90,7 +91,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       } catch (error) {
         if (cancelled) return;
         console.error(error);
-        toast.error("Error fetching referees");
+        toast.error(error.message || "Error fetching referees");
       } finally {
         if (!cancelled) setFetching(false);
       }
@@ -160,7 +161,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Referee added successfully");
         setFormData({
@@ -178,7 +179,7 @@ const Referees = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding referee");
+      toast.error(error.message || "Error adding referee");
     } finally {
       setLoading(false);
     }

@@ -70,7 +70,7 @@ namespace Recruitment.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Failed to retrieve dropdown list.", details = ex.Message });
+                return StatusCode(500, new { success = false, message = Recruitment.Server.Utilities.ErrorText.From(ex) });
             }
         }
     }

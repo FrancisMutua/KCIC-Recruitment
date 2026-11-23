@@ -14,6 +14,7 @@ import RecruitmentRequirements from "./profile/steps/RecruitmentRequirements";
 import ApplicationReview from "./profile/steps/ApplicationReview";
 import Referees from "./profile/steps/Referees";
 import Attachments from "./profile/steps/Attachments";
+import { readJson } from "../../lib/http";
 
 const ApplicationDetails = () => {
   const { applicationNo } = useParams();
@@ -94,7 +95,7 @@ const ApplicationDetails = () => {
                 "Authorization": `Bearer ${user.accessToken}`
              }
         });
-        const result = await response.json();
+        const result = await readJson(response);
 
         if (result.success) {
           const data = result.data || {};
@@ -130,7 +131,7 @@ const ApplicationDetails = () => {
           toast.error(result.message || "Failed to load application details");
         }
       } catch (error) {
-        toast.error("Error loading application details");
+        toast.error(error.message || "Error loading application details");
         console.error(error);
       } finally {
         setLoading(false);
@@ -213,7 +214,7 @@ const ApplicationDetails = () => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Personal details saved");
         handleNext();
@@ -221,7 +222,7 @@ const ApplicationDetails = () => {
         toast.error(result.message || result.Message || "Failed to save personal details");
       }
     } catch (error) {
-      toast.error("An error occurred while saving personal details. Please try again.");
+      toast.error(error.message || "An error occurred while saving personal details. Please try again.");
       console.error(error);
     } finally {
       setSaving(false);

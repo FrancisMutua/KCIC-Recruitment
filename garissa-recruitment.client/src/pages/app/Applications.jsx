@@ -5,6 +5,7 @@ import { MoonLoader } from "react-spinners";
 import { DataTable } from "../../components/ui/DataTable";
 import { Button } from "../../components/ui/button";
 import { fixText } from "../../lib/jobAdvert";
+import { readJson } from "../../lib/http";
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Applications = () => {
                 "Authorization": `Bearer ${user.accessToken}`
             }
         });
-        const result = await response.json();
+        const result = await readJson(response);
 
         if (result.success) {
             setApplications(result.data);
@@ -37,8 +38,8 @@ const Applications = () => {
         }
       } catch (error) {
         console.error("Error fetching applications:", error);
-        setError("Failed to load applications.");
-        toast.error("Failed to load applications.");
+        setError(error.message || "Failed to load applications.");
+        toast.error(error.message || "Failed to load applications.");
       } finally {
         setLoading(false);
       }

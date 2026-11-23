@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { readJson } from "../../lib/http";
 
 const Settings = () => {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -38,7 +39,7 @@ const Settings = () => {
         },
         body: JSON.stringify(passwords),
       });
-      const result = await response.json();
+      const result = await readJson(response);
 
       if (result.success) {
         toast.success(result.message);
@@ -47,8 +48,8 @@ const Settings = () => {
       } else {
         toast.error(result.message);
       }
-    } catch {
-      toast.error("An error occurred while changing password.");
+    } catch (error) {
+      toast.error(error.message || "An error occurred while changing password.");
     } finally {
       setLoading(false);
     }

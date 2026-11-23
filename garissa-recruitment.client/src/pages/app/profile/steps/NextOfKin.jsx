@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
+import { readJson } from "../../../../lib/http";
 
 const NextOfKin = ({ applicationNo, onBack, onNext }) => {
   const [kinList, setKinList] = useState([]);
@@ -42,7 +43,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         const filtered = (result.data || []).filter(item => item.type === "Next of Kin");
         setKinList(filtered);
@@ -51,7 +52,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching Next of Kin");
+      toast.error(error.message || "Error fetching Next of Kin");
     } finally {
       setFetching(false);
     }
@@ -67,7 +68,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
         const response = await fetch(`/api/job/relationships?applicationNo=${applicationNo}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
-        const result = await response.json();
+        const result = await readJson(response);
         if (cancelled) return;
         if (result.success) {
           const filtered = (result.data || []).filter(item => item.type === "Next of Kin");
@@ -78,7 +79,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       } catch (error) {
         if (cancelled) return;
         console.error(error);
-        toast.error("Error fetching Next of Kin");
+        toast.error(error.message || "Error fetching Next of Kin");
       } finally {
         if (!cancelled) setFetching(false);
       }
@@ -141,7 +142,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Next of Kin added successfully");
         setFormData({
@@ -160,7 +161,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding Next of Kin");
+      toast.error(error.message || "Error adding Next of Kin");
     } finally {
       setLoading(false);
     }
@@ -177,7 +178,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
           "Authorization": `Bearer ${user.accessToken}`
         }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Record deleted");
         refreshKin();
@@ -186,7 +187,7 @@ const NextOfKin = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error deleting record");
+      toast.error(error.message || "Error deleting record");
     }
   };
 

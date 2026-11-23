@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import StatCard from "./components/StatCard";
 import JobTable from "../../../components/JobTable";
+import { readJson } from "../../../lib/http";
 
 const iconMap = {
   TotalOpenings: IconBriefcase,
@@ -46,7 +47,7 @@ const Dashboard = () => {
 
         if (!response.ok) throw new Error("Failed to fetch statistics");
 
-        const data = await response.json();
+        const data = await readJson(response);
         setStats(data.data);
       } catch (error) {
         console.error("Dashboard error:", error);

@@ -25,15 +25,7 @@ namespace Recruitment.Server.Controllers
                 string username = login.username;
                 string password = login.password;
 
-                string hashedPassword;
-                try
-                {
-                    hashedPassword = await _bc.GetUserPasswordAsync(username);
-                }
-                catch (BusinessCentralException)
-                {
-                    throw new Exception("Invalid username or password."); // unknown email
-                }
+                string hashedPassword = await _bc.GetUserPasswordAsync(username);
 
                 if (string.IsNullOrEmpty(hashedPassword))
                 {
@@ -65,12 +57,12 @@ namespace Recruitment.Server.Controllers
                     {
                         var name = JsonUtilities.FlattenNavResponse(await _bc.GetUserDetailsAsync(username))["FirstName"]?.ToString() ?? string.Empty;
                         await _emailService.SendActivationEmailAsync(username, name, _authService.GenerateActivationToken(username), FrontendUrl());
-                        return BadRequest(new ApiResponse<object> { Success = false, Message = "Your account has not been activated yet. We have sent a new activation link to your email address." });
+                        return BadRequest(new ApiResponse<object> { Success = false, Message = $"{ex.Message} A new activation link has been sent to your email address." });
                     }
                     catch (Exception mailError)
                     {
                         _logger.LogError(mailError, "Could not resend activation email to {Username}", username);
-                        return BadRequest(new ApiResponse<object> { Success = false, Message = "Your account has not been activated yet, and we could not send a new activation link. Please try again later." });
+                        return BadRequest(new ApiResponse<object> { Success = false, Message = $"{ex.Message} Sending a new activation link failed: {ErrorText.From(mailError)}" });
                     }
                 }
 
@@ -123,7 +115,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Login error for {Username}", login?.username);
-                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.StartsWith("Invalid") ? ex.Message : "An error occurred during login. Please try again." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
         
@@ -153,19 +145,15 @@ namespace Recruitment.Server.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Activation email failed for new account {Email}", emailAddress);
-                    return Ok(new ApiResponse<object> { Success = true, Message = "Account created, but we could not send the activation email. Sign in with your new password to receive a fresh activation link." });
+                    return Ok(new ApiResponse<object> { Success = true, Message = $"Account created, but the activation email failed: {ErrorText.From(ex)}" });
                 }
 
                 return Ok(new ApiResponse<object> { Success = true, Message = "Account created successfully! A verification email has been sent to your inbox. Please activate your account to proceed." });
             }
-            catch (BusinessCentralException ex) when (ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
-            {
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "An account with this email address already exists. Please sign in or reset your password." });
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Create account error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to create account. This email or ID number may already be in use." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
 
@@ -189,7 +177,7 @@ namespace Recruitment.Server.Controllers
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Reset password error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to reset password. Please ensure the email is correct." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
         [HttpPost("activate")]
@@ -217,7 +205,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Activation error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Activation failed. The link may have expired or is invalid." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
         /// <summary>A profile is complete once the fields copied onto new applications are filled in.</summary>
@@ -244,7 +232,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Get profile error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to load profile details." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
         [Authorize]
@@ -276,7 +264,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Update profile error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = "Failed to update profile. Please ensure all required fields are valid." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
 
@@ -334,7 +322,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Change password error");
-                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message.Contains("Incorrect") || ex.Message.Contains("Could not verify") ? ex.Message : "Failed to change password. Please try again later." });
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
     }

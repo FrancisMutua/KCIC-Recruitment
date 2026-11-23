@@ -39,7 +39,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching advertised jobs");
-                return BadRequest(Failure("Could not load advertised jobs. Please try again later."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
@@ -74,7 +74,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching job details for {JobId}", jobId);
-                return BadRequest(Failure("Failed to load job details. Please try again later."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
@@ -102,12 +102,12 @@ namespace Recruitment.Server.Controllers
             catch (BusinessCentralException ex)
             {
                 _logger.LogWarning(ex, "BC rejected application start");
-                return BadRequest(Failure(ex.Message));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error starting application");
-                return BadRequest(Failure("Failed to start the application. Please try again later."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
@@ -131,16 +131,24 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching applications");
-                return BadRequest(Failure("Failed to load your applications."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
         [HttpGet("application-details")]
         public async Task<IActionResult> ApplicationDetails(string applicationNo)
         {
-            var app = await LoadOwnedApplicationAsync(applicationNo);
-            if (app == null) return NotFound(Failure("Application not found."));
-            return Ok(Success(app.Details));
+            try
+            {
+                var app = await LoadOwnedApplicationAsync(applicationNo);
+                if (app == null) return NotFound(Failure("Application not found."));
+                return Ok(Success(app.Details));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading application {ApplicationNo}", applicationNo);
+                return BadRequest(Failure(ErrorText.From(ex)));
+            }
         }
 
         /// <summary>Everything the wizard needs about rules and progress for one application.</summary>
@@ -185,7 +193,7 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading application context for {ApplicationNo}", applicationNo);
-                return BadRequest(Failure("Could not load application requirements. Please try again."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
@@ -225,7 +233,7 @@ namespace Recruitment.Server.Controllers
                 await _bc.AddAcademicQualificationAsync(request.ApplicationNo, request.AreaOfStudy, request.Course,
                     request.Institution, request.StartDate, request.EndDate, request.Grade, DateTime.MinValue, request.CourseDescription);
                 return Ok(Success(true, "Academic qualification added"));
-            }, "This qualification is already on your application.");
+            });
         }
 
         [HttpDelete("delete-academic-qualification")]
@@ -254,7 +262,7 @@ namespace Recruitment.Server.Controllers
                 await _bc.InsertWorkExperienceAsync(request.ApplicationNo, request.Position, request.Institution, request.StartDate,
                     request.IsCurrent ? DateTime.MinValue : request.EndDate ?? DateTime.MinValue, request.Responsibility, request.IsCurrent);
                 return Ok(Success(true, "Work experience added"));
-            }, "You have already added experience with this employer. Each employer can only be listed once.");
+            });
         }
 
         // ── Professional qualifications & memberships (no working delete in BC) ─
@@ -270,7 +278,7 @@ namespace Recruitment.Server.Controllers
             {
                 await _bc.InsertProfessionalQualificationAsync(request.ApplicationNo, request.Description, request.Institution, request.Year);
                 return Ok(Success(true, "Professional qualification added"));
-            }, "This professional qualification is already on your application.");
+            });
         }
 
         [HttpGet("professional-memberships")]
@@ -285,7 +293,7 @@ namespace Recruitment.Server.Controllers
                 await _bc.InsertProfessionalMembershipAsync(request.ApplicationNo, request.BodyName, request.MembershipNo,
                     request.MembershipDate ?? DateTime.MinValue, request.Status is 1 or 2 ? request.Status : 1);
                 return Ok(Success(true, "Professional membership added"));
-            }, "You have already added a membership for this professional body.");
+            });
         }
 
         // ── Referees ───────────────────────────────────────────────────────────
@@ -303,7 +311,7 @@ namespace Recruitment.Server.Controllers
                 await _bc.InsertRelationshipsAsync("referee", request.ApplicationNo, request.FirstName.Trim(), request.MiddleName.Trim(),
                     request.LastName.Trim(), request.PhoneNo, request.Email, request.Relationship, request.Institution);
                 return Ok(Success(true, "Referee added"));
-            }, "A referee with this name is already on your application.");
+            });
         }
 
         // ── Documents ──────────────────────────────────────────────────────────
@@ -356,9 +364,17 @@ namespace Recruitment.Server.Controllers
         [HttpGet("submission-check")]
         public async Task<IActionResult> SubmissionCheck(string applicationNo)
         {
-            var app = await LoadOwnedApplicationAsync(applicationNo);
-            if (app == null) return NotFound(Failure("Application not found."));
-            return Ok(Success(await MissingItemsAsync(applicationNo, app.Details)));
+            try
+            {
+                var app = await LoadOwnedApplicationAsync(applicationNo);
+                if (app == null) return NotFound(Failure("Application not found."));
+                return Ok(Success(await MissingItemsAsync(applicationNo, app.Details)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking application {ApplicationNo}", applicationNo);
+                return BadRequest(Failure(ErrorText.From(ex)));
+            }
         }
 
         [HttpPost("submit-application")]
@@ -409,12 +425,12 @@ namespace Recruitment.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error reading application {ApplicationNo}", applicationNo);
-                return BadRequest(Failure("Could not load this section. Please try again."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 
         /// <summary>Runs a change only for the owner's unsubmitted application, translating BC errors.</summary>
-        private async Task<IActionResult> EditAsync(string applicationNo, Func<OwnedApplication, Task<IActionResult>> change, string? duplicateMessage = null)
+        private async Task<IActionResult> EditAsync(string applicationNo, Func<OwnedApplication, Task<IActionResult>> change)
         {
             try
             {
@@ -423,19 +439,15 @@ namespace Recruitment.Server.Controllers
                 if (app.Submitted) return BadRequest(Failure("This application has been submitted and can no longer be changed."));
                 return await change(app);
             }
-            catch (BusinessCentralException ex) when (ex.IsDuplicateRecord && duplicateMessage != null)
-            {
-                return BadRequest(Failure(duplicateMessage));
-            }
             catch (BusinessCentralException ex)
             {
                 _logger.LogWarning(ex, "BC rejected change to {ApplicationNo}", applicationNo);
-                return BadRequest(Failure(ex.Message));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error changing application {ApplicationNo}", applicationNo);
-                return BadRequest(Failure("The change could not be saved. Please try again."));
+                return BadRequest(Failure(ErrorText.From(ex)));
             }
         }
 

@@ -1,11 +1,13 @@
+import { readJson, resultError } from './http.js';
+
 export async function recruitmentRequest(path, options = {}) {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const response = await fetch(`/api/job/${path}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.accessToken || ''}`, ...options.headers },
   });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok || !result.success) throw new Error(result.message || result.Message || 'The request could not be completed. Please try again.');
+  const result = await readJson(response);
+  if (!response.ok || !result.success) throw new Error(resultError(result, response));
   return result.data;
 }
 

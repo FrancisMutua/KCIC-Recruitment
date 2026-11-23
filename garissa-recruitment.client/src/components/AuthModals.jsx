@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import logo from "../assets/images/logo.png";
 import { useModal } from "../context/ModalContext";
+import { readJson } from "../lib/http";
 
 const AuthModals = () => {
   const {
@@ -63,7 +64,7 @@ const AuthModals = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success === false) throw new Error(result.message);
       toast.success(result.message);
       openLogin();
@@ -94,7 +95,7 @@ const AuthModals = () => {
         body: JSON.stringify(user),
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
 
       if (result.success === false) throw new Error(result.message);
 
@@ -151,7 +152,7 @@ const AuthModals = () => {
         body: JSON.stringify(user),
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
 
       if (result.success === false) throw new Error(result.message);
 

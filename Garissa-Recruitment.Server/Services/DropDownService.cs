@@ -101,17 +101,18 @@ namespace Recruitment.Server.Services
         {
             var dropDownList = new List<DropDownOption>();
             
-            try 
             {
                 var requestUrl = _odataBaseUrl + page;
                 var response = await _httpClient.GetAsync(requestUrl);
-                
+                var result = await response.Content.ReadAsStringAsync();
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    return dropDownList;
+                    // BC OData errors are JSON {"error":{"message":...}}; fall back to the raw body.
+                    string detail = result;
+                    try { detail = JObject.Parse(result)["error"]?["message"]?.ToString() ?? result; } catch { }
+                    throw new HttpRequestException($"Business Central OData {page}: HTTP {(int)response.StatusCode} {response.ReasonPhrase} - {detail}".TrimEnd(' ', '-'));
                 }
-
-                var result = await response.Content.ReadAsStringAsync();
                 
                 if (string.IsNullOrEmpty(result))
                 {
@@ -144,10 +145,6 @@ namespace Recruitment.Server.Services
                         Value = codeValue
                     };
                 }));
-            }
-            catch (Exception)
-            {
-                // Log error if needed
             }
 
             return dropDownList;

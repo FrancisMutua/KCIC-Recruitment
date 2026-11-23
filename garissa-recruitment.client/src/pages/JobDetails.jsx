@@ -7,6 +7,7 @@ import { IconArrowLeft, IconShare } from "@tabler/icons-react";
 import { useModal } from "../context/ModalContext";
 import JobAdvertContent from "../components/JobAdvertContent";
 import { fixText } from "../lib/jobAdvert";
+import { readJson } from "../lib/http";
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -28,7 +29,7 @@ const JobDetails = () => {
         const response = await fetch(`/api/job/jobrequirements?jobId=${encodeURIComponent(jobId)}&requisitionNo=${encodeURIComponent(requisitionNo)}`, {
           signal,
         });
-        const result = await response.json();
+        const result = await readJson(response);
 
         if (result.success === false) throw new Error(result.message);
         setJobDetails(result.data);
@@ -92,7 +93,7 @@ const JobDetails = () => {
             body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
+        const result = await readJson(response);
         
         if (result.success) {
             toast.success("Your application is open. Complete each step and submit it before the advert closes.");
@@ -102,7 +103,7 @@ const JobDetails = () => {
         }
 
       } catch (err) {
-          toast.error("An error occurred while applying.");
+          toast.error(err.message || "An error occurred while applying.");
           console.error(err);
       } finally {
         setSubmitting(false);

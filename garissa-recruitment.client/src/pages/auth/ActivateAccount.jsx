@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconCheck, IconX, IconLoader2 } from "@tabler/icons-react";
+import { readJson } from "../../lib/http";
 
 const ActivateAccount = () => {
   const [status, setStatus] = useState("loading");
@@ -29,7 +30,7 @@ const ActivateAccount = () => {
           body: JSON.stringify({ token, email }),
         });
 
-        const data = await response.json();
+        const data = await readJson(response);
 
         if (data.success) {
           setStatus("success");
@@ -41,9 +42,9 @@ const ActivateAccount = () => {
           setStatus("error");
           setMessage(data.message || "Activation failed.");
         }
-      } catch {
+      } catch (error) {
         setStatus("error");
-        setMessage("An error occurred during activation. Please try again later.");
+        setMessage(error.message || "An error occurred during activation. Please try again later.");
       }
     };
 

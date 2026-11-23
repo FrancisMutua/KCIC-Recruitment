@@ -3,6 +3,7 @@ import { isBlank } from "../../../../lib/applicationValidation";
 import { toast } from "react-toastify";
 import { IconPlus, IconLoader2 } from "@tabler/icons-react";
 import { PERMANENT_RECORD_NOTE } from "../../../../lib/recruitmentApi";
+import { readJson } from "../../../../lib/http";
 
 const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
   const [trainingList, setTrainingList] = useState([]);
@@ -39,7 +40,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         setTrainingList(result.data || []);
       } else {
@@ -47,7 +48,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching professional training");
+      toast.error(error.message || "Error fetching professional training");
     } finally {
       setFetching(false);
     }
@@ -63,7 +64,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         const response = await fetch(`/api/job/professional-training?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
-        const result = await response.json();
+        const result = await readJson(response);
         if (cancelled) return;
         if (result.success) {
           setTrainingList(result.data || []);
@@ -73,7 +74,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       } catch (error) {
         if (cancelled) return;
         console.error(error);
-        toast.error("Error fetching professional training");
+        toast.error(error.message || "Error fetching professional training");
       } finally {
         if (!cancelled) setFetching(false);
       }
@@ -135,7 +136,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Professional training added successfully");
         setFormData({
@@ -150,7 +151,7 @@ const ProfessionalTraining = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding professional training");
+      toast.error(error.message || "Error adding professional training");
     } finally {
       setLoading(false);
     }

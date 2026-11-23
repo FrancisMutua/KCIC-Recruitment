@@ -5,6 +5,7 @@ import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../components/ui/GlobalDropdown";
 import { validatePersonalDetails, personalRequiredFields } from "../../lib/applicationValidation";
 import { GenderOptions, ProfileMaritalStatusOptions, optionValue } from "../../constants/enums";
+import { readJson } from "../../lib/http";
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const ProfileUpdate = () => {
             Authorization: `Bearer ${user.accessToken}`,
           },
         });
-        const result = await response.json();
+        const result = await readJson(response);
         if (result.success) {
           const d = result.data;
           // Map PascalCase API response to camelCase state
@@ -92,8 +93,8 @@ const ProfileUpdate = () => {
         } else {
           toast.error(result.message || result.Message);
         }
-      } catch {
-        toast.error("Failed to fetch profile details.");
+      } catch (error) {
+        toast.error(error.message || "Failed to fetch profile details.");
       } finally {
         setFetching(false);
       }
@@ -143,7 +144,7 @@ const ProfileUpdate = () => {
         },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success(result.message);
         // Update local storage profile

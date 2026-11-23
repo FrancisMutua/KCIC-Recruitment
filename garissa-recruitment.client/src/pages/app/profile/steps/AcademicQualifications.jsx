@@ -4,6 +4,7 @@ import { IconPlus, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import GlobalDropdown from "../../../../components/ui/GlobalDropdown";
 import { validateDateRange } from "../../../../lib/dateValidation";
 import { isBlank } from "../../../../lib/applicationValidation";
+import { readJson } from "../../../../lib/http";
 
 const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
   const [qualifications, setQualifications] = useState([]);
@@ -50,7 +51,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
         headers: { "Authorization": `Bearer ${user.accessToken}` }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         setQualifications(result.data || []);
       } else {
@@ -58,7 +59,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching academic qualifications");
+      toast.error(error.message || "Error fetching academic qualifications");
     } finally {
       setFetching(false);
     }
@@ -74,7 +75,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         const response = await fetch(`/api/job/academic-qualifications?applicationNo=${encodeURIComponent(applicationNo)}`, {
           headers: { "Authorization": `Bearer ${user.accessToken}` }
         });
-        const result = await response.json();
+        const result = await readJson(response);
         if (cancelled) return;
         if (result.success) {
           setQualifications(result.data || []);
@@ -84,7 +85,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       } catch (error) {
         if (cancelled) return;
         console.error(error);
-        toast.error("Error fetching academic qualifications");
+        toast.error(error.message || "Error fetching academic qualifications");
       } finally {
         if (!cancelled) setFetching(false);
       }
@@ -148,7 +149,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Qualification added successfully");
         setFormData({
@@ -167,7 +168,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding qualification");
+      toast.error(error.message || "Error adding qualification");
     } finally {
       setLoading(false);
     }
@@ -184,7 +185,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
           "Authorization": `Bearer ${user.accessToken}`
         }
       });
-      const result = await response.json();
+      const result = await readJson(response);
       if (result.success) {
         toast.success("Qualification deleted");
         refreshQualifications();
@@ -193,7 +194,7 @@ const AcademicQualifications = ({ applicationNo, onBack, onNext }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error deleting qualification");
+      toast.error(error.message || "Error deleting qualification");
     }
   };
 

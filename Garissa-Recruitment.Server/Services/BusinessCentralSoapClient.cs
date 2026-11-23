@@ -63,18 +63,10 @@ namespace Recruitment.Server.Services
             using var response = await _http.SendAsync(request);
             var payload = await response.Content.ReadAsStringAsync();
 
-            XDocument document;
-            try
-            {
-                document = XDocument.Parse(payload);
-            }
-            catch (System.Xml.XmlException)
-            {
-                throw new HttpRequestException(
-                    $"Business Central returned HTTP {(int)response.StatusCode} for {operation}.");
-            }
+            XDocument? document = null;
+            try { document = XDocument.Parse(payload); } catch (System.Xml.XmlException) { }
 
-            var fault = document.Descendants().FirstOrDefault(e => e.Name.LocalName == "Fault");
+            var fault = document?.Descendants().FirstOrDefault(e => e.Name.LocalName == "Fault");
             if (fault != null)
             {
                 var message = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "faultstring")?.Value;
@@ -83,9 +75,16 @@ namespace Recruitment.Server.Services
                     : message.Trim());
             }
 
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode || document == null)
+            {
+                // Not a SOAP result (e.g. 401 page, proxy error): pass the status and body text through as-is.
+                var detail = System.Text.RegularExpressions.Regex.Replace(payload, "<[^>]+>", " ");
+                detail = System.Text.RegularExpressions.Regex.Replace(detail, @"\s+", " ").Trim();
+                if (detail.Length > 500) detail = detail[..500];
                 throw new HttpRequestException(
-                    $"Business Central returned HTTP {(int)response.StatusCode} for {operation}.");
+                    $"Business Central {operation}: HTTP {(int)response.StatusCode} {response.ReasonPhrase}" +
+                    (string.IsNullOrEmpty(detail) ? string.Empty : $" - {detail}"));
+            }
 
             return document.Descendants().FirstOrDefault(e => e.Name.LocalName == "return_value")?.Value
                 ?? string.Empty;
