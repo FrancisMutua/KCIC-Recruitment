@@ -45,8 +45,8 @@ const ProfileUpdate = () => {
           let y = parts[2];
           
           if (y.length === 2) {
-              // Assume 20xx
-              y = "20" + y; 
+              // More than 5 years ahead means last century (e.g. birth year 90 -> 1990)
+              y = (2000 + Number(y) > new Date().getFullYear() + 5 ? "19" : "20") + y;
           }
           return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
       }
@@ -148,8 +148,9 @@ const ProfileUpdate = () => {
       if (result.success) {
         toast.success(result.message);
         // Update local storage profile
-        const updatedProfile = { ...profile };
-        localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
+        // Keep the stored BC profile (PascalCase) so the header name still shows; update the fields just saved.
+        const stored = JSON.parse(localStorage.getItem("userProfile") || "{}");
+        localStorage.setItem("userProfile", JSON.stringify({ ...stored, TelephoneNo: profile.phoneNumber, PostalAddress: profile.postalAddress, Country: profile.country }));
         navigate("/app");
       } else {
         throw new Error(result.message || result.Message);

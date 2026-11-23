@@ -75,7 +75,8 @@ const ApplicationDetails = () => {
       if (parts.length === 3) {
           const m = parts[0], d = parts[1];
           let y = parts[2];
-          if (y.length === 2) y = "20" + y; 
+          // Two-digit years: more than 5 years ahead means last century (e.g. birth year 90 -> 1990).
+          if (y.length === 2) y = (2000 + Number(y) > new Date().getFullYear() + 5 ? "19" : "20") + y;
           return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
       }
       return dateStr;
@@ -235,11 +236,15 @@ const ApplicationDetails = () => {
 
   const handleNext = () => {
     setActiveStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+    // The page scrolls inside <main>, not the window.
+    document.querySelector("main")?.scrollTo(0, 0);
     window.scrollTo(0, 0);
   };
 
   const handleBack = () => {
     setActiveStep((prev) => Math.max(prev - 1, 0));
+    // The page scrolls inside <main>, not the window.
+    document.querySelector("main")?.scrollTo(0, 0);
     window.scrollTo(0, 0);
   };
 
