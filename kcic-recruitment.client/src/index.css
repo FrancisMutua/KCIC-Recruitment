@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand colours come from the KCIC logo (see tailwind.config.js). */
+@layer base {
+  body {
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+  h1, h2, h3, h4 { @apply tracking-tight; }
+  ::selection { @apply bg-brand-green-100 text-brand-green-900; }
+
+  /* Modern defaults for every form control; page-level utility classes still take precedence. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea {
+    @apply border-slate-300 text-slate-900 shadow-sm transition
+           placeholder:text-slate-400
+           focus:border-brand-green focus:outline-none focus:ring-4 focus:ring-brand-green/15;
+  }
+  input[readonly], input:disabled, select:disabled, textarea:disabled { @apply cursor-not-allowed bg-slate-100 text-slate-500; }
+  input[type="checkbox"], input[type="radio"] { accent-color: #547828; }
+  input[type="file"] {
+    @apply text-sm text-slate-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-brand-green-600
+           file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-green-700;
+  }
+  button:focus-visible, a:focus-visible { @apply outline-none ring-2 ring-brand-green ring-offset-2; }
+}
+
+@layer components {
+  .table-header {
+    @apply border-b border-slate-200 bg-slate-50 p-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .table-body {
+    @apply border-b border-slate-100 p-4 text-slate-700;
+  }
+
+  .table-row-custom {
+    @apply cursor-pointer transition-colors hover:bg-brand-green-50/50;
+  }
+
+  /* Primary button — logo green (darker shades keep white text at AA contrast) */
+  .btn-primary {
+    background: linear-gradient(135deg, #547828 0%, #436020 100%);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(34, 48, 16, 0.15);
+    transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.95;
+    box-shadow: 0 6px 16px rgba(140, 200, 67, 0.35);
+    transform: translateY(-1px);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Secondary button — logo wordmark grey */
+  .btn-secondary {
+    background-color: #595a5c;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(36, 36, 37, 0.15);
+    transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    opacity: 0.95;
+    box-shadow: 0 6px 16px rgba(89, 90, 92, 0.35);
+    transform: translateY(-1px);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Global Primary Gradient Background */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #547828 0%, #436020 100%);
+    background-attachment: fixed;
+  }
+
+  /* Hero band: logo greens with soft leaf-green and grey glows */
+  .bg-hero {
+    background:
+      radial-gradient(900px 300px at 90% -20%, rgba(140, 200, 67, 0.30), transparent 60%),
+      radial-gradient(700px 400px at -10% 120%, rgba(149, 150, 154, 0.18), transparent 60%),
+      linear-gradient(135deg, #547828 0%, #324818 100%);
+  }
+
+  /* Surface used by page sections */
+  .surface { @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm; }
+}
+
+input:not([type="checkbox"]):not([type="radio"]) {
+  border-radius: 0.5rem !important;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d3eab8 #f6fbf0;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f6fbf0;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d3eab8;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #b4db85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

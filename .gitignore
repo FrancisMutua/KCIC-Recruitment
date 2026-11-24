@@ -33,7 +33,7 @@ yarn-error.log*
 *.xml
 *.log
 DisplayLayer/
-Garissa-Recruitment.sln.DotSettings.user
+KCIC-Recruitment.sln.DotSettings.user
 
 # Rider / JetBrains
 .idea/
@@ -59,11 +59,11 @@ full_build_output.txt
 *.file
 
 # Backend environment-specific settings
-Garissa-Recruitment.Server/Properties/PublishProfiles/*
-!Garissa-Recruitment.Server/Properties/PublishProfiles/Live.pubxml
+KCIC-Recruitment.Server/Properties/PublishProfiles/*
+!KCIC-Recruitment.Server/Properties/PublishProfiles/Live.pubxml
 
 # Client build logs / local artifacts
-garissa-recruitment.client/build_output.txt
+kcic-recruitment.client/build_output.txt
 
 # Debug output from the JS project build on macOS (backslash in the folder name)
-garissa-recruitment.client/obj\\*
+kcic-recruitment.client/obj\\*
