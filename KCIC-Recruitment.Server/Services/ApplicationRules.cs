@@ -2,27 +2,34 @@ using Recruitment.Server.Models;
 
 namespace Recruitment.Server.Services
 {
-    /// <summary>Portal rules layered on top of codeunit 50034 (status labels, document tagging).</summary>
+    /// <summary>Portal rules layered on top of codeunit 70007 (status labels, document tagging).</summary>
     public static class ApplicationRules
     {
+        /// <summary>Table "HRM-Job Applications (B)": the Document Attachment table ID GetAttachedDocuments reads.</summary>
+        public const int JobApplicationsTableId = 52179114;
+
         private const string CategorySeparator = "__";
 
         /// <summary>
-        /// Applicant-facing status. BC keeps a separate Submitted flag; the Status option
-        /// ("Open,Closed,Pending,Rejected,Under Review,Not Successfull,Normal") is HR's progress.
+        /// "HRM-Job Applications (B)".Status is New,Submitted,Processing,"Not Successful",Successful.
+        /// New is a draft the applicant can still edit; everything else is read-only.
         /// </summary>
-        public static string CandidateStatus(bool submitted, string? bcStatus) =>
-            !submitted ? "Draft" : (bcStatus ?? string.Empty).Trim() switch
-            {
-                "Under Review" => "Under review",
-                "Rejected" or "Not Successfull" => "Not successful",
-                "Closed" => "Closed",
-                _ => "Submitted"
-            };
+        public static bool IsSubmitted(string? bcStatus) =>
+            !string.IsNullOrWhiteSpace(bcStatus) && !string.Equals(bcStatus.Trim(), "New", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>Applicant-facing status label for a BC Status value.</summary>
+        public static string CandidateStatus(string? bcStatus) => (bcStatus ?? string.Empty).Trim() switch
+        {
+            "" or "New" => "Draft",
+            "Processing" => "Under review",
+            "Not Successful" => "Not successful",
+            "Successful" => "Successful",
+            _ => "Submitted"
+        };
 
         /// <summary>
-        /// UploadDocument ignores docType and GetAttachedDocuments does not return it, so the
-        /// category code is kept as a file-name prefix: "CV__my resume.pdf".
+        /// UploadDocument does not store a document type and GetAttachedDocuments does not return one,
+        /// so the category code is kept as a file-name prefix: "CV__my resume.pdf".
         /// </summary>
         public static string TaggedFileName(string categoryCode, string originalFileName)
         {
@@ -35,17 +42,18 @@ namespace Recruitment.Server.Services
             return $"{categoryCode}{CategorySeparator}{stem}{extension}";
         }
 
-        /// <summary>Splits a stored file name back into (category code, display name).</summary>
+        /// <summary>Splits a stored file name back into (category code, display name without extension).</summary>
         public static (string CategoryCode, string DisplayName) ParseFileName(string storedFileName, IEnumerable<DocumentCategory> categories)
         {
-            var index = storedFileName.IndexOf(CategorySeparator, StringComparison.Ordinal);
+            var name = storedFileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? storedFileName[..^4] : storedFileName;
+            var index = name.IndexOf(CategorySeparator, StringComparison.Ordinal);
             if (index > 0)
             {
-                var code = storedFileName[..index];
+                var code = name[..index];
                 if (categories.Any(c => string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase)))
-                    return (code.ToUpperInvariant(), storedFileName[(index + CategorySeparator.Length)..]);
+                    return (code.ToUpperInvariant(), name[(index + CategorySeparator.Length)..]);
             }
-            return ("OTHER", storedFileName);
+            return ("OTHER", name);
         }
     }
 }

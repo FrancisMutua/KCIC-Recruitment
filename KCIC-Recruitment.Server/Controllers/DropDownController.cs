@@ -47,10 +47,6 @@ namespace Recruitment.Server.Controllers
                             : "";
                         dropDownList = await _dropDownService.GetWardsList(subCountyFilter);
                     }
-                    else if (request.Type == "Disability Type")
-                    {
-                        dropDownList = await _dropDownService.GetDisabilityTypesList();
-                    }
                     else
                     {
                         dropDownList = await _dropDownService.GetSoapDropDownLists(request.Type, request.Filters);

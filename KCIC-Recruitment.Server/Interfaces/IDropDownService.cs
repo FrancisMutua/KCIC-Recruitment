@@ -11,6 +11,5 @@ namespace Recruitment.Server.Interfaces
         string BuildODataQuery(DropDownRequest request);
         Task<List<DropDownOption>> GetSubCountiesList(string countyName = "");
         Task<List<DropDownOption>> GetWardsList(string subCountyName = "");
-        Task<List<DropDownOption>> GetDisabilityTypesList();
     }
 }

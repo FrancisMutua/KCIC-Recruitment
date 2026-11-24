@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GenderOptions, MaritalStatusOptions } from "../../constants/enums";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,22 +24,6 @@ const Profile = () => {
     return (first + last).toUpperCase() || "UA";
   };
 
-
-  const getGenderLabel = (val) => {
-    if (!val && val !== 0) return "";
-    // Check if it's already a label
-    if (isNaN(val)) return val; 
-    const option = GenderOptions.find(o => o.value == val);
-    return option ? option.label : val;
-  };
-
-  const getMaritalStatusLabel = (val) => {
-    if (!val && val !== 0) return "";
-    // Check if it's already a label
-    if (isNaN(val)) return val;
-    const option = MaritalStatusOptions.find(o => o.value == val);
-    return option ? option.label : val;
-  };
 
   return (
 
@@ -93,7 +76,7 @@ const Profile = () => {
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1 capitalize">Gender</label>
                 <div className="p-3 bg-slate-50 rounded-lg text-slate-700 border border-slate-100">
-                  {getGenderLabel(getValue(profile?.Gender)) || <span className="italic text-slate-400">No data</span>}
+                  {getValue(profile?.Gender) || <span className="italic text-slate-400">No data</span>}
                 </div>
               </div>
             </div>

@@ -71,8 +71,8 @@ const Applications = () => {
           Draft: 'bg-brand-grey-100 text-brand-grey-700',
           Submitted: 'bg-brand-green-50 text-brand-green-800',
           'Under review': 'bg-brand-green-100 text-brand-green-800',
+          Successful: 'bg-brand-green-100 text-brand-green-900',
           'Not successful': 'bg-red-100 text-red-800',
-          Closed: 'bg-slate-100 text-slate-700',
         }[status] || 'bg-brand-green-50 text-brand-green-800';
         return (
             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${style}`}>

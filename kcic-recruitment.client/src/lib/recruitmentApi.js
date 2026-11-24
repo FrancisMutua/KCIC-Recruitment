@@ -21,8 +21,10 @@ export const submissionCheck = (applicationNo) => recruitmentRequest(`submission
 
 export const post = (path, body) => recruitmentRequest(path, { method: 'POST', body: JSON.stringify(body) });
 
-// Business Central cannot remove these records once saved (no usable delete in codeunit 50034).
-export const PERMANENT_RECORD_NOTE = 'Records in this section cannot be removed once added, so please check the details before saving.';
+export const remove = (path) => recruitmentRequest(path, { method: 'DELETE' });
+
+/** GET a list or record for one application. */
+export const load = (path, applicationNo) => recruitmentRequest(`${path}?${query(applicationNo)}`);
 
 // The applicant's declaration that they meet the advert's minimum requirements is kept in this browser.
 export const declarationKey = (applicationNo) => `app_declaration_${applicationNo}`;

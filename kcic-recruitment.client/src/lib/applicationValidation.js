@@ -1,21 +1,17 @@
+import { SalutationOptions } from "../constants/enums.js";
 import { parseDate } from "./dateValidation.js";
 
-// Fields stored on "HRM-Job Applications (B)" by codeunit 50034 UpdateApplicationPersonalDetails.
+// Fields stored on "HRM-Job Applications (B)" by codeunit 70007 UpdateApplicationPersonalDetails.
+// Section 2 of the KCIC application form (all required there except Telephone and the alternative contact).
 export const personalRequiredFields = [
-  ["firstName", "First Name"], ["lastName", "Last Name"],
-  ["idNumber", "ID / Passport No"], ["emailAddress", "Email Address"],
-  ["initials", "Salutation"], ["kraPin", "KRA Pin"],
-  ["phoneNumber", "Phone Number"],
-  ["birthDate", "Date of Birth"], ["gender", "Gender"], ["maritalStatus", "Marital Status"],
-  ["citizenship", "Citizenship"], ["country", "Country"],
-  ["county", "Current County of Residence"], ["postalAddress", "Postal Address"], ["postalCode", "Postal Code"]
+  ["firstName", "First Name"], ["lastName", "Surname"], ["initials", "Title"],
+  ["birthDate", "Date of Birth"], ["gender", "Gender"], ["nationality", "Nationality"],
+  ["idNumber", "ID No / Passport No"], ["postalAddress", "Address"], ["postalCode", "Postal Code"],
+  ["phoneNumber", "Mobile"], ["emailAddress", "E-mail"]
 ];
 
 export function validatePersonalDetails(profile, today = new Date(), requiredFields = personalRequiredFields) {
   const fields = [...requiredFields];
-  if (profile.disability === true || profile.disability === "true") {
-    fields.push(["disabilityStatus", "Disability Type"], ["pwdNumber", "PWD Number"]);
-  }
   const errors = {};
   for (const [key, label] of fields) {
     if (isBlank(profile[key])) {
@@ -41,16 +37,11 @@ export function missingRequiredDocuments(context, documents) {
 
 export const isBlank = (value) => value == null || String(value).trim() === "";
 
+/** The salutation as one of SalutationOptions ("" when not recognised). Accepts "Mr", "mr." etc. */
 export function salutationValue(value) {
   if (isBlank(value)) return "";
-  const text = String(value).trim();
-  if (/^[0-4]$/.test(text)) return text;
-  return { Mr: "0", Mrs: "1", Miss: "2", Dr: "3", Prof: "4" }[text.replace(/\.$/, "")] ?? "";
-}
-
-export function salutationText(value) {
-  const code = salutationValue(value);
-  return code === "" ? "" : ["Mr.", "Mrs.", "Miss.", "Dr.", "Prof."][Number(code)];
+  const text = String(value).trim().replace(/\.$/, "").toLowerCase();
+  return SalutationOptions.find((option) => option.value.replace(/\.$/, "").toLowerCase() === text)?.value ?? "";
 }
 
 export function validateBirthDate(value, today = new Date()) {

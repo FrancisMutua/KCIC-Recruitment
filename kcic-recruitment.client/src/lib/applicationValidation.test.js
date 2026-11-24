@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  personalRequiredFields, validatePersonalDetails, validateBirthDate, salutationValue, salutationText,
+  personalRequiredFields, validatePersonalDetails, validateBirthDate, salutationValue,
   isBlank, missingRequiredDocuments
 } from "./applicationValidation.js";
 import { GenderOptions, MaritalStatusOptions, optionValue } from "../constants/enums.js";
@@ -9,7 +9,7 @@ import { GenderOptions, MaritalStatusOptions, optionValue } from "../constants/e
 const today = new Date(2026, 5, 15);
 const completeProfile = () => ({
   ...Object.fromEntries(personalRequiredFields.map(([key]) => [key, "value"])),
-  initials: 0, birthDate: "2008-06-15"
+  initials: "Mr.", birthDate: "2008-06-15"
 });
 
 test("all mandatory personal fields reject empty and whitespace values", () => {
@@ -20,25 +20,22 @@ test("all mandatory personal fields reject empty and whitespace values", () => {
   }
 });
 
-test("middle name is optional, and zero salutation is preserved", () => {
+test("middle name is optional, and salutations match the codeunit's titles", () => {
   assert.deepEqual(validatePersonalDetails(completeProfile(), today), {});
-  for (const value of [0, "0", "Mr", "Mr."]) assert.equal(salutationValue(value), "0");
-  assert.equal(salutationValue("Prof."), "4");
-  assert.equal(salutationValue("Mrs."), "1");
-  assert.equal(salutationValue("Miss."), "2");
-  assert.equal(salutationText(1), "Mrs.");
-  assert.equal(salutationText(2), "Miss.");
+  for (const value of ["Mr", "Mr.", "mr."]) assert.equal(salutationValue(value), "Mr.");
+  assert.equal(salutationValue("Prof."), "Prof");
+  assert.equal(salutationValue("Miss."), "Miss");
   assert.equal(salutationValue("unknown"), "");
-  assert.equal(salutationText("unknown"), "");
-  assert.equal(salutationText(""), "");
+  assert.equal(salutationValue(""), "");
+  assert.ok(validatePersonalDetails({ ...completeProfile(), initials: "Sir" }, today).initials);
   assert.equal(isBlank(0), false);
   assert.equal(isBlank("  "), true);
 });
 
-test("conditional disability fields are enforced only when a disability is declared", () => {
-  const errors = validatePersonalDetails({ ...completeProfile(), disability: "true" }, today);
-  for (const key of ["pwdNumber", "disabilityStatus"]) assert.ok(errors[key]);
-  assert.deepEqual(validatePersonalDetails({ ...completeProfile(), disability: "false" }, today), {});
+test("fields the KCIC form does not ask for are optional", () => {
+  for (const key of ["kraPin", "maritalStatus", "citizenship", "country", "county", "altPhoneNumber", "altContactPerson"]) {
+    assert.ok(!personalRequiredFields.some(([field]) => field === key), key);
+  }
 });
 
 test("fields Business Central does not store are not required", () => {
@@ -65,11 +62,13 @@ test("required document categories must each have an upload", () => {
   assert.deepEqual(missingRequiredDocuments({}, []), []);
 });
 
-test("gender and marital status use Business Central option values", () => {
-  assert.equal(optionValue(GenderOptions, "Male"), "1");
-  assert.equal(optionValue(GenderOptions, "Female"), "2");
+test("gender and marital status use the text codeunit 70007 maps", () => {
+  assert.equal(optionValue(GenderOptions, "Male"), "Male");
+  assert.equal(optionValue(GenderOptions, "female"), "Female");
   assert.equal(optionValue(GenderOptions, " "), "");
-  assert.equal(optionValue(MaritalStatusOptions, "Widow(er)"), "5");
-  assert.equal(optionValue(MaritalStatusOptions, "2"), "2");
-  assert.equal(optionValue(MaritalStatusOptions, "Complicated"), "");
+  // MaritalStatusToText returns "Widow" for Widow(er) and "Complicated" for Other.
+  assert.equal(optionValue(MaritalStatusOptions, "Widow"), "Widow");
+  assert.equal(optionValue(MaritalStatusOptions, "Complicated"), "Complicated");
+  // "Separated" cannot be saved through the codeunit, so it is not offered.
+  assert.equal(optionValue(MaritalStatusOptions, "Separated"), "");
 });

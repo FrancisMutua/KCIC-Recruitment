@@ -151,27 +151,49 @@ namespace Recruitment.Server.Services
         }
 
         /// <summary>
-        /// Codeunit 50034 GetSetupDropDowns supports: County, Religion, Countries, AcademicQualifications.
-        /// "Citizenship" reuses the country list. Anything else returns an empty list.
+        /// Lists for the application forms. Codeunit 70007 GetSetupDropDowns reads "HRM-Lookup Values"
+        /// (types such as County, Religion, Language, Qualification Type). Countries come from the
+        /// ISO 3166 list, matching the 2-letter codes BC uses for "Country/Region".
         /// </summary>
         public async Task<List<DropDownOption>> GetSoapDropDownLists(string dropdownType, Dictionary<string, object>? filters = null)
         {
-            var bcType = dropdownType switch
+            switch (dropdownType)
             {
-                "Citizenship" => "Countries",
-                _ => dropdownType
-            };
-            if (bcType is not ("County" or "Religion" or "Countries" or "AcademicQualifications")) return [];
-            return ToOptions(await _recruitment.GetSetupDropDownsAsync(bcType, string.Empty));
+                case "Countries":
+                case "Citizenship":
+                    return Countries.Value;
+                case "County":
+                    var counties = ToOptions(await _recruitment.GetSetupDropDownsAsync("County"));
+                    return counties.Count > 0 ? counties : KenyanCounties;
+                default:
+                    return ToOptions(await _recruitment.GetSetupDropDownsAsync(dropdownType));
+            }
         }
 
-        // GetSubCounties / GetWards are empty stubs in codeunit 50034.
+        // Codeunit 70007 has no sub-county or ward lists.
         public Task<List<DropDownOption>> GetSubCountiesList(string countyName = "") => Task.FromResult(new List<DropDownOption>());
 
         public Task<List<DropDownOption>> GetWardsList(string subCountyName = "") => Task.FromResult(new List<DropDownOption>());
 
-        public async Task<List<DropDownOption>> GetDisabilityTypesList() =>
-            ToOptions(await _recruitment.GetDisabilityTypesAsync());
+        private static readonly Lazy<List<DropDownOption>> Countries = new(() =>
+            System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures)
+                .Select(culture => { try { return new System.Globalization.RegionInfo(culture.Name); } catch (ArgumentException) { return null; } })
+                .Where(region => region != null && region.TwoLetterISORegionName.Length == 2 && char.IsLetter(region.TwoLetterISORegionName[0]))
+                .GroupBy(region => region!.TwoLetterISORegionName)
+                .Select(group => group.First()!)
+                .OrderBy(region => region.TwoLetterISORegionName == "KE" ? 0 : 1).ThenBy(region => region.EnglishName)
+                .Select(region => new DropDownOption { Code = region.TwoLetterISORegionName, Description = region.EnglishName, Text = region.EnglishName, Value = region.TwoLetterISORegionName })
+                .ToList());
+
+        /// <summary>Used when KCIC has not set up County lookup values in BC.</summary>
+        private static readonly List<DropDownOption> KenyanCounties = new[]
+        {
+            "Baringo", "Bomet", "Bungoma", "Busia", "Elgeyo-Marakwet", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kajiado",
+            "Kakamega", "Kericho", "Kiambu", "Kilifi", "Kirinyaga", "Kisii", "Kisumu", "Kitui", "Kwale", "Laikipia", "Lamu",
+            "Machakos", "Makueni", "Mandera", "Marsabit", "Meru", "Migori", "Mombasa", "Murang'a", "Nairobi", "Nakuru", "Nandi",
+            "Narok", "Nyamira", "Nyandarua", "Nyeri", "Samburu", "Siaya", "Taita-Taveta", "Tana River", "Tharaka-Nithi",
+            "Trans Nzoia", "Turkana", "Uasin Gishu", "Vihiga", "Wajir", "West Pokot"
+        }.Select(name => new DropDownOption { Code = name.ToUpperInvariant(), Description = name, Text = name, Value = name.ToUpperInvariant() }).ToList();
 
         private static List<DropDownOption> ToOptions(string json) =>
             BcJson.Array(json).Select(item => new DropDownOption

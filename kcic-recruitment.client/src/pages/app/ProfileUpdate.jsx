@@ -2,159 +2,147 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
-import GlobalDropdown from "../../components/ui/GlobalDropdown";
-import { validatePersonalDetails, personalRequiredFields } from "../../lib/applicationValidation";
-import { GenderOptions, ProfileMaritalStatusOptions, optionValue } from "../../constants/enums";
+import { Field } from "../../components/application/Field";
+import { isShown, validateFields } from "../../lib/fieldRules";
+import { validateBirthDate, salutationValue } from "../../lib/applicationValidation";
+import { GenderOptions, MaritalStatusOptions, SalutationOptions, optionValue } from "../../constants/enums";
 import { apiFetch, readJson } from "../../lib/http";
+
+// Codeunit 70007 UpdateApplicantProfile overwrites every one of these fields, so all are always sent.
+// The profile prefills the Personal Details of each new application.
+const readOnlyFields = [
+  { name: "firstName", label: "First Name" },
+  { name: "middleName", label: "Middle Name" },
+  { name: "lastName", label: "Last Name" },
+  { name: "idNumber", label: "ID / Passport No" },
+  { name: "emailAddress", label: "Email Address" },
+];
+const sections = [
+  {
+    title: "Personal Details",
+    fields: [
+      { name: "salutation", label: "Salutation", type: "select", options: SalutationOptions },
+      { name: "phoneNumber", label: "Phone Number", type: "tel", required: true, hint: "Kenyan number, e.g. 0712 345 678." },
+      { name: "birthDate", label: "Date of Birth", type: "date", required: true },
+      { name: "gender", label: "Gender", type: "select", options: GenderOptions, required: true },
+      { name: "maritalStatus", label: "Marital Status", type: "select", options: MaritalStatusOptions },
+    ],
+  },
+  {
+    title: "Contact & Location",
+    fields: [
+      { name: "country", label: "Country of Residence", type: "lookup", lookupType: "Countries", required: true },
+      { name: "postalAddress", label: "Postal Address", required: true, maxLength: 80 },
+      { name: "postalCode", label: "Postal Code", maxLength: 20 },
+    ],
+  },
+  {
+    title: "Disability",
+    fields: [
+      { name: "disability", label: "Do you have a disability?", type: "yesno" },
+      { name: "disabilityStatus", label: "Nature of Disability", required: true, maxLength: 250, show: (v) => v.disability },
+      { name: "pwdNumber", label: "NCPWD Registration Number", required: true, maxLength: 250, show: (v) => v.disability },
+    ],
+  },
+];
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const renderError = (name) => fieldErrors[name] ? <p role="alert" className="mt-1 text-xs text-red-600">{fieldErrors[name]}</p> : null;
+  const [errors, setErrors] = useState({});
   const [profile, setProfile] = useState({
-    emailAddress: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    idNumber: "",
-    phoneNumber: "",
-    gender: "",
-    maritalStatus: "0",
-    postalAddress: "",
-    birthDate: "",
-    country: "",
+    firstName: "", middleName: "", lastName: "", idNumber: "", emailAddress: "",
+    salutation: "", phoneNumber: "", birthDate: "", gender: "", maritalStatus: "",
+    country: "", postalAddress: "", postalCode: "", disability: false, disabilityStatus: "", pwdNumber: "",
   });
-
-
-
-  // Helper to format NAV date (MM/DD/YY) to Input Date (YYYY-MM-DD)
-  const formatNavDate = (dateStr) => {
-      if (!dateStr) return "";
-      
-      // If already has T (ISO), just take first part
-      if (dateStr.includes('T')) return dateStr.split('T')[0];
-
-      // Handle MM/DD/YY
-      // Example: 01/27/26 -> 2026-01-27
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-          const m = parts[0];
-          const d = parts[1];
-          let y = parts[2];
-          
-          if (y.length === 2) {
-              // More than 5 years ahead means last century (e.g. birth year 90 -> 1990)
-              y = (2000 + Number(y) > new Date().getFullYear() + 5 ? "19" : "20") + y;
-          }
-          return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-      }
-      return dateStr;
-  };
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user || !user.accessToken) {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user?.accessToken) {
           navigate("/");
           return;
         }
-
-        const response = await apiFetch("/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        });
+        const response = await apiFetch("/api/auth/profile", { headers: { Authorization: `Bearer ${user.accessToken}` } });
         const result = await readJson(response);
-        if (result.success) {
-          const d = result.data;
-          // Map PascalCase API response to camelCase state
-          setProfile((prev) => ({
-            ...prev,
-            firstName: d.FirstName || prev.firstName,
-            middleName: d.MiddleName || prev.middleName,
-            lastName: d.LastName || prev.lastName,
-            idNumber: d.IdNumber || prev.idNumber,
-            emailAddress: d.EmailAddress || prev.emailAddress,
-            // Handle Phone: API sends 0 for empty usually
-            phoneNumber: (d.TelephoneNo && d.TelephoneNo !== 0) ? d.TelephoneNo.toString() : prev.phoneNumber,
-            postalAddress: d.PostalAddress || prev.postalAddress,
-            birthDate: formatNavDate(d.DateOfBirth) || prev.birthDate,
-            
-            // Map Dropdowns if text is returned
-            maritalStatus: optionValue(ProfileMaritalStatusOptions, d.MaritalStatus) || prev.maritalStatus,
-            gender: optionValue(GenderOptions, d.Gender) || prev.gender,
-            
-            // Other fields not in the snippet but strictly mapped
-            country: d.Country || prev.country,
-          }));
-        } else {
-          toast.error(result.message || result.Message);
-        }
+        if (!result.success) throw new Error(result.message || result.Message);
+        const d = result.data || {};
+        setProfile({
+          firstName: d.FirstName || "",
+          middleName: d.MiddleName || "",
+          lastName: d.LastName || "",
+          idNumber: d.IDNumber || "",
+          emailAddress: d.EmailAddress || "",
+          salutation: salutationValue(d.Initials),
+          phoneNumber: d.TelephoneNo || "",
+          birthDate: d.DateOfBirth || "",
+          gender: optionValue(GenderOptions, d.Gender),
+          maritalStatus: optionValue(MaritalStatusOptions, d.MaritalStatus),
+          country: d.Country || "",
+          postalAddress: d.PostalAddress || "",
+          postalCode: d.PostCode || "",
+          disability: d.Disability === true,
+          disabilityStatus: d.DisabilityStatus || "",
+          pwdNumber: d.PwdNumber || "",
+        });
       } catch (error) {
         toast.error(error.message || "Failed to fetch profile details.");
       } finally {
         setFetching(false);
       }
     };
-
     fetchProfile();
   }, [navigate]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+  const change = (name, value) => {
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const required = personalRequiredFields.filter(([key]) =>
-      ["phoneNumber", "birthDate", "gender", "country", "postalAddress"].includes(key));
-    const errors = validatePersonalDetails(profile, new Date(), required);
-    setFieldErrors(errors);
-    if (Object.keys(errors).length) {
+    const found = validateFields(sections.flatMap((s) => s.fields), profile);
+    if (!found.birthDate) {
+      const birthError = validateBirthDate(profile.birthDate);
+      if (birthError) found.birthDate = birthError;
+    }
+    setErrors(found);
+    if (Object.keys(found).length) {
       toast.error("Please correct the highlighted fields.");
       return;
     }
 
     setLoading(true);
     try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        
-        // Convert types for backend
-        // Fields stored on the BC OnlineUsers record (copied onto each new application).
-        const payload = {
-            phoneNumber: String(profile.phoneNumber || ""),
-            gender: Number(profile.gender) || 0,
-            maritalStatus: Number(profile.maritalStatus) || 0,
-            postalAddress: profile.postalAddress,
-            birthDate: profile.birthDate ? profile.birthDate : null,
-            country: profile.country
-        };
-
+      const user = JSON.parse(localStorage.getItem("user"));
       const response = await apiFetch("/api/auth/updateprofile", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.accessToken}` },
+        body: JSON.stringify({
+          salutation: profile.salutation,
+          phoneNumber: String(profile.phoneNumber || ""),
+          gender: profile.gender,
+          maritalStatus: profile.maritalStatus,
+          postalCode: profile.postalCode,
+          postalAddress: profile.postalAddress,
+          birthDate: profile.birthDate || null,
+          disability: profile.disability,
+          disabilityStatus: profile.disabilityStatus,
+          pwdNumber: profile.pwdNumber,
+          country: profile.country,
+        }),
       });
       const result = await readJson(response);
-      if (result.success) {
-        toast.success(result.message);
-        // Update local storage profile
-        // Keep the stored BC profile (PascalCase) so the header name still shows; update the fields just saved.
-        const stored = JSON.parse(localStorage.getItem("userProfile") || "{}");
-        localStorage.setItem("userProfile", JSON.stringify({ ...stored, TelephoneNo: profile.phoneNumber, PostalAddress: profile.postalAddress, Country: profile.country }));
-        navigate("/app");
-      } else {
-        throw new Error(result.message || result.Message);
-      }
+      if (!result.success) throw new Error(result.message || result.Message);
+      toast.success(result.message);
+      // Keep the stored BC profile (PascalCase) so the header name still shows; update the fields just saved.
+      const stored = JSON.parse(localStorage.getItem("userProfile") || "{}");
+      localStorage.setItem("userProfile", JSON.stringify({
+        ...stored, TelephoneNo: profile.phoneNumber, Gender: profile.gender, PostalAddress: profile.postalAddress, Country: profile.country,
+      }));
+      navigate("/app");
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -173,173 +161,29 @@ const ProfileUpdate = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-2 px-2">
       <div className="max-w-full mx-auto bg-white rounded-2xl shadow-sm border border-slate-200/80">
-
-
-        <form onSubmit={handleSubmit} className="p-8" noValidate>
+        <form onSubmit={handleSubmit} className="p-8 space-y-8" noValidate>
+          <p className="text-sm text-slate-600">Your profile fills in the personal details of each new application, so you only type them once.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Personal Details */}
-            <div className="col-span-full border-b pb-2 mb-2">
-                <h3 className="text-lg font-semibold text-slate-900">Personal Details</h3>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
-              <input
-                type="text"
-                name="firstName"
-                value={profile.firstName}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
-                readOnly 
-                title="Cannot be modified"
-              />
-            </div>
-             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Middle Name</label>
-              <input
-                type="text"
-                name="middleName"
-                value={profile.middleName}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
-                readOnly
-                 title="Cannot be modified"
-              />
-            </div>
-             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
-                 readOnly
-                  title="Cannot be modified"
-              />
-            </div>
-            
-             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">ID Number</label>
-              <input
-                type="text"
-                name="idNumber"
-                value={profile.idNumber}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
-                readOnly
-              />
-            </div>
-
-             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-              <input
-                type="email"
-                name="emailAddress"
-                value={profile.emailAddress}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-slate-100"
-                readOnly
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number <span className="text-red-600">*</span></label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={profile.phoneNumber}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
-                required
-              />
-              {renderError("phoneNumber")}
-            </div>
-            
-             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth <span className="text-red-600">*</span></label>
-              <input
-                type="date"
-                name="birthDate"
-                value={profile.birthDate || ''}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
-                required
-                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
-              />
-              {renderError("birthDate")}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Gender <span className="text-red-600">*</span></label>
-              <select
-                name="gender"
-                value={profile.gender}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
-                required
-              >
-                  <option value="">Select Gender</option>
-                  {GenderOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-              {renderError("gender")}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Marital Status</label>
-              <select
-                name="maritalStatus"
-                value={profile.maritalStatus}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none bg-white"
-              >
-                  {ProfileMaritalStatusOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-            </div>
-
-
-            
-             <div>
-              <GlobalDropdown
-                source="SOAP"
-                type="Countries"
-                code="Code"
-                description="Name"
-                label="Country"
-                name="country"
-                value={profile.country}
-                onChange={(val) => handleChange({ target: { name: "country", value: val } })}
-                required
-                error={fieldErrors.country}
-              />
-            </div>
-
-            {/* Address & Contact */}
-             <div className="col-span-full border-b pb-2 mb-2 mt-4">
-                <h3 className="text-lg font-semibold text-slate-900">Contact & Location</h3>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Postal Address <span className="text-red-600">*</span></label>
-              <input
-                type="text"
-                name="postalAddress"
-                value={profile.postalAddress}
-                onChange={handleChange}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-green focus:outline-none"
-                required
-              />
-              {renderError("postalAddress")}
-            </div>
-
+            {readOnlyFields.map((field) => (
+              <div key={field.name}>
+                <span className="block text-sm font-medium text-slate-700">{field.label}</span>
+                <input value={profile[field.name]} readOnly title="Cannot be modified"
+                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-slate-100" />
+              </div>
+            ))}
           </div>
-
-          <div className="mt-8 flex justify-end">
-            <button
-              type="submit"
-              className="btn-primary px-8 py-3 rounded-lg shadow-md hover:opacity-90 transition-colors font-semibold flex items-center gap-2"
-              disabled={loading}
-            >
+          {sections.map((section) => (
+            <section key={section.title} className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900 border-b pb-2">{section.title}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {section.fields.filter((field) => isShown(field, profile)).map((field) =>
+                  <Field key={field.name} field={field} value={profile[field.name]} error={errors[field.name]} onChange={change} disabled={loading} />)}
+              </div>
+            </section>
+          ))}
+          <div className="flex justify-end">
+            <button type="submit" disabled={loading}
+              className="btn-primary px-8 py-3 rounded-lg shadow-md hover:opacity-90 transition-colors font-semibold flex items-center gap-2">
               {loading ? <IconLoader2 className="animate-spin" size={20} /> : <IconDeviceFloppy size={20} />}
               Save & Continue
             </button>

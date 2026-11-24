@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { applicationContext, hasDeclared, recruitmentRequest, submissionCheck } from '../../../../lib/recruitmentApi';
+import { applicationContext, hasDeclared, recruitmentRequest, setDeclared, submissionCheck } from '../../../../lib/recruitmentApi';
 import { fixText } from '../../../../lib/jobAdvert';
 import { isBlank } from '../../../../lib/applicationValidation';
 
 const TRACK = ['Draft', 'Submitted', 'Under review', 'Outcome'];
-const stageIndex = (status) => ({ Draft: 0, Submitted: 1, 'Under review': 2, 'Not successful': 3, Closed: 3 }[status] ?? 0);
+const stageIndex = (status) => ({ Draft: 0, Submitted: 1, 'Under review': 2, 'Not successful': 3, Successful: 3 }[status] ?? 0);
 
 /** Applicant-facing progress tracker driven by the status Business Central reports. */
 export function ApplicationTracker({ status }) {
@@ -29,6 +29,7 @@ function Records({ title, rows, columns }) {
 export default function ApplicationReview({ applicationNo, profile, submitted, status, onBack, onSubmit, loading }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [declared, setDeclaredState] = useState(() => hasDeclared(applicationNo));
   useEffect(() => {
     let active = true;
     const suffix = `?applicationNo=${encodeURIComponent(applicationNo)}`;
@@ -46,20 +47,32 @@ export default function ApplicationReview({ applicationNo, profile, submitted, s
   if (!data) return <p>Loading application summary…</p>;
   const { context } = data;
   const readOnly = submitted || !context.CanEdit;
-  const needsDeclaration = (context.MinimumRequirements || []).length > 0 && !hasDeclared(applicationNo);
-  const missing = [...data.missing, ...(needsDeclaration ? ['Confirm that you meet the minimum requirements in the Requirements & Memberships step.'] : [])];
+  const requirements = context.JobRequirements || [];
+  const missing = [...data.missing, ...(declared ? [] : ['Tick the declaration below.'])];
+  const toggleDeclaration = (checked) => { setDeclared(applicationNo, checked); setDeclaredState(checked); };
 
   return <div className="space-y-7">
     <div className="flex flex-wrap justify-between gap-4"><h2 className="text-xl font-semibold">Application summary</h2><span className="rounded-full bg-brand-green-50 text-brand-green-800 px-3 py-1">{status || context.CandidateStatus}</span></div>
     <ApplicationTracker status={status || context.CandidateStatus} />
     {readOnly && <p className="text-sm text-slate-600">This application has been submitted to the Kenya Climate Innovation Center and can no longer be changed. Its status above updates as HR reviews it.</p>}
     <dl className="grid sm:grid-cols-2 gap-3">{[['Position', fixText(context.JobTitle)], ['Name', [profile.firstName, profile.middleName, profile.lastName].filter(Boolean).join(' ')], ['Email', profile.emailAddress], ['ID / Passport', profile.idNumber], ['Phone', profile.phoneNumber], ['Current county of residence', profile.county]].map(([label, value]) => <div key={label}><dt className="text-sm text-slate-500">{label}</dt><dd>{isBlank(value) ? '—' : value}</dd></div>)}</dl>
-    <Records title="Academic qualifications" rows={data.education} columns={[["code", "Level"], ["description", "Course"], ["institution", "Institution"], ["areaOfStudy", "Area of study"], ["grade", "Grade"]]} />
-    <Records title="Work experience" rows={data.experience} columns={[["position", "Position"], ["institution", "Employer"], ["startDate", "From"], ["endDate", "To"]]} />
-    <Records title="Professional qualifications" rows={data.training} columns={[["description", "Qualification / training"], ["institution", "Institution"], ["year", "Year attained"]]} />
-    <Records title="Professional memberships" rows={context.Memberships} columns={[["Description", "Body"], ["MembershipNo", "Membership number"], ["Status", "Status"]]} />
-    <Records title="Referees" rows={data.referees} columns={[["names", "Name"], ["institution", "Institution"], ["email", "Email"], ["phoneNo", "Phone"]]} />
+    <Records title="6. Academic / professional / technical qualifications" rows={data.education} columns={[["startDate", "From"], ["endDate", "To"], ["institution", "Institution"], ["description", "Qualification"], ["courseDescription", "Course"], ["areaOfStudy", "Subject"], ["grade", "Class / grade"]]} />
+    <Records title="7. Other courses, training and memberships" rows={data.training} columns={[["year", "Year"], ["institution", "Institution / college"], ["description", "Course"], ["trainingDescription", "Details"]]} />
+    <Records title="8. Employment details" rows={data.experience} columns={[["startDate", "From"], ["endDate", "To"], ["institution", "Employer"], ["position", "Position"], ["salary", "Gross monthly salary"]]} />
+    <Records title="11. Personal references" rows={data.referees} columns={[["names", "Full name"], ["occupation", "Occupation"], ["phoneNo", "Telephone"], ["email", "E-mail"], ["periodKnown", "Known for"]]} />
     <Records title="Documents" rows={data.documents} columns={[["fileName", "Document"], ["documentType", "Type"]]} />
+    {!readOnly && requirements.length > 0 && <section className="space-y-3">
+      <h3 className="font-semibold">Requirements for this position</h3>
+      <ol className="list-decimal pl-8 space-y-1 bg-slate-50 rounded-lg p-5 text-slate-700">{requirements.map((row, index) => <li key={`${row.Code}-${index}`}>{fixText(row.Description || row.Code)}</li>)}</ol>
+    </section>}
+    {!readOnly && <section className="space-y-3 rounded-lg border border-slate-200 p-5">
+      <h3 className="font-semibold">Declaration</h3>
+      <label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={declared} onChange={(e) => toggleDeclaration(e.target.checked)} />
+        <span className="space-y-2 text-slate-700">
+          <span className="block">I hereby certify to the best of my knowledge that the particulars given on this form are correct and I understand that any incorrect information may lead to disqualification/legal action.</span>
+          <span className="block">I further consent that information of personal nature may be obtained from my former employers as listed and or my referees for consideration of my application. <span className="text-red-600">*</span></span>
+        </span></label>
+    </section>}
     {!readOnly && missing.length > 0 && <div role="alert" className="border border-brand-green-300 bg-brand-green-50 p-4 rounded-lg"><p className="font-semibold">Complete these items before submitting:</p><ul className="list-disc pl-5">{missing.map((message) => <li key={message}>{message}</li>)}</ul></div>}
     {!readOnly && <div className="flex justify-between"><button type="button" onClick={onBack} className="px-4 py-2 rounded-lg border border-slate-300 bg-white font-semibold text-slate-700 hover:bg-slate-50">Previous</button><button type="button" onClick={onSubmit} disabled={loading || missing.length > 0} className="btn-primary px-5 py-2 rounded-lg disabled:opacity-50">{loading ? 'Submitting…' : 'Submit application'}</button></div>}
   </div>;

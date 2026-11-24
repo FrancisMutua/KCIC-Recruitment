@@ -50,7 +50,8 @@ namespace Recruitment.Server.Controllers
                 {
                     result = await _bc.UserLoginAsync(username);
                 }
-                catch (BusinessCentralException ex) when (ex.Message.Contains("not been activated", StringComparison.OrdinalIgnoreCase))
+                // Codeunit 70007 UserLogin: "Account is not activated. Please check your email."
+                catch (BusinessCentralException ex) when (ex.Message.Contains("not activated", StringComparison.OrdinalIgnoreCase))
                 {
                     // Self-service recovery when the original activation email was lost or never sent.
                     try
@@ -88,7 +89,7 @@ namespace Recruitment.Server.Controllers
                 var expiresIn = (int)(tokenData.Expiration - DateTime.UtcNow).TotalSeconds;
 
                    
-                // BC's IsProfileUpdated is a stub that always returns false, so derive it from the stored profile.
+                // Codeunit 70007 IsProfileUpdated only checks for a saved application, so derive it from the profile itself.
                 bool isProfileUpdated = false;
                 try
                 {
@@ -208,10 +209,14 @@ namespace Recruitment.Server.Controllers
                 return BadRequest(new ApiResponse<object> { Success = false, Message = ErrorText.From(ex) });
             }
         }
-        /// <summary>A profile is complete once the fields copied onto new applications are filled in.</summary>
+        /// <summary>
+        /// A profile is complete once the fields used to prefill applications are filled in. Gender is
+        /// not checked because BC always reports one (its first option, Male, is the default), and a
+        /// blank phone number is stored as "0".
+        /// </summary>
         private static bool IsProfileComplete(System.Text.Json.Nodes.JsonObject profile) =>
-            new[] { "TelephoneNo", "DateOfBirth", "Gender", "PostalAddress", "Country" }
-                .All(key => !string.IsNullOrWhiteSpace(profile[key]?.ToString()));
+            !string.IsNullOrWhiteSpace(BcValue.PhoneForDisplay(BcJson.Text(profile, "TelephoneNo"))) &&
+            new[] { "DateOfBirth", "PostalAddress", "Country" }.All(key => !string.IsNullOrWhiteSpace(BcJson.Text(profile, key)));
 
         [Authorize]
         [HttpGet("profile")]
@@ -226,6 +231,9 @@ namespace Recruitment.Server.Controllers
                 var result = await _bc.GetUserDetailsAsync(username);
 
                 var cleanedProfile = JsonUtilities.FlattenNavResponse(result);
+                cleanedProfile["TelephoneNo"] = BcValue.PhoneForDisplay(BcJson.Text(cleanedProfile, "TelephoneNo"));
+                // Gender always reads "Male" until the applicant saves a profile (Male is BC's first option).
+                if (!IsProfileComplete(cleanedProfile)) cleanedProfile["Gender"] = string.Empty;
 
                 return Ok(new ApiResponse<object> { Success = true, Data = cleanedProfile });
             }
@@ -244,22 +252,28 @@ namespace Recruitment.Server.Controllers
                 var username = User.Claims.FirstOrDefault(x => x.Type == "username")?.Value;
                 if (string.IsNullOrEmpty(username)) return Unauthorized(new ApiResponse<object> { Success = false, Message = "User not found!" });
 
-                // UpdateApplicantProfile stores phone, gender, marital status, postal address, birth date and country;
-                // BC ignores its initials, postal code and disability parameters.
+                if (account.Gender is not ("Male" or "Female"))
+                    return BadRequest(new ApiResponse<object> { Success = false, Message = "Select your gender." });
+
+                // UpdateApplicantProfile overwrites every profile field, so the form always sends all of them.
                 await _bc.UpdateApplicantProfileAsync(
                     username,
-                    string.Empty,
-                    account.PhoneNumber ?? string.Empty,
-                    account.Gender is 1 or 2 ? account.Gender.Value : 0,
-                    account.MaritalStatus is 0 or 1 ? account.MaritalStatus.Value : 0,
-                    string.Empty,
+                    AccountDto.SalutationCode(account.Salutation),
+                    BcValue.Phone(account.PhoneNumber, "Phone number"),
+                    account.Gender,
+                    account.MaritalStatus ?? string.Empty,
+                    account.PostalCode ?? string.Empty,
                     account.PostalAddress ?? string.Empty,
                     account.BirthDate ?? DateTime.MinValue,
-                    false,
-                    string.Empty,
-                    string.Empty,
+                    account.Disability,
+                    account.Disability ? account.DisabilityStatus ?? string.Empty : string.Empty,
+                    account.Disability ? account.PwdNumber ?? string.Empty : string.Empty,
                     account.Country ?? string.Empty);
                 return Ok(new ApiResponse<object> { Success = true, Message = "Profile updated successfully!" });
+            }
+            catch (PortalValidationException ex)
+            {
+                return BadRequest(new ApiResponse<object> { Success = false, Message = ex.Message });
             }
             catch (Exception ex)
             {
